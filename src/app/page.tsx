@@ -201,10 +201,10 @@ export default async function Home() {
               <Link
                 key={p.id}
                 href={`/seido/${p.id}`}
-                className="flex h-[80px] w-[152px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-2"
+                className="flex h-[96px] w-[152px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-2"
               >
                 <p className="mb-1 line-clamp-2 text-xs text-[#888780]">{p.label}</p>
-                <p className="text-sm font-medium">{p.value}</p>
+                <p className="line-clamp-2 text-base font-medium">{p.value}</p>
               </Link>
             ))}
           </div>
