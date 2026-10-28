@@ -52,12 +52,19 @@ const JIDO_FUYOU_PARTIAL_MAX_BASE = 48040;
 const JIDO_FUYOU_PARTIAL_MIN_EXTRA = 5680;
 const JIDO_FUYOU_PARTIAL_MAX_EXTRA = 11340;
 const JIDO_IKUSEI_LIMIT = [383.8, 421.8, 459.8, 497.8];
-// マル親(台東区)の所得制限。他区はまだ正式確認していないため適用しない。
-const MARUOYA_TAITO_LIMIT = [216, 254];
 
-const JIDO_FUYOU_WINDOW = "台東区 子育て支援課給付担当(03-5246-1232)。他区は各区役所の子育て支援窓口";
+// マル親の所得制限(本人・保護者基準、万円)。23区は2パターンに分かれる(23区分を公式サイトで確認済み)。
+const MARUOYA_PATTERN_A = [208, 246, 284]; // 千代田・中央・港・新宿・文京・墨田・江東・品川・目黒・大田・世田谷・渋谷・中野・杉並・荒川・足立・葛飾・江戸川・北・板橋
+const MARUOYA_PATTERN_B = [216, 254, 292]; // 台東・練馬・豊島
+const MARUOYA_PATTERN_B_WARDS = new Set(["台東区", "練馬区", "豊島区"]);
+
+function maruoyaLimitTableForWard(ward: string): number[] {
+  return MARUOYA_PATTERN_B_WARDS.has(ward) ? MARUOYA_PATTERN_B : MARUOYA_PATTERN_A;
+}
+
+const JIDO_FUYOU_WINDOW = "お住まいの区の子育て支援課給付担当";
 const JIDO_IKUSEI_WINDOW = "お住まいの区の子育て支援課給付担当";
-const MARUOYA_WINDOW = "台東区 子育て支援課給付担当(03-5246-1232)";
+const MARUOYA_WINDOW = "お住まいの区の子育て支援課(ひとり親家庭等医療費助成担当)";
 
 function limitForCount(table: number[], count: number): number {
   const idx = Math.min(count, table.length - 1);
@@ -144,14 +151,15 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
       });
     }
 
-    // マル親医療費助成: 台東区は所得基準まで計算、他区はまだ未確認のため案内のみ
-    if (input.ward === "台東区") {
-      const maruoyaLimit = limitForCount(MARUOYA_TAITO_LIMIT, count);
+    // マル親医療費助成: 23区それぞれの所得基準で判定(台東・練馬・豊島のみ基準が異なる)
+    if (input.ward) {
+      const maruoyaTable = maruoyaLimitTableForWard(input.ward);
+      const maruoyaLimit = limitForCount(maruoyaTable, count);
       if (income < maruoyaLimit) {
         items.push({
           name: "ひとり親家庭等医療費助成(マル親)",
           status: "全部支給",
-          note: "医療費の自己負担がほぼ無料になりそうです(台東区の基準)",
+          note: `医療費の自己負担がほぼ無料になりそうです(${input.ward}の基準)`,
           window: MARUOYA_WINDOW,
           programId: "maruoya-iryouhi",
         });
@@ -159,7 +167,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         items.push({
           name: "ひとり親家庭等医療費助成(マル親)",
           status: "対象外",
-          note: "所得基準を超えているため対象外の可能性が高いです(台東区の基準)",
+          note: `所得基準を超えているため対象外の可能性が高いです(${input.ward}の基準)`,
           programId: "maruoya-iryouhi",
         });
       }
@@ -167,7 +175,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
       items.push({
         name: "ひとり親家庭等医療費助成(マル親)",
         status: "要確認",
-        note: "医療費の自己負担が軽くなる制度です。区ごとに基準が違うため、お住まいの区役所でご確認ください",
+        note: "医療費の自己負担が軽くなる制度です。区が分かるとここも診断できます",
       });
     }
   } else {
