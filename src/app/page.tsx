@@ -223,7 +223,7 @@ export default async function Home() {
             {newest.map((item) => {
               const inner = (
                 <>
-                  <span className="shrink-0 rounded-full bg-[#D85A30] px-2 py-0.5 text-[10px] font-semibold text-white">
+                  <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
                     NEW
                   </span>
                   <p className="text-sm leading-snug">{item.text}</p>
@@ -253,7 +253,7 @@ export default async function Home() {
             {top3.map((item, i) => {
               const inner = (
                 <>
-                  <span className="text-base font-medium text-[#B4B2A9]">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#FAECE7] text-sm font-bold text-[#712B13]">
                     {i + 1}
                   </span>
                   <p className="text-sm leading-snug">{item.text}</p>
