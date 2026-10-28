@@ -88,14 +88,6 @@ const programs = programsData.programs as Program[];
 
 export const instant = false;
 
-const LAYER_LABEL: Record<Program["layer"], string> = {
-  national: "全国共通の制度",
-  national_prefecture_admin: "全国共通の制度(都道府県・政令市・中核市が窓口)",
-  prefecture: "東京都在住なら誰でも",
-  municipal: "台東区の制度",
-  prefecture_municipal: "東京都・台東区の制度",
-};
-
 const AREA_BADGE: Record<Program["layer"], string> = {
   national: "全国",
   national_prefecture_admin: "全国",
@@ -136,12 +128,10 @@ export default async function ProgramDetailPage({
     <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 py-5">
         <div className="mb-4 flex items-center gap-2">
-          <Link href="/" aria-label="トップへ戻る">
+          <Link href="/seido" className="flex items-center gap-2">
             <IconArrowLeft size={20} className="text-[#5F5E5A]" />
+            <span className="text-xs text-[#888780]">手当一覧へ</span>
           </Link>
-          <p className="text-xs text-[#888780]">
-            支援制度 › {program.areaBadgeOverride ?? LAYER_LABEL[program.layer]}
-          </p>
         </div>
 
         <div className="mb-2 flex flex-wrap gap-1.5">
