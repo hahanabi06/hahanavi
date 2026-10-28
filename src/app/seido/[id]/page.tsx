@@ -104,6 +104,8 @@ const CATEGORY_LABEL: Record<string, string> = {
   tax: "税金の控除",
   insurance: "保険料の軽減",
   housing: "住まいの支援",
+  education: "教育費の支援",
+  discount: "割引・優遇制度",
 };
 
 export function generateStaticParams() {
