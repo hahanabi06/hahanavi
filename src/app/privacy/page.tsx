@@ -5,9 +5,9 @@ export const metadata = { title: "プライバシーポリシー | ハハナビ"
 export default function Privacy() {
   return (
     <>
-      <PageHeader title="プライバシーポリシー" backHref="/" />
+      <PageHeader title="プライバシーポリシー" backHref="/" fixed={false} />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 pt-20 pb-5">
+      <main className="w-full max-w-md px-4 py-5">
         <div className="flex flex-col gap-4 text-sm leading-relaxed">
           <p>
             ハハナビ(以下「当サイト」)は、ご利用者の個人情報を以下の方針に基づいて取り扱います。

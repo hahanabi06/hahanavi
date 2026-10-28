@@ -7,9 +7,9 @@ export const metadata = { title: "企業の方へ | ハハナビ" };
 export default function CompanyPage() {
   return (
     <>
-      <PageHeader title="企業の方へ" backHref="/" />
+      <PageHeader title="企業の方へ" backHref="/" fixed={false} />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 pt-20 pb-5">
+        <main className="w-full max-w-md px-4 py-5">
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
             <BearParentChild size={44} />
             <p className="text-sm leading-relaxed">

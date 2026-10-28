@@ -5,9 +5,9 @@ export const metadata = { title: "利用規約 | ハハナビ" };
 export default function Terms() {
   return (
     <>
-      <PageHeader title="利用規約" backHref="/" />
+      <PageHeader title="利用規約" backHref="/" fixed={false} />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 pt-20 pb-5">
+        <main className="w-full max-w-md px-4 py-5">
           <div className="flex flex-col gap-4 text-sm leading-relaxed">
             <p>
               この利用規約は、ハハナビ(以下「当サイト」)の利用条件を定めるものです。当サイトおよびLINE公式アカウントをご利用いただく方(以下「利用者」)には、本規約に同意いただいたものとみなします。
