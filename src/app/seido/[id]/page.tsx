@@ -58,7 +58,12 @@ type Program = {
   id: string;
   name: string;
   headline?: string;
-  layer: "national" | "prefecture" | "municipal" | "prefecture_municipal";
+  layer:
+    | "national"
+    | "national_prefecture_admin"
+    | "prefecture"
+    | "municipal"
+    | "prefecture_municipal";
   areaBadgeOverride?: string;
   category: string;
   amount: string;
@@ -84,6 +89,7 @@ export const instant = false;
 
 const LAYER_LABEL: Record<Program["layer"], string> = {
   national: "全国共通の制度",
+  national_prefecture_admin: "全国共通の制度(都道府県・政令市・中核市が窓口)",
   prefecture: "東京都在住なら誰でも",
   municipal: "台東区の制度",
   prefecture_municipal: "東京都・台東区の制度",
@@ -91,6 +97,7 @@ const LAYER_LABEL: Record<Program["layer"], string> = {
 
 const AREA_BADGE: Record<Program["layer"], string> = {
   national: "全国",
+  national_prefecture_admin: "全国",
   prefecture: "東京都",
   municipal: "台東区",
   prefecture_municipal: "東京都・台東区",
@@ -106,6 +113,7 @@ const CATEGORY_LABEL: Record<string, string> = {
   housing: "住まいの支援",
   education: "教育費の支援",
   discount: "割引・優遇制度",
+  loan: "貸付制度(要返済)",
 };
 
 export function generateStaticParams() {
