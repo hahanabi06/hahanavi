@@ -68,23 +68,23 @@ export default async function ArticlePage({
           })}
         </div>
 
-        <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
-          <BearParentChild size={44} />
-          <p className="text-sm leading-relaxed">
-            自分の場合いくらになるか、LINEで聞いてみて
+        <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
+          <p className="mb-2.5 text-sm leading-relaxed">
+            この記事の制度、自分は対象になる?
+            <br />
+            他の制度と合わせていくらもらえるか診断するよ
           </p>
+          <a
+            href={LINE_ADD_FRIEND_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium text-white"
+            style={{ backgroundColor: LINE_GREEN }}
+          >
+            <IconMessageCircle2 size={16} />
+            LINEで簡単手当診断をしてみる
+          </a>
         </div>
-
-        <a
-          href={LINE_ADD_FRIEND_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium text-white"
-          style={{ backgroundColor: LINE_GREEN }}
-        >
-          <IconMessageCircle2 size={16} />
-          LINEで簡単手当診断
-        </a>
       </main>
     </div>
   );
