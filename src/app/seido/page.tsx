@@ -19,6 +19,7 @@ type Program = {
     | "municipal"
     | "prefecture_municipal";
   areaBadgeOverride?: string;
+  category: string;
 };
 
 const programs = programsData.programs as Program[];
@@ -34,6 +35,40 @@ const GROUPS: { title: string; layers: Program["layer"][] }[] = [
     layers: ["municipal", "prefecture_municipal"],
   },
 ];
+
+// お金がもらえる制度 → 負担が軽くなる制度 → 返済が必要な貸付、の順でわかりやすく並べる
+type BenefitType = "給付" | "軽減・免除" | "貸付";
+
+const CATEGORY_TO_TYPE: Record<string, BenefitType> = {
+  cash: "給付",
+  career: "給付",
+  education: "給付",
+  housing: "給付",
+  tax: "軽減・免除",
+  insurance: "軽減・免除",
+  childcare: "軽減・免除",
+  medical: "軽減・免除",
+  discount: "軽減・免除",
+  loan: "貸付",
+};
+
+const TYPE_ORDER: BenefitType[] = ["給付", "軽減・免除", "貸付"];
+
+const TYPE_BADGE: Record<BenefitType, string> = {
+  給付: "bg-[#FCEAE3] text-[#B8491F]",
+  "軽減・免除": "bg-[#E6F1FB] text-[#0C447C]",
+  貸付: "bg-[#FDF3D9] text-[#8A6D1F]",
+};
+
+function typeOf(p: Program): BenefitType {
+  return CATEGORY_TO_TYPE[p.category] ?? "給付";
+}
+
+function sortByType(items: Program[]): Program[] {
+  return [...items].sort(
+    (a, b) => TYPE_ORDER.indexOf(typeOf(a)) - TYPE_ORDER.indexOf(typeOf(b)),
+  );
+}
 
 export default function SeidoListPage() {
   return (
@@ -51,29 +86,41 @@ export default function SeidoListPage() {
         </p>
 
         {GROUPS.map((group) => {
-          const items = programs.filter((p) => group.layers.includes(p.layer));
+          const items = sortByType(
+            programs.filter((p) => group.layers.includes(p.layer)),
+          );
           if (items.length === 0) return null;
           return (
             <section key={group.title} className="mb-6">
               <p className="mb-2.5 text-sm font-medium">{group.title}</p>
               <div className="flex flex-col gap-1.5">
-                {items.map((p) => (
-                  <Link
-                    key={p.id}
-                    href={`/seido/${p.id}`}
-                    className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
-                  >
-                    <p className="text-sm leading-snug">{p.name}</p>
-                    <div className="flex shrink-0 items-center gap-1">
-                      {p.headline && (
-                        <span className="text-xs font-semibold whitespace-nowrap text-[#993C1D]">
-                          {p.headline}
+                {items.map((p) => {
+                  const type = typeOf(p);
+                  return (
+                    <Link
+                      key={p.id}
+                      href={`/seido/${p.id}`}
+                      className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_BADGE[type]}`}
+                        >
+                          {type}
                         </span>
-                      )}
-                      <IconChevronRight size={16} className="text-[#888780]" />
-                    </div>
-                  </Link>
-                ))}
+                        <p className="text-sm leading-snug">{p.name}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        {p.headline && (
+                          <span className="text-xs font-semibold whitespace-nowrap text-[#993C1D]">
+                            {p.headline}
+                          </span>
+                        )}
+                        <IconChevronRight size={16} className="text-[#888780]" />
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </section>
           );
