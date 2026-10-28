@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { Zen_Maru_Gothic } from "next/font/google";
-import { BearFace, BearParentChild } from "@/components/Bear";
+import { BearParentChild } from "@/components/Bear";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import programsData from "@/data/programs.json";
 
@@ -95,11 +95,11 @@ const NAV_ITEMS = [
 export default function Home() {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#FAECE7]">
+      <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#E6F1FB]">
         <div className="grid w-full max-w-md grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-3">
           <IconMenu2 size={20} className="text-[#5F5E5A]" />
           <div className="flex items-center justify-center gap-1.5">
-            <BearFace size={38} />
+            <BearParentChild size={42} />
             <div className="text-left">
               <p
                 className={`${zenMaruGothic.className} text-2xl leading-tight text-[#D85A30]`}
@@ -119,13 +119,13 @@ export default function Home() {
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-20 pb-5">
         {/* icon nav */}
-        <div className="my-5 flex justify-between">
+        <div className="my-5 flex justify-center gap-5">
           {NAV_ITEMS.map(({ icon: Icon, label }) => (
             <div key={label} className="flex flex-col items-center gap-1.5">
               <div className="flex h-[50px] w-[50px] items-center justify-center rounded-full bg-[#F1EFE8]">
                 <Icon size={21} className="text-[#5F5E5A]" />
               </div>
-              <span className="text-[10px]">{label}</span>
+              <span className="text-xs">{label}</span>
             </div>
           ))}
         </div>
