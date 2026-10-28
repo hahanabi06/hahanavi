@@ -152,9 +152,12 @@ export default function SeidoListPage() {
           <p className="text-sm font-medium">支援制度一覧</p>
         </div>
 
-        <p className="mb-3 text-xs leading-relaxed text-[#888780]">
-          使える制度は、お住まいの地域によって変わります。「全国」「都道府県」「市区町村」の順に、対象が広い制度から並べているよ。
-        </p>
+        <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
+          <BearParentChild size={40} />
+          <p className="text-sm leading-relaxed">
+            使える制度は、お住まいの地域によって変わるよ。「全国」「都道府県」「市区町村」の順に、対象が広い制度から並べているから、上から見てみてね。
+          </p>
+        </div>
 
         <div className="mb-5 flex flex-wrap gap-2">
           <select
