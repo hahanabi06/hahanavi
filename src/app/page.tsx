@@ -75,7 +75,7 @@ const PROGRAMS = programsData.programs.map((p) => ({
 const RANKING = [
   {
     text: "え、知らなかった。月1万円以上増える制度があった",
-    href: "/kiji/jidou-ikusei-teate-ikura",
+    href: "/kiji/407d711e-c25a-81d4-b16c-fc817d09daba",
   },
   { text: "資格、お金かけずに取れるって本当?", href: null },
   { text: "元夫からの連絡、もう無視していいよ", href: null },
