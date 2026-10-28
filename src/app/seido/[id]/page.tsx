@@ -42,6 +42,12 @@ type Tier = {
   note?: string;
 };
 
+type Exception = {
+  area: string;
+  description: string;
+  note?: string;
+};
+
 type Program = {
   id: string;
   name: string;
@@ -62,6 +68,7 @@ type Program = {
   verifyNeeded: boolean;
   source?: string;
   verifiedAt?: string;
+  exception?: Exception;
 };
 
 const programs = programsData.programs as Program[];
@@ -293,6 +300,27 @@ export default async function ProgramDetailPage({
               </dd>
             )}
           </div>
+
+          {program.exception && (
+            <div className="border-b border-[#D3D1C7] py-3">
+              <dt className="mb-2 text-sm font-medium text-[#5F5E5A]">
+                さらに上乗せがある市区町村
+              </dt>
+              <dd className="rounded-xl bg-[#EAF7EE] px-3.5 py-3">
+                <span className="mb-1.5 inline-block rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#1F7A3D]">
+                  {program.exception.area}だけの上乗せ
+                </span>
+                <p className="text-sm leading-snug font-semibold text-[#1F7A3D]">
+                  {program.exception.description}
+                </p>
+                {program.exception.note && (
+                  <p className="mt-1.5 text-[11px] leading-relaxed text-[#3C8C57]">
+                    {program.exception.note}
+                  </p>
+                )}
+              </dd>
+            </div>
+          )}
 
           {program.requiredDocs && (
             <div className="border-b border-[#D3D1C7] py-3">
