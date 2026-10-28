@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BearParentChild } from "@/components/Bear";
 
 const MESSAGES = [
@@ -28,11 +28,7 @@ function getTodaysMessage(): string {
 }
 
 export function BearGreeting() {
-  const [message, setMessage] = useState(MESSAGES[0]);
-
-  useEffect(() => {
-    setMessage(getTodaysMessage());
-  }, []);
+  const [message] = useState(getTodaysMessage);
 
   const lines = splitLines(message);
 
