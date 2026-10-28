@@ -7,7 +7,70 @@ type LineEvent = {
   type: string;
   replyToken?: string;
   message?: { type: string; text?: string };
+  source?: { type: string; userId?: string };
 };
+
+// Supabaseクライアントはクエリ失敗時に例外を投げず { error } を返すだけなので、
+// try/catchだけだと書き込み失敗に気づけない。LINEの顧客データは生命線なので、
+// 失敗は必ずログに残す(ユーザーへの返信は止めない = best-effortだが、サイレント失敗はさせない)。
+async function touchLineUser(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string,
+  message?: { text: string; parsed: ReturnType<typeof parseMessage> }
+) {
+  try {
+    const update: Record<string, unknown> = {
+      line_user_id: userId,
+      last_seen_at: new Date().toISOString(),
+    };
+
+    if (message) {
+      const { data: existing, error: selectError } = await supabase
+        .from("line_users")
+        .select("message_count")
+        .eq("line_user_id", userId)
+        .maybeSingle();
+      if (selectError) {
+        console.error("[line_users] select failed", userId, selectError);
+      }
+
+      update.last_message = message.text;
+      update.message_count = (existing?.message_count ?? 0) + 1;
+      if (message.parsed.ward) update.ward = message.parsed.ward;
+      if (message.parsed.numChildren !== null)
+        update.num_children = message.parsed.numChildren;
+      if (message.parsed.incomeManYen !== null)
+        update.income_man_yen = message.parsed.incomeManYen;
+    }
+
+    const { error } = await supabase
+      .from("line_users")
+      .upsert(update, { onConflict: "line_user_id" });
+    if (error) console.error("[line_users] upsert failed", userId, error);
+  } catch (err) {
+    console.error("[line_users] unexpected error", userId, err);
+  }
+}
+
+async function logLineMessage(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string,
+  text: string,
+  parsed: ReturnType<typeof parseMessage>
+) {
+  try {
+    const { error } = await supabase.from("line_messages").insert({
+      line_user_id: userId,
+      text,
+      ward: parsed.ward,
+      num_children: parsed.numChildren,
+      income_man_yen: parsed.incomeManYen,
+    });
+    if (error) console.error("[line_messages] insert failed", userId, error);
+  } catch (err) {
+    console.error("[line_messages] unexpected error", userId, err);
+  }
+}
 
 function formatDiagnosisReply(text: string): string {
   const input = parseMessage(text);
@@ -62,21 +125,36 @@ export async function POST(req: NextRequest) {
         const supabase = getSupabaseServerClient();
         const logFollow = (async () => {
           try {
-            await supabase.from("line_follows").insert({});
-          } catch {
-            // best-effort logging only
+            const { error } = await supabase.from("line_follows").insert({});
+            if (error) console.error("[line_follows] insert failed", error);
+          } catch (err) {
+            console.error("[line_follows] unexpected error", err);
           }
         })();
-        await Promise.all([
+        const tasks = [
           replyToLine(event.replyToken, WELCOME_MESSAGE, channelAccessToken),
           logFollow,
-        ]);
+        ];
+        if (event.source?.userId) {
+          tasks.push(touchLineUser(supabase, event.source.userId));
+        }
+        await Promise.all(tasks);
         return;
       }
 
       if (event.type === "message" && event.message?.type === "text") {
-        const reply = formatDiagnosisReply(event.message.text ?? "");
-        await replyToLine(event.replyToken, reply, channelAccessToken);
+        const text = event.message.text ?? "";
+        const reply = formatDiagnosisReply(text);
+        const tasks = [replyToLine(event.replyToken, reply, channelAccessToken)];
+        if (event.source?.userId) {
+          const supabase = getSupabaseServerClient();
+          const parsed = parseMessage(text);
+          tasks.push(
+            touchLineUser(supabase, event.source.userId, { text, parsed }),
+            logLineMessage(supabase, event.source.userId, text, parsed)
+          );
+        }
+        await Promise.all(tasks);
       }
     })
   );

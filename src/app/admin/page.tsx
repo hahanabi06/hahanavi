@@ -104,6 +104,10 @@ function aggregateViews(rows: ViewRow[]) {
   };
 }
 
+function daysAgoIso(days: number): string {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
+
 function countInWindow(rows: { created_at: string }[], windowMs: number) {
   const now = Date.now();
   return rows.filter((r) => now - new Date(r.created_at).getTime() <= windowMs)
@@ -134,35 +138,76 @@ function BarChart({ data }: { data: { label: string; pv: number }[] }) {
 export default async function AdminDashboard() {
   await connection();
   const supabase = getSupabaseServerClient();
-  const thirtyDaysAgo = new Date(
-    Date.now() - 30 * 24 * 60 * 60 * 1000,
-  ).toISOString();
+  const thirtyDaysAgo = daysAgoIso(30);
 
-  const [inquiriesRes, reportsRes, viewsRes, followsRes, articles] =
-    await Promise.all([
-      supabase
-        .from("company_inquiries")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("program_reports")
-        .select("*")
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("page_views")
-        .select("path, visitor_id, created_at")
-        .gte("created_at", thirtyDaysAgo),
-      supabase
-        .from("line_follows")
-        .select("created_at")
-        .gte("created_at", thirtyDaysAgo),
-      listPublishedArticles().catch(() => []),
-    ]);
+  const [
+    inquiriesRes,
+    reportsRes,
+    viewsRes,
+    followsRes,
+    lineUsersRes,
+    lineMessagesRes,
+    articles,
+  ] = await Promise.all([
+    supabase
+      .from("company_inquiries")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("program_reports")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("page_views")
+      .select("path, visitor_id, created_at")
+      .gte("created_at", thirtyDaysAgo),
+    supabase
+      .from("line_follows")
+      .select("created_at")
+      .gte("created_at", thirtyDaysAgo),
+    supabase
+      .from("line_users")
+      .select("*")
+      .order("last_seen_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("line_messages")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(300),
+    listPublishedArticles().catch(() => []),
+  ]);
 
   const inquiries = inquiriesRes.data ?? [];
   const reports = reportsRes.data ?? [];
   const views = aggregateViews(viewsRes.data ?? []);
   const follows = followsRes.data ?? [];
+  const lineUsers = lineUsersRes.data ?? [];
+  const lineUserById = new Map(lineUsers.map((u) => [u.line_user_id, u]));
+
+  type LineMessageRow = {
+    line_user_id: string;
+    text: string;
+    created_at: string;
+  };
+  const messagesByUser = new Map<string, LineMessageRow[]>();
+  for (const m of (lineMessagesRes.data ?? []) as LineMessageRow[]) {
+    const list = messagesByUser.get(m.line_user_id) ?? [];
+    list.push(m);
+    messagesByUser.set(m.line_user_id, list);
+  }
+  const lineConversations = Array.from(messagesByUser.entries())
+    .map(([userId, messages]) => ({
+      userId,
+      profile: lineUserById.get(userId),
+      // 新着順で取得してるので、表示用に古い→新しいへ並べ直す
+      messages: [...messages].reverse(),
+    }))
+    .sort(
+      (a, b) =>
+        new Date(b.messages[b.messages.length - 1].created_at).getTime() -
+        new Date(a.messages[a.messages.length - 1].created_at).getTime(),
+    );
   const day = 24 * 60 * 60 * 1000;
   const followCounts = {
     last24h: countInWindow(follows, day),
@@ -172,6 +217,7 @@ export default async function AdminDashboard() {
 
   const articleTitleById = new Map(articles.map((a) => [a.id, a.title]));
   function labelForPath(path: string): string {
+    if (path === "/") return "トップページ";
     const match = path.match(/^\/kiji\/(.+)$/);
     if (match) {
       const title = articleTitleById.get(match[1]);
@@ -212,75 +258,79 @@ export default async function AdminDashboard() {
         <main className="min-w-0 flex-1 px-8 py-6">
           <section className="mb-8">
             <p className="mb-3 text-lg font-medium">アクセス解析</p>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
-                <p className="text-xs text-[#888780]">過去24時間</p>
-                <p className="text-2xl font-medium">
-                  {views.last24h.pv}
-                  <span className="text-sm font-normal text-[#888780]">
-                    {" "}
-                    PV
-                  </span>
-                </p>
-                <p className="text-sm text-[#5F5E5A]">
-                  {views.last24h.uu} UU
-                </p>
-              </div>
-              <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
-                <p className="text-xs text-[#888780]">過去7日間</p>
-                <p className="text-2xl font-medium">
-                  {views.last7d.pv}
-                  <span className="text-sm font-normal text-[#888780]">
-                    {" "}
-                    PV
-                  </span>
-                </p>
-                <p className="text-sm text-[#5F5E5A]">{views.last7d.uu} UU</p>
-              </div>
-              <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
-                <p className="text-xs text-[#888780]">過去30日間</p>
-                <p className="text-2xl font-medium">
-                  {views.last30d.pv}
-                  <span className="text-sm font-normal text-[#888780]">
-                    {" "}
-                    PV
-                  </span>
-                </p>
-                <p className="text-sm text-[#5F5E5A]">
-                  {views.last30d.uu} UU
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-3 rounded-xl bg-[#F1EFE8] px-4 py-3">
-              <p className="mb-3 text-sm font-medium">
-                日別PV推移(過去14日間)
-              </p>
-              <BarChart data={views.daily} />
-            </div>
-
-            {views.topPaths.length > 0 && (
-              <div className="mt-3 rounded-xl bg-[#F1EFE8] px-4 py-3">
-                <p className="mb-2 text-sm font-medium">
-                  人気ページ(過去30日間)
-                </p>
-                <div className="flex flex-col gap-1">
-                  {views.topPaths.map(([path, count]) => (
-                    <div
-                      key={path}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <span className="truncate text-[#5F5E5A]">
-                        {labelForPath(path)}
+            <div className="flex gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
+                    <p className="text-xs text-[#888780]">過去24時間</p>
+                    <p className="text-2xl font-medium">
+                      {views.last24h.pv}
+                      <span className="text-sm font-normal text-[#888780]">
+                        {" "}
+                        PV
                       </span>
-                      <span className="shrink-0 pl-3 font-medium">
-                        {count}
+                    </p>
+                    <p className="text-sm text-[#5F5E5A]">
+                      {views.last24h.uu} UU
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
+                    <p className="text-xs text-[#888780]">過去7日間</p>
+                    <p className="text-2xl font-medium">
+                      {views.last7d.pv}
+                      <span className="text-sm font-normal text-[#888780]">
+                        {" "}
+                        PV
                       </span>
-                    </div>
-                  ))}
+                    </p>
+                    <p className="text-sm text-[#5F5E5A]">
+                      {views.last7d.uu} UU
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
+                    <p className="text-xs text-[#888780]">過去30日間</p>
+                    <p className="text-2xl font-medium">
+                      {views.last30d.pv}
+                      <span className="text-sm font-normal text-[#888780]">
+                        {" "}
+                        PV
+                      </span>
+                    </p>
+                    <p className="text-sm text-[#5F5E5A]">
+                      {views.last30d.uu} UU
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-3 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                  <p className="mb-3 text-sm font-medium">
+                    日別PV推移(過去14日間)
+                  </p>
+                  <BarChart data={views.daily} />
                 </div>
               </div>
-            )}
+
+              {views.topPaths.length > 0 && (
+                <div className="w-96 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                  <p className="mb-2 text-sm font-medium">
+                    人気ページ(過去30日間)
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {views.topPaths.map(([path, count]) => (
+                      <div
+                        key={path}
+                        className="flex items-center gap-3 text-sm"
+                      >
+                        <span className="min-w-0 flex-1 truncate text-[#5F5E5A]">
+                          {labelForPath(path)}
+                        </span>
+                        <span className="shrink-0 font-medium">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </section>
 
           <section className="mb-8">
@@ -307,6 +357,43 @@ export default async function AdminDashboard() {
                 </p>
               </div>
             </div>
+          </section>
+
+          <section className="mb-8">
+            <p className="mb-3 text-lg font-medium">
+              LINEのやりとり({lineConversations.length}人)
+            </p>
+            {lineConversations.length === 0 ? (
+              <p className="text-sm text-[#888780]">まだありません。</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {lineConversations.map(({ userId, profile, messages }) => (
+                  <div
+                    key={userId}
+                    className="rounded-xl bg-[#F1EFE8] px-4 py-3"
+                  >
+                    <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#888780]">
+                      <span>区: {profile?.ward ?? "不明"}</span>
+                      <span>子供: {profile?.num_children ?? "不明"}</span>
+                      <span>年収: {profile?.income_man_yen ?? "不明"}万円</span>
+                      <span className="ml-auto">
+                        最終: {formatDate(messages[messages.length - 1].created_at)}
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      {messages.map((m, i) => (
+                        <p key={i} className="text-sm leading-relaxed">
+                          <span className="mr-2 text-xs text-[#888780]">
+                            {formatDate(m.created_at)}
+                          </span>
+                          {m.text}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           <div className="grid grid-cols-2 gap-6">
