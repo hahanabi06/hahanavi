@@ -201,9 +201,9 @@ export default async function Home() {
               <Link
                 key={p.id}
                 href={`/seido/${p.id}`}
-                className="min-w-[118px] shrink-0 rounded-2xl bg-[#F1EFE8] px-3 py-3"
+                className="flex h-[92px] w-[132px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
-                <p className="mb-1 text-xs text-[#888780]">{p.label}</p>
+                <p className="mb-1 line-clamp-2 text-xs text-[#888780]">{p.label}</p>
                 <p className="text-base font-medium">{p.value}</p>
               </Link>
             ))}
@@ -222,21 +222,21 @@ export default async function Home() {
                   <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
                     NEW
                   </span>
-                  <p className="text-base leading-snug">{item.text}</p>
+                  <p className="line-clamp-2 flex-1 text-base leading-snug">{item.text}</p>
                 </>
               );
               return item.href ? (
                 <Link
                   key={item.text}
                   href={item.href}
-                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
                 >
                   {inner}
                 </Link>
               ) : (
                 <div
                   key={item.text}
-                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
                 >
                   {inner}
                 </div>
@@ -252,7 +252,7 @@ export default async function Home() {
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#FAECE7] text-sm font-bold text-[#712B13]">
                     {i + 1}
                   </span>
-                  <p className="flex-1 text-base leading-snug">{item.text}</p>
+                  <p className="line-clamp-2 flex-1 text-base leading-snug">{item.text}</p>
                   {item.href && (
                     <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
                       人気
@@ -264,14 +264,14 @@ export default async function Home() {
                 <Link
                   key={item.text}
                   href={item.href}
-                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
                 >
                   {inner}
                 </Link>
               ) : (
                 <div
                   key={item.text}
-                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
                 >
                   {inner}
                 </div>
@@ -287,11 +287,11 @@ export default async function Home() {
             {QUALIFICATIONS.map(({ icon: Icon, label, note }) => (
               <div
                 key={label}
-                className="min-w-[108px] shrink-0 rounded-2xl bg-[#F1EFE8] px-3 py-3"
+                className="flex h-[96px] w-[120px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
                 <Icon size={18} className="text-[#5F5E5A]" />
-                <p className="mt-1.5 text-sm font-medium">{label}</p>
-                <p className="text-xs text-[#888780]">{note}</p>
+                <p className="mt-1.5 line-clamp-1 text-sm font-medium">{label}</p>
+                <p className="line-clamp-2 text-xs text-[#888780]">{note}</p>
               </div>
             ))}
           </div>
