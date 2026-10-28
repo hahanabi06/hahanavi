@@ -3,6 +3,17 @@ import { getSupabaseServerClient } from "@/lib/supabase";
 import { listPublishedArticles } from "@/lib/notion";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 import { LinePushForm } from "@/components/LinePushForm";
+import programsData from "@/data/programs.json";
+
+const STATIC_PATH_LABEL: Record<string, string> = {
+  "/": "トップページ",
+  "/kiji": "お役立ち記事一覧",
+  "/seido": "支援制度一覧",
+  "/company": "企業の方へ",
+  "/about": "運営者情報",
+  "/privacy": "プライバシーポリシー",
+  "/terms": "利用規約",
+};
 
 export const instant = false;
 export const metadata = { title: "管理画面 | ハハナビ" };
@@ -217,13 +228,24 @@ export default async function AdminDashboard() {
   };
 
   const articleTitleById = new Map(articles.map((a) => [a.id, a.title]));
+  const programNameById = new Map(
+    programsData.programs.map((p) => [p.id, p.name]),
+  );
   function labelForPath(path: string): string {
-    if (path === "/") return "トップページ";
-    const match = path.match(/^\/kiji\/(.+)$/);
-    if (match) {
-      const title = articleTitleById.get(match[1]);
-      if (title) return `記事: ${title}`;
+    if (STATIC_PATH_LABEL[path]) return STATIC_PATH_LABEL[path];
+
+    const kijiMatch = path.match(/^\/kiji\/(.+)$/);
+    if (kijiMatch) {
+      const title = articleTitleById.get(kijiMatch[1]);
+      return title ? `記事: ${title}` : "記事(削除済み?)";
     }
+
+    const seidoMatch = path.match(/^\/seido\/(.+)$/);
+    if (seidoMatch) {
+      const name = programNameById.get(seidoMatch[1]);
+      return name ? `制度: ${name}` : "制度ページ";
+    }
+
     return path;
   }
 

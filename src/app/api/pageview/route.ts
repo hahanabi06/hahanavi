@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { isOwnerRequest } from "@/lib/admin-auth";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
     /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptimerobot/i.test(
       userAgent
     );
-  if (isBot) {
+  if (isBot || (await isOwnerRequest(req))) {
     return NextResponse.json({ ok: true, skipped: true });
   }
 
