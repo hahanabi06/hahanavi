@@ -119,9 +119,9 @@ export default function Home() {
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-20 pb-5">
         {/* icon nav */}
-        <div className="my-5 flex justify-center gap-4">
+        <div className="my-5 flex justify-between">
           {NAV_ITEMS.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex w-16 flex-col items-center gap-1.5">
+            <div key={label} className="flex w-20 flex-col items-center gap-1.5">
               <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]">
                 <Icon size={21} className="text-[#5F5E5A]" />
               </div>
