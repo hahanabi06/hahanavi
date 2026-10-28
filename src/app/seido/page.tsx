@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import {
   IconArrowLeft,
@@ -6,7 +9,8 @@ import {
 } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
 import programsData from "@/data/programs.json";
-import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
+import { LINE_GREEN, LINE_ADD_FRIEND_URL, PREFECTURES } from "@/lib/constants";
+import { TOKYO_WARDS } from "@/lib/diagnosis";
 
 type Program = {
   id: string;
@@ -20,21 +24,13 @@ type Program = {
     | "prefecture_municipal";
   areaBadgeOverride?: string;
   category: string;
+  wardsAvailable?: "all" | string[];
 };
 
 const programs = programsData.programs as Program[];
 
-const GROUPS: { title: string; layers: Program["layer"][] }[] = [
-  {
-    title: "全国どこでも使える制度",
-    layers: ["national", "national_prefecture_admin"],
-  },
-  { title: "東京都にお住まいなら使える制度", layers: ["prefecture"] },
-  {
-    title: "台東区にお住まいなら使える制度",
-    layers: ["municipal", "prefecture_municipal"],
-  },
-];
+// 今のところ詳しいデータがあるのは東京都・台東区だけ。他の都道府県・区市町村は今後広げていく
+const SUPPORTED_PREFECTURE = "東京都";
 
 // お金がもらえる制度 → 負担が軽くなる制度 → 返済が必要な貸付、の順でわかりやすく並べる
 type BenefitType = "給付" | "軽減・免除" | "貸付";
@@ -70,7 +66,82 @@ function sortByType(items: Program[]): Program[] {
   );
 }
 
+function ProgramCard({ p }: { p: Program }) {
+  const type = typeOf(p);
+  return (
+    <Link
+      href={`/seido/${p.id}`}
+      className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
+    >
+      <div className="flex flex-col gap-1">
+        <span
+          className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_BADGE[type]}`}
+        >
+          {type}
+        </span>
+        <p className="text-sm leading-snug">{p.name}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+        {p.headline && (
+          <span className="text-xs font-semibold whitespace-nowrap text-[#993C1D]">
+            {p.headline}
+          </span>
+        )}
+        <IconChevronRight size={16} className="text-[#888780]" />
+      </div>
+    </Link>
+  );
+}
+
+function ProgramGroup({
+  title,
+  items,
+}: {
+  title: string;
+  items: Program[];
+}) {
+  return (
+    <section className="mb-6">
+      <p className="mb-2.5 text-sm font-medium">{title}</p>
+      {items.length > 0 ? (
+        <div className="flex flex-col gap-1.5">
+          {sortByType(items).map((p) => (
+            <ProgramCard key={p.id} p={p} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-4 text-xs leading-relaxed text-[#888780]">
+          準備中です。今は東京都のデータのみ対応しています。エリアを順次広げていくので、もうしばらく待ってね。
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function SeidoListPage() {
+  const [prefecture, setPrefecture] = useState(SUPPORTED_PREFECTURE);
+  const [ward, setWard] = useState("台東区");
+
+  const nationalItems = programs.filter((p) =>
+    ["national", "national_prefecture_admin"].includes(p.layer),
+  );
+
+  const isTokyo = prefecture === SUPPORTED_PREFECTURE;
+
+  const prefectureItems = isTokyo
+    ? programs.filter((p) => p.layer === "prefecture")
+    : [];
+
+  const municipalItems = isTokyo
+    ? programs.filter(
+        (p) =>
+          (p.layer === "municipal" || p.layer === "prefecture_municipal") &&
+          (p.wardsAvailable === "all" ||
+            (Array.isArray(p.wardsAvailable) &&
+              p.wardsAvailable.includes(ward))),
+      )
+    : [];
+
   return (
     <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 py-5">
@@ -81,50 +152,48 @@ export default function SeidoListPage() {
           <p className="text-sm font-medium">支援制度一覧</p>
         </div>
 
-        <p className="mb-5 text-xs leading-relaxed text-[#888780]">
-          使える制度は、お住まいの地域によって変わります。「全国」「東京都」「台東区」の順に、対象が広い制度から並べているよ。
+        <p className="mb-3 text-xs leading-relaxed text-[#888780]">
+          使える制度は、お住まいの地域によって変わります。「全国」「都道府県」「市区町村」の順に、対象が広い制度から並べているよ。
         </p>
 
-        {GROUPS.map((group) => {
-          const items = sortByType(
-            programs.filter((p) => group.layers.includes(p.layer)),
-          );
-          if (items.length === 0) return null;
-          return (
-            <section key={group.title} className="mb-6">
-              <p className="mb-2.5 text-sm font-medium">{group.title}</p>
-              <div className="flex flex-col gap-1.5">
-                {items.map((p) => {
-                  const type = typeOf(p);
-                  return (
-                    <Link
-                      key={p.id}
-                      href={`/seido/${p.id}`}
-                      className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
-                    >
-                      <div className="flex flex-col gap-1">
-                        <span
-                          className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_BADGE[type]}`}
-                        >
-                          {type}
-                        </span>
-                        <p className="text-sm leading-snug">{p.name}</p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1">
-                        {p.headline && (
-                          <span className="text-xs font-semibold whitespace-nowrap text-[#993C1D]">
-                            {p.headline}
-                          </span>
-                        )}
-                        <IconChevronRight size={16} className="text-[#888780]" />
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+        <div className="mb-5 flex flex-wrap gap-2">
+          <select
+            value={prefecture}
+            onChange={(e) => setPrefecture(e.target.value)}
+            className="rounded-full bg-[#F1EFE8] px-3 py-1.5 text-xs font-medium text-[#5F5E5A]"
+          >
+            {PREFECTURES.map((pref) => (
+              <option key={pref} value={pref}>
+                {pref}
+              </option>
+            ))}
+          </select>
+          {isTokyo && (
+            <select
+              value={ward}
+              onChange={(e) => setWard(e.target.value)}
+              className="rounded-full bg-[#F1EFE8] px-3 py-1.5 text-xs font-medium text-[#5F5E5A]"
+            >
+              {TOKYO_WARDS.map((w) => (
+                <option key={w} value={w}>
+                  {w}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        <ProgramGroup title="全国どこでも使える制度" items={nationalItems} />
+        <ProgramGroup
+          title={`${prefecture}にお住まいなら使える制度`}
+          items={prefectureItems}
+        />
+        {isTokyo && (
+          <ProgramGroup
+            title={`${ward}にお住まいなら使える制度`}
+            items={municipalItems}
+          />
+        )}
 
         <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
           <p className="mb-2.5 text-sm leading-relaxed">

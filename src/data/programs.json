@@ -167,7 +167,8 @@
       "source": "https://www.fukushi.metro.tokyo.lg.jp/seikatsu/josei/maruoya",
       "verifiedAt": "2026-10-28",
       "areaBadgeOverride": "東京都23区",
-      "note": "23区分の所得基準は各区公式サイトで個別に確認済み(2026-10-28)。出典欄のリンクは東京都福祉局の制度概要ページ(区ごとの詳細は都のページに掲載無し、各区の窓口で最終確認を)"
+      "note": "23区分の所得基準は各区公式サイトで個別に確認済み(2026-10-28)。出典欄のリンクは東京都福祉局の制度概要ページ(区ごとの詳細は都のページに掲載無し、各区の窓口で最終確認を)",
+      "wardsAvailable": "all"
     },
     {
       "id": "hoikuryou-genmen",
@@ -316,7 +317,10 @@
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kenchiku/jutaku/sumai/yachinhojo/saimuhosho.html",
       "verifiedAt": "2026-10-28",
-      "note": "家賃等債務保証制度(保証料助成)は荒川区など他区にも類似の制度があることを確認済み。台東区だけの制度ではなく、東京23区にある程度共通するタイプの支援。ここに載せている金額・条件は台東区のもの"
+      "note": "家賃等債務保証制度(保証料助成)は荒川区など他区にも類似の制度があることを確認済み。台東区だけの制度ではなく、東京23区にある程度共通するタイプの支援。ここに載せている金額・条件は台東区のもの",
+      "wardsAvailable": [
+        "台東区"
+      ]
     },
     {
       "id": "jr-teikiken-waribiki",
