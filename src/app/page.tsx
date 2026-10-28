@@ -169,9 +169,9 @@ export default async function Home() {
               </p>
             </div>
           </div>
-          <a href="#" className="text-xs text-[#888780]">
+          <Link href="/company" className="text-xs text-[#888780]">
             企業の方へ
-          </a>
+          </Link>
         </div>
       </header>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
