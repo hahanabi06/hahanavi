@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import { cacheLife } from "next/cache";
 
 function getNotionClient() {
   const token = process.env.NOTION_TOKEN;
@@ -21,9 +22,12 @@ function plainText(richText: any[] | undefined): string {
 export type ArticleSummary = {
   id: string;
   title: string;
+  createdTime: string;
 };
 
 export async function listPublishedArticles(): Promise<ArticleSummary[]> {
+  "use cache";
+  cacheLife("minutes");
   const notion = getNotionClient();
   const res = await notion.dataSources.query({
     data_source_id: getDataSourceId(),
@@ -31,12 +35,13 @@ export async function listPublishedArticles(): Promise<ArticleSummary[]> {
       property: "Status",
       select: { equals: "公開" },
     },
-    sorts: [{ timestamp: "last_edited_time", direction: "descending" }],
+    sorts: [{ timestamp: "created_time", direction: "descending" }],
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return res.results.map((page: any) => ({
     id: page.id,
     title: plainText(page.properties?.Name?.title) || "無題",
+    createdTime: page.created_time,
   }));
 }
 
@@ -54,6 +59,8 @@ export type Article = {
 };
 
 export async function getArticle(id: string): Promise<Article | null> {
+  "use cache";
+  cacheLife("minutes");
   const notion = getNotionClient();
   let page;
   try {

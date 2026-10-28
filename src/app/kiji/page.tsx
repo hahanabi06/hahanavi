@@ -3,8 +3,6 @@ import { IconArrowLeft, IconChevronRight } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
 import { listPublishedArticles } from "@/lib/notion";
 
-export const instant = false;
-
 export default async function KijiListPage() {
   const articles = await listPublishedArticles().catch(() => []);
 

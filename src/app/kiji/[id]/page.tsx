@@ -2,10 +2,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { IconArrowLeft, IconMessageCircle2 } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
-import { getArticle } from "@/lib/notion";
+import { ViewTracker } from "@/components/ViewTracker";
+import { getArticle, listPublishedArticles } from "@/lib/notion";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
-export const instant = false;
+export async function generateStaticParams() {
+  const articles = await listPublishedArticles().catch(() => []);
+  return articles.map((a) => ({ id: a.id }));
+}
 
 export default async function ArticlePage({
   params,
@@ -20,6 +24,7 @@ export default async function ArticlePage({
   return (
     <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 py-5">
+        <ViewTracker articleId={id} />
         <div className="mb-4">
           <Link href="/kiji" aria-label="記事一覧へ戻る" className="mb-2 inline-block">
             <IconArrowLeft size={20} className="text-[#5F5E5A]" />
