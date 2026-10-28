@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { incrementArticleView } from "@/lib/article-stats";
 import { isOwnerRequest } from "@/lib/admin-auth";
+import { hasNoTrackCookie } from "@/lib/no-track";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -8,7 +9,7 @@ export async function POST(req: Request) {
   if (!articleId) {
     return NextResponse.json({ error: "articleId is required" }, { status: 400 });
   }
-  if (await isOwnerRequest(req)) {
+  if (hasNoTrackCookie(req) || (await isOwnerRequest(req))) {
     return NextResponse.json({ ok: true, skipped: true });
   }
   await incrementArticleView(articleId).catch(() => {});
