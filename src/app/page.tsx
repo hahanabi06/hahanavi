@@ -88,10 +88,9 @@ const NAV_ITEMS = [
 
 export default function Home() {
   return (
-    <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 py-5">
-        {/* header */}
-        <div className="mb-1 flex items-center justify-between">
+    <>
+      <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#FAECE7]">
+        <div className="flex w-full max-w-md items-center justify-between px-4 py-3">
           <IconMenu2 size={20} className="text-[#5F5E5A]" />
           <div className="text-center">
             <p className="text-sm font-medium">ハハナビ</p>
@@ -103,7 +102,9 @@ export default function Home() {
             企業の方へ
           </a>
         </div>
-
+      </header>
+      <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
+        <main className="w-full max-w-md px-4 pt-16 pb-5">
         {/* icon nav */}
         <div className="my-5 flex justify-between">
           {NAV_ITEMS.map(({ icon: Icon, label }) => (
@@ -237,7 +238,8 @@ export default function Home() {
             追加
           </a>
         </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }
