@@ -12,9 +12,15 @@ import {
   IconMessageCircle2,
 } from "@tabler/icons-react";
 import Link from "next/link";
+import { Zen_Maru_Gothic } from "next/font/google";
 import { BearFace, BearParentChild } from "@/components/Bear";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import programsData from "@/data/programs.json";
+
+const zenMaruGothic = Zen_Maru_Gothic({
+  subsets: ["latin"],
+  weight: ["700"],
+});
 
 function LineButton({
   children,
@@ -90,13 +96,20 @@ export default function Home() {
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#FAECE7]">
-        <div className="flex w-full max-w-md items-center justify-between px-4 py-3">
+        <div className="grid w-full max-w-md grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-3">
           <IconMenu2 size={20} className="text-[#5F5E5A]" />
-          <div className="text-center">
-            <p className="text-sm font-medium">ハハナビ</p>
-            <p className="text-[10px] text-[#888780]">
-              シングルマザーのための情報サイト
-            </p>
+          <div className="flex items-center justify-center gap-1.5">
+            <BearFace size={38} />
+            <div className="text-left">
+              <p
+                className={`${zenMaruGothic.className} text-2xl leading-tight text-[#D85A30]`}
+              >
+                ハハナビ
+              </p>
+              <p className="text-[10px] text-[#888780]">
+                シングルマザーのための情報サイト
+              </p>
+            </div>
           </div>
           <a href="#" className="text-[10px] text-[#888780]">
             企業の方へ
@@ -104,7 +117,7 @@ export default function Home() {
         </div>
       </header>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 pt-16 pb-5">
+        <main className="w-full max-w-md px-4 pt-20 pb-5">
         {/* icon nav */}
         <div className="my-5 flex justify-between">
           {NAV_ITEMS.map(({ icon: Icon, label }) => (
