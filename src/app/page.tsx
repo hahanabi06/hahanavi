@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { Zen_Maru_Gothic } from "next/font/google";
 import { BearParentChild } from "@/components/Bear";
+import { RequestForm } from "@/components/RequestForm";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import programsData from "@/data/programs.json";
 
@@ -227,18 +228,7 @@ export default function Home() {
           <p className="mb-2.5 text-xs leading-relaxed text-[#5F5E5A]">
             載ってない制度や記事のリクエスト、誰でも送っていいよ
           </p>
-          <input
-            type="text"
-            placeholder="お名前(なくてもOK)"
-            className="mb-2 w-full rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm outline-none"
-          />
-          <textarea
-            placeholder="例: 〇〇区の住宅支援についても知りたい"
-            className="mb-2.5 h-16 w-full resize-none rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm outline-none"
-          />
-          <button className="w-full rounded-full bg-[#D85A30] px-4 py-2.5 text-sm font-medium text-white">
-            送る
-          </button>
+          <RequestForm />
         </section>
 
         {/* bottom LINE bar */}

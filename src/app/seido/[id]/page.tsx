@@ -6,6 +6,7 @@ import {
   IconMessageCircle2,
 } from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
+import { ReportForm } from "@/components/ReportForm";
 import programsData from "@/data/programs.json";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
@@ -404,9 +405,13 @@ export default async function ProgramDetailPage({
           )}
         </div>
 
-        <p className="mb-5 text-[11px] leading-relaxed text-[#888780]">
+        <p className="mb-1 text-[11px] leading-relaxed text-[#888780]">
           情報は目安です。正式な判定や最新の基準は窓口でご確認ください。
         </p>
+
+        <div className="mb-4 border-b border-[#D3D1C7]">
+          <ReportForm programId={program.id} programName={program.name} />
+        </div>
 
         <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
           <p className="mb-2.5 text-sm leading-relaxed">
