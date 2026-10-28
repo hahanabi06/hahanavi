@@ -64,9 +64,12 @@ const PROGRAMS = [
 ];
 
 const RANKING = [
-  "え、知らなかった。月1万円増える制度",
-  "資格、お金かけずに取れるって本当?",
-  "元夫からの連絡、もう無視していいよ",
+  {
+    text: "え、知らなかった。月1万円以上増える制度があった",
+    href: "/kiji/jidou-ikusei-teate-ikura",
+  },
+  { text: "資格、お金かけずに取れるって本当?", href: null },
+  { text: "元夫からの連絡、もう無視していいよ", href: null },
 ];
 
 const QUALIFICATIONS = [
@@ -143,17 +146,32 @@ export default function Home() {
         <section className="mb-6">
           <SectionHeading title="お役立ち記事、今週の人気ランキング" />
           <div className="flex flex-col gap-1.5">
-            {RANKING.map((text, i) => (
-              <div
-                key={text}
-                className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
-              >
-                <span className="text-base font-medium text-[#B4B2A9]">
-                  {i + 1}
-                </span>
-                <p className="text-sm leading-snug">{text}</p>
-              </div>
-            ))}
+            {RANKING.map((item, i) => {
+              const inner = (
+                <>
+                  <span className="text-base font-medium text-[#B4B2A9]">
+                    {i + 1}
+                  </span>
+                  <p className="text-sm leading-snug">{item.text}</p>
+                </>
+              );
+              return item.href ? (
+                <Link
+                  key={item.text}
+                  href={item.href}
+                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                >
+                  {inner}
+                </Link>
+              ) : (
+                <div
+                  key={item.text}
+                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                >
+                  {inner}
+                </div>
+              );
+            })}
           </div>
         </section>
 
