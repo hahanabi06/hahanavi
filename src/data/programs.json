@@ -63,70 +63,84 @@
       "name": "保育料減免",
       "layer": "municipal",
       "category": "childcare",
-      "amount": "ひとり親等で年収約360万円未満(D7階層以下): 第1子半額。台東区独自で0〜2歳第1子保育料を区内全世帯対象に無償化(都より前倒し実施)",
+      "amount": "ひとり親等で年収約360万円未満(D7階層以下): 第1子半額。台東区は2025年度より0〜2歳第1子保育料を区内全世帯対象に無償化(都より前倒し実施、東京新聞・日経新聞で報道確認)",
       "eligibility": "認可保育園等を利用するひとり親世帯",
       "window": "台東区 保育課",
-      "verifyNeeded": true
+      "verifyNeeded": true,
+      "note": "区の保育料ページが移転/削除されており、ひとり親の階層区分の一次ソース再確認ができなかった。公開前に台東区の最新ページで要再確認"
     },
     {
       "id": "koutou-shokugyou-kunren",
       "name": "高等職業訓練促進給付金",
       "layer": "national",
       "category": "career",
-      "amount": "住民税非課税世帯: 月100,000円(最終1年は140,000円) / 課税世帯: 月70,500円(最終1年は110,500円)。修了支援給付金: 非課税世帯50,000円",
-      "eligibility": "看護師・保育士等の資格取得のため1年以上のカリキュラムを修業するひとり親",
-      "window": "台東区 子育て支援課",
-      "verifyNeeded": true
+      "amount": "住民税非課税世帯: 月150,000円(修学期間12ヶ月以上、最終年度も同額) / 課税世帯: 月70,500円(最終1年は110,500円)。修了支援給付金: 非課税世帯50,000円・課税世帯25,000円",
+      "eligibility": "児童扶養手当の受給者、または受給者と同等の所得水準のひとり親で、看護師・介護福祉士など対象資格(21職種)取得のため修業する方。事前相談(予約制)が必須",
+      "requiredDocs": "事前相談後に案内。課税判定には扶養義務者の所得も含む",
+      "window": "台東区 子育て支援課庶務担当(03-5246-1237)",
+      "verifyNeeded": false,
+      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/shokugyou_kyufu.html",
+      "verifiedAt": "2026-10-28"
     },
     {
       "id": "jiritsu-shien-kyouiku-kunren",
       "name": "自立支援教育訓練給付金",
       "layer": "national",
       "category": "career",
-      "amount": "一般教育訓練給付金対象講座: 受講料の60%(上限20万円) / 専門実践教育訓練給付金対象講座: 60%(修学年数×40万円、最大160万円)",
-      "eligibility": "対象講座を受講・修了したひとり親",
+      "amount": "一般教育訓練給付対象講座: 受講料の60%(上限12,000円〜200,000円) / 専門実践教育訓練給付対象講座: 60%(上限160万円、40万円×4年)",
+      "eligibility": "ひとり親家庭の父・母で、事前に相談員との面談を経て対象講座(介護福祉士、医療事務、簿記、MOS、TOEIC等)を受講・修了した方",
       "window": "台東区 子育て支援課",
-      "verifyNeeded": true
+      "verifyNeeded": false,
+      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/kyouikukunren_kyufu.html",
+      "verifiedAt": "2026-10-28"
     },
     {
       "id": "hitorioya-koujo",
       "name": "ひとり親控除(税制)",
       "layer": "national",
       "category": "tax",
-      "amount": "所得税35万円 / 住民税30万円の控除",
+      "amount": "所得税・住民税から35万円の控除",
       "incomeLimit": "本人の合計所得金額500万円以下",
-      "eligibility": "生計を一にし総所得金額等58万円以下の子を扶養するひとり親",
+      "eligibility": "婚姻していない(または配偶者の生死不明)方で、事実婚状態になく、総所得金額等58万円以下(2025年分以降)の子と生計を一にしている",
       "window": "確定申告 または 勤務先の年末調整",
-      "verifyNeeded": true
+      "verifyNeeded": false,
+      "source": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1171.htm",
+      "verifiedAt": "2026-10-28"
     },
     {
       "id": "kokumin-nenkin-menjo",
       "name": "国民年金保険料の免除",
       "layer": "national",
       "category": "insurance",
-      "amount": "条件を満たすと全額免除",
-      "incomeLimit": "申請年度前年の所得135万円以下(ひとり親の特例基準)",
+      "amount": "条件を満たすと保険料が全額免除",
+      "incomeLimit": "前年所得135万円以下(ひとり親・寡婦・障害者の特例基準。平成31年度税制改正で未婚のひとり親も対象化)",
+      "eligibility": "自動では適用されず、区役所の国民年金窓口または年金事務所での申請が必要",
       "window": "台東区役所 国民年金係 または 年金事務所",
-      "verifyNeeded": true
+      "verifyNeeded": true,
+      "note": "135万円という基準額は複数の自治体公式サイトで一致確認。日本年金機構の一次ソースでの直接確認は未実施"
     },
     {
       "id": "kokuho-keigen",
       "name": "国民健康保険料の軽減・減免",
       "layer": "municipal",
       "category": "insurance",
-      "amount": "所得に応じ7割/5割/2割軽減。失業・災害等は別途減免あり",
+      "amount": "7割軽減: 世帯の所得合計が基礎控除額43万円以下 / 5割軽減: 43万円+31万円×(加入者数+特定同一世帯所属者数)以下 / 2割軽減: 43万円+57万円×(同人数)以下。未就学児がいる世帯はさらに軽減率が上乗せ(7割→8.5割、5割→7.5割、2割→6割)",
       "window": "台東区 保険料係",
-      "verifyNeeded": true
+      "verifyNeeded": false,
+      "source": "https://www.city.taito.lg.jp/kurashi/zeikin/kokuminkenkohoken/hokenryou/20130605110058881.html",
+      "verifiedAt": "2026-10-28"
     },
     {
       "id": "jyutaku-shien",
       "name": "住宅支援(都営住宅優先・家賃保証)",
       "layer": "prefecture_municipal",
       "category": "housing",
-      "amount": "都営住宅: 優遇抽選で当選倍率7倍。家賃等債務保証制度: 初回保証料の一部助成(単身上限2万円/2人上限3万円/3人以上上限4万円)",
-      "eligibility": "ひとり親世帯。高齢者等住み替え居住支援制度は立ち退き等が前提の場合あり、対象範囲は要確認",
+      "amount": "都営住宅: 家族向け募集でひとり親世帯は当選倍率7倍の優遇。家賃等債務保証制度: 保証会社利用時の初回保証料の1/2を助成(上限 単身2万円・2人3万円・3人以上4万円)。立ち退きによる転居の場合は転居費用を別途助成(高齢者等住み替え居住支援制度)",
+      "eligibility": "ひとり親世帯。住み替え居住支援制度は立ち退き等やむを得ない事情での転居が前提",
       "window": "台東区 住宅課",
-      "verifyNeeded": true
+      "verifyNeeded": false,
+      "source": "https://www.city.taito.lg.jp/kenchiku/jutaku/sumai/yachinhojo/saimuhosho.html",
+      "verifiedAt": "2026-10-28"
     }
   ]
 }

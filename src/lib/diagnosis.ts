@@ -186,5 +186,23 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
     });
   }
 
+  // 児童扶養手当の対象(全部・一部支給どちらか)なら、資格取得支援もセットで案内
+  if (income < fuyoPartialLimit) {
+    items.push({
+      name: "資格取得支援(高等職業訓練促進給付金 等)",
+      status: "要確認",
+      note: "看護師・介護福祉士などの資格取得を目指すなら、月7万円台〜15万円の生活費支援が受けられる可能性があります。資格に興味があれば詳細ページをチェックしてね",
+      window: JIDO_FUYOU_WINDOW,
+      programId: "koutou-shokugyou-kunren",
+    });
+  }
+
+  items.push({
+    name: "ひとり親控除(税制)",
+    status: "要確認",
+    note: "所得税・住民税が35万円控除される制度です(本人所得500万円以下が条件)。確定申告か年末調整で忘れずに申請してね",
+    programId: "hitorioya-koujo",
+  });
+
   return { items, totalMonthlyYen, missingInfo };
 }
