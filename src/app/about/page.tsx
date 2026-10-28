@@ -16,11 +16,11 @@ export default function About() {
 
             <section>
               <h2 className="mb-1 font-medium">運営者</h2>
-              <p>ハハナビ運営者(個人運営)</p>
+              <p>ハハナビ運営者</p>
             </section>
 
             <section>
-              <h2 className="mb-1 font-medium">運営者の経歴</h2>
+              <h2 className="mb-1 font-medium">代表者の経歴</h2>
               <p>
                 一橋大学経済学部を卒業後、マーケティングリサーチ会社、日系大手コンサルティングファームの公共分野における新規事業部門、外資系コンサルティングファームの戦略部門を経て、ハハナビを立ち上げました。
               </p>
