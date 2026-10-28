@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BearParentChild } from "@/components/Bear";
 
 const MESSAGES = [
@@ -28,12 +28,19 @@ function getTodaysMessage(): string {
 }
 
 export function BearGreeting() {
-  const [message] = useState(getTodaysMessage);
+  // new Date()は静的プリレンダー時に評価できない(不安定な値)ため、
+  // マウント後にuseEffectで読む。初期表示は固定文言を出さず空のまま
+  // にして、間違ったメッセージが一瞬見える「ラグ」を防ぐ。
+  const [message, setMessage] = useState<string | null>(null);
 
-  const lines = splitLines(message);
+  useEffect(() => {
+    setMessage(getTodaysMessage());
+  }, []);
+
+  const lines = message ? splitLines(message) : [];
 
   return (
-    <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
+    <div className="mb-5 flex min-h-[88px] items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
       <BearParentChild size={56} />
       <p className="text-base leading-relaxed">
         {lines.map((line, i) => (
