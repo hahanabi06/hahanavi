@@ -11,6 +11,7 @@ import {
   IconKeyboard,
   IconMessageCircle2,
 } from "@tabler/icons-react";
+import Link from "next/link";
 import { BearFace, BearParentChild } from "@/components/Bear";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
@@ -54,11 +55,12 @@ function SectionHeading({
   );
 }
 
+// 検証済みデータ(src/data/programs.json)から抜粋した要約。詳細・最新の出典は各詳細ページ側で確認できる。
 const PROGRAMS = [
-  { label: "児童扶養手当", value: "月43,160円〜" },
-  { label: "医療費助成", value: "ほぼ無料に" },
-  { label: "住宅支援", value: "月2万円前後" },
-  { label: "保育料減免", value: "所得で変動" },
+  { id: "jidou-fuyou-teate", label: "児童扶養手当", value: "月48,050円〜" },
+  { id: "maruoya-iryouhi", label: "マル親医療費助成", value: "ほぼ無料に" },
+  { id: "jidou-ikusei-teate", label: "児童育成手当", value: "月13,500円" },
+  { id: "koutou-shokugyou-kunren", label: "資格取得の生活費支援", value: "月15万円まで" },
 ];
 
 const RANKING = [
@@ -124,13 +126,14 @@ export default function Home() {
           <SectionHeading title="支援制度" />
           <div className="mb-2.5 flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PROGRAMS.map((p) => (
-              <div
-                key={p.label}
+              <Link
+                key={p.id}
+                href={`/seido/${p.id}`}
                 className="min-w-[118px] shrink-0 rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
                 <p className="mb-1 text-[10px] text-[#888780]">{p.label}</p>
                 <p className="text-sm font-medium">{p.value}</p>
-              </div>
+              </Link>
             ))}
           </div>
           <LineButton>LINEで簡単手当診断</LineButton>
