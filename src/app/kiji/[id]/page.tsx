@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { IconMessageCircle2 } from "@tabler/icons-react";
-import { BearParentChild } from "@/components/Bear";
+import { BearParentChild, BearCub } from "@/components/Bear";
 import { ViewTracker } from "@/components/ViewTracker";
 import { PageHeader } from "@/components/PageHeader";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
@@ -38,7 +38,11 @@ export default async function ArticlePage({
                   key={i}
                   className="flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3"
                 >
-                  <BearParentChild size={40} />
+                  {block.speaker === "kid" ? (
+                    <BearCub size={32} />
+                  ) : (
+                    <BearParentChild size={40} />
+                  )}
                   <p className="text-sm leading-relaxed">{block.text}</p>
                 </div>
               );

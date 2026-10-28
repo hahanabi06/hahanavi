@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyLineSignature, replyToLine, WELCOME_MESSAGE } from "@/lib/line";
 import { parseMessage, diagnose } from "@/lib/diagnosis";
+import { getSupabaseServerClient } from "@/lib/supabase";
 
 type LineEvent = {
   type: string;
@@ -58,7 +59,18 @@ export async function POST(req: NextRequest) {
       if (!event.replyToken) return;
 
       if (event.type === "follow") {
-        await replyToLine(event.replyToken, WELCOME_MESSAGE, channelAccessToken);
+        const supabase = getSupabaseServerClient();
+        const logFollow = (async () => {
+          try {
+            await supabase.from("line_follows").insert({});
+          } catch {
+            // best-effort logging only
+          }
+        })();
+        await Promise.all([
+          replyToLine(event.replyToken, WELCOME_MESSAGE, channelAccessToken),
+          logFollow,
+        ]);
         return;
       }
 

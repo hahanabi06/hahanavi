@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import { listPublishedArticles } from "@/lib/notion";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 
 export const instant = false;
@@ -14,6 +15,10 @@ function formatDate(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function formatDay(d: Date): string {
+  return d.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" });
 }
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -38,6 +43,11 @@ const PORTAL_LINKS = [
     href: "https://www.notion.so/407d711ec25a80c5a4aedc433cb805b0",
   },
   {
+    label: "GitHub",
+    sub: "ソースコード",
+    href: "https://github.com/hahanabi06/hahanavi",
+  },
+  {
     label: "LINE公式アカウント",
     sub: "管理画面",
     href: "https://manager.line.biz/",
@@ -46,25 +56,79 @@ const PORTAL_LINKS = [
   { label: "X", sub: "旧Twitter", href: "https://x.com/home" },
 ];
 
-function aggregateViews(rows: { path: string; created_at: string }[]) {
+type ViewRow = { path: string; visitor_id: string | null; created_at: string };
+
+function aggregateViews(rows: ViewRow[]) {
   const now = Date.now();
   const day = 24 * 60 * 60 * 1000;
-  let last24h = 0;
-  let last7d = 0;
-  const pathCounts = new Map<string, number>();
 
-  for (const row of rows) {
-    const age = now - new Date(row.created_at).getTime();
-    if (age <= day) last24h += 1;
-    if (age <= 7 * day) last7d += 1;
-    pathCounts.set(row.path, (pathCounts.get(row.path) ?? 0) + 1);
+  function countsFor(windowMs: number) {
+    const inWindow = rows.filter(
+      (r) => now - new Date(r.created_at).getTime() <= windowMs,
+    );
+    const pv = inWindow.length;
+    const uu = new Set(
+      inWindow.map((r) => r.visitor_id).filter((v): v is string => !!v),
+    ).size;
+    return { pv, uu };
   }
 
+  const pathCounts = new Map<string, number>();
+  for (const row of rows) {
+    pathCounts.set(row.path, (pathCounts.get(row.path) ?? 0) + 1);
+  }
   const topPaths = Array.from(pathCounts.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  return { last24h, last7d, last30d: rows.length, topPaths };
+  // daily PV for the last 14 days, oldest first
+  const daily: { label: string; pv: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const dayStart = new Date();
+    dayStart.setHours(0, 0, 0, 0);
+    dayStart.setDate(dayStart.getDate() - i);
+    const dayEnd = new Date(dayStart.getTime() + day);
+    const pv = rows.filter((r) => {
+      const t = new Date(r.created_at).getTime();
+      return t >= dayStart.getTime() && t < dayEnd.getTime();
+    }).length;
+    daily.push({ label: formatDay(dayStart), pv });
+  }
+
+  return {
+    last24h: countsFor(day),
+    last7d: countsFor(7 * day),
+    last30d: countsFor(30 * day),
+    topPaths,
+    daily,
+  };
+}
+
+function countInWindow(rows: { created_at: string }[], windowMs: number) {
+  const now = Date.now();
+  return rows.filter((r) => now - new Date(r.created_at).getTime() <= windowMs)
+    .length;
+}
+
+function BarChart({ data }: { data: { label: string; pv: number }[] }) {
+  const max = Math.max(1, ...data.map((d) => d.pv));
+  return (
+    <div className="flex h-32 items-end gap-1.5">
+      {data.map((d) => (
+        <div
+          key={d.label}
+          className="flex flex-1 flex-col items-center gap-1"
+        >
+          <div
+            className="w-full rounded-t bg-[#D85A30]"
+            style={{ height: `${Math.max(2, (d.pv / max) * 100)}%` }}
+            title={`${d.label}: ${d.pv}`}
+          />
+          <span className="text-[10px] text-[#888780]">{d.label}</span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default async function AdminDashboard() {
@@ -74,24 +138,47 @@ export default async function AdminDashboard() {
     Date.now() - 30 * 24 * 60 * 60 * 1000,
   ).toISOString();
 
-  const [inquiriesRes, reportsRes, viewsRes] = await Promise.all([
-    supabase
-      .from("company_inquiries")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("program_reports")
-      .select("*")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("page_views")
-      .select("path, created_at")
-      .gte("created_at", thirtyDaysAgo),
-  ]);
+  const [inquiriesRes, reportsRes, viewsRes, followsRes, articles] =
+    await Promise.all([
+      supabase
+        .from("company_inquiries")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("program_reports")
+        .select("*")
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("page_views")
+        .select("path, visitor_id, created_at")
+        .gte("created_at", thirtyDaysAgo),
+      supabase
+        .from("line_follows")
+        .select("created_at")
+        .gte("created_at", thirtyDaysAgo),
+      listPublishedArticles().catch(() => []),
+    ]);
 
   const inquiries = inquiriesRes.data ?? [];
   const reports = reportsRes.data ?? [];
   const views = aggregateViews(viewsRes.data ?? []);
+  const follows = followsRes.data ?? [];
+  const day = 24 * 60 * 60 * 1000;
+  const followCounts = {
+    last24h: countInWindow(follows, day),
+    last7d: countInWindow(follows, 7 * day),
+    last30d: follows.length,
+  };
+
+  const articleTitleById = new Map(articles.map((a) => [a.id, a.title]));
+  function labelForPath(path: string): string {
+    const match = path.match(/^\/kiji\/(.+)$/);
+    if (match) {
+      const title = articleTitleById.get(match[1]);
+      if (title) return `記事: ${title}`;
+    }
+    return path;
+  }
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -100,9 +187,7 @@ export default async function AdminDashboard() {
           <div className="mb-6 flex items-center justify-between">
             <p className="text-lg font-medium">管理画面</p>
           </div>
-          <p className="mb-2 text-xs font-medium text-[#888780]">
-            ポータル
-          </p>
+          <p className="mb-2 text-xs font-medium text-[#888780]">ポータル</p>
           <nav className="flex flex-col gap-1">
             {PORTAL_LINKS.map((link) => (
               <a
@@ -130,17 +215,50 @@ export default async function AdminDashboard() {
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="text-xs text-[#888780]">過去24時間</p>
-                <p className="text-2xl font-medium">{views.last24h}</p>
+                <p className="text-2xl font-medium">
+                  {views.last24h.pv}
+                  <span className="text-sm font-normal text-[#888780]">
+                    {" "}
+                    PV
+                  </span>
+                </p>
+                <p className="text-sm text-[#5F5E5A]">
+                  {views.last24h.uu} UU
+                </p>
               </div>
               <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="text-xs text-[#888780]">過去7日間</p>
-                <p className="text-2xl font-medium">{views.last7d}</p>
+                <p className="text-2xl font-medium">
+                  {views.last7d.pv}
+                  <span className="text-sm font-normal text-[#888780]">
+                    {" "}
+                    PV
+                  </span>
+                </p>
+                <p className="text-sm text-[#5F5E5A]">{views.last7d.uu} UU</p>
               </div>
               <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="text-xs text-[#888780]">過去30日間</p>
-                <p className="text-2xl font-medium">{views.last30d}</p>
+                <p className="text-2xl font-medium">
+                  {views.last30d.pv}
+                  <span className="text-sm font-normal text-[#888780]">
+                    {" "}
+                    PV
+                  </span>
+                </p>
+                <p className="text-sm text-[#5F5E5A]">
+                  {views.last30d.uu} UU
+                </p>
               </div>
             </div>
+
+            <div className="mt-3 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <p className="mb-3 text-sm font-medium">
+                日別PV推移(過去14日間)
+              </p>
+              <BarChart data={views.daily} />
+            </div>
+
             {views.topPaths.length > 0 && (
               <div className="mt-3 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-2 text-sm font-medium">
@@ -152,7 +270,9 @@ export default async function AdminDashboard() {
                       key={path}
                       className="flex items-center justify-between text-sm"
                     >
-                      <span className="truncate text-[#5F5E5A]">{path}</span>
+                      <span className="truncate text-[#5F5E5A]">
+                        {labelForPath(path)}
+                      </span>
                       <span className="shrink-0 pl-3 font-medium">
                         {count}
                       </span>
@@ -161,6 +281,32 @@ export default async function AdminDashboard() {
                 </div>
               </div>
             )}
+          </section>
+
+          <section className="mb-8">
+            <p className="mb-3 text-lg font-medium">
+              LINE登録(CV)
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-xl bg-[#FAECE7] px-4 py-3">
+                <p className="text-xs text-[#993C1D]">過去24時間</p>
+                <p className="text-2xl font-medium text-[#712B13]">
+                  {followCounts.last24h}
+                </p>
+              </div>
+              <div className="rounded-xl bg-[#FAECE7] px-4 py-3">
+                <p className="text-xs text-[#993C1D]">過去7日間</p>
+                <p className="text-2xl font-medium text-[#712B13]">
+                  {followCounts.last7d}
+                </p>
+              </div>
+              <div className="rounded-xl bg-[#FAECE7] px-4 py-3">
+                <p className="text-xs text-[#993C1D]">過去30日間</p>
+                <p className="text-2xl font-medium text-[#712B13]">
+                  {followCounts.last30d}
+                </p>
+              </div>
+            </div>
           </section>
 
           <div className="grid grid-cols-2 gap-6">

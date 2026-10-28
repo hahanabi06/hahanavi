@@ -45,9 +45,11 @@ export async function listPublishedArticles(): Promise<ArticleSummary[]> {
   }));
 }
 
+export type BearSpeaker = "mama" | "kid";
+
 export type ArticleBlock =
   | { type: "paragraph"; text: string }
-  | { type: "bear"; text: string }
+  | { type: "bear"; text: string; speaker: BearSpeaker }
   | { type: "heading"; text: string }
   | { type: "bullet"; text: string };
 
@@ -87,7 +89,10 @@ export async function getArticle(id: string): Promise<Article | null> {
       if (text) blocks.push({ type: "paragraph", text });
     } else if (b.type === "callout") {
       const text = plainText(b.callout?.rich_text);
-      if (text) blocks.push({ type: "bear", text });
+      // Notionでコールアウトのアイコンを🧸にすると熊太郎が喋ってる扱いになる(それ以外は全部シングマちゃん)
+      const speaker: BearSpeaker =
+        b.callout?.icon?.emoji === "🧸" ? "kid" : "mama";
+      if (text) blocks.push({ type: "bear", text, speaker });
     } else if (b.type === "heading_1" || b.type === "heading_2" || b.type === "heading_3") {
       const text = plainText(b[b.type]?.rich_text);
       if (text) blocks.push({ type: "heading", text });
