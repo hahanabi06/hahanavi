@@ -11,17 +11,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "path is required" }, { status: 400 });
   }
 
-  // Claudeの内蔵ブラウザ(開発・動作確認で使う)からのアクセスは、
-  // User-Agentに"Claude/"が入るのでアクセス解析からは除外する
+  // Claudeの内蔵ブラウザ(開発・動作確認で使う)や、リンクプレビュー用のbot・
+  // クローラーからのアクセスは、アクセス解析には含めない
   const userAgent = req.headers.get("user-agent") ?? "";
-  if (userAgent.includes("Claude/")) {
+  const isBot =
+    userAgent.includes("Claude/") ||
+    /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptimerobot/i.test(
+      userAgent
+    );
+  if (isBot) {
     return NextResponse.json({ ok: true, skipped: true });
   }
 
   const supabase = getSupabaseServerClient();
   const { error } = await supabase
     .from("page_views")
-    .insert({ path, visitor_id: visitorId });
+    .insert({ path, visitor_id: visitorId, user_agent: userAgent.slice(0, 300) });
   if (error) console.error("[page_views] insert failed", error);
 
   return NextResponse.json({ ok: true });
