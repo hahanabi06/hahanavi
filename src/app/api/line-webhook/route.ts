@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyLineSignature, replyToLine, WELCOME_MESSAGE } from "@/lib/line";
 import { parseMessage, diagnose } from "@/lib/diagnosis";
 
-export const dynamic = "force-dynamic";
-
 type LineEvent = {
   type: string;
   replyToken?: string;
