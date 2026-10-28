@@ -256,7 +256,12 @@ export default async function Home() {
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#FAECE7] text-sm font-bold text-[#712B13]">
                     {i + 1}
                   </span>
-                  <p className="text-sm leading-snug">{item.text}</p>
+                  <p className="flex-1 text-sm leading-snug">{item.text}</p>
+                  {item.href && (
+                    <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
+                      人気
+                    </span>
+                  )}
                 </>
               );
               return item.href ? (
