@@ -46,6 +46,11 @@ export type DiagnosisResult = {
 const JIDO_FUYOU_FULL_LIMIT = [77, 115, 153];
 const JIDO_FUYOU_PARTIAL_LIMIT = [216, 254, 292];
 const JIDO_FUYOU_FULL_AMOUNT = [48050, 59400, 70750];
+// 一部支給の金額レンジ(1人目の最小・最大、2人目以降1人につき加算される最小・最大)
+const JIDO_FUYOU_PARTIAL_MIN_BASE = 11340;
+const JIDO_FUYOU_PARTIAL_MAX_BASE = 48040;
+const JIDO_FUYOU_PARTIAL_MIN_EXTRA = 5680;
+const JIDO_FUYOU_PARTIAL_MAX_EXTRA = 11340;
 const JIDO_IKUSEI_LIMIT = [383.8, 421.8, 459.8, 497.8];
 // マル親(台東区)の所得制限。他区はまだ正式確認していないため適用しない。
 const MARUOYA_TAITO_LIMIT = [216, 254];
@@ -95,10 +100,15 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
     });
     totalMonthlyYen += amount;
   } else if (income < fuyoPartialLimit) {
+    const extra = Math.max(0, count - 1);
+    const minAmount =
+      JIDO_FUYOU_PARTIAL_MIN_BASE + extra * JIDO_FUYOU_PARTIAL_MIN_EXTRA;
+    const maxAmount =
+      JIDO_FUYOU_PARTIAL_MAX_BASE + extra * JIDO_FUYOU_PARTIAL_MAX_EXTRA;
     items.push({
       name: "児童扶養手当(国)",
       status: "一部支給",
-      note: "一部支給の対象になりそうですが、具体的な金額は所得で変わるため窓口でご確認ください",
+      note: `一部支給の対象になりそうです。所得に応じて月${minAmount.toLocaleString()}円〜${maxAmount.toLocaleString()}円の間になります`,
       window: JIDO_FUYOU_WINDOW,
       programId: "jidou-fuyou-teate",
     });
