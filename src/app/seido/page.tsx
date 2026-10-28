@@ -145,11 +145,11 @@ export default function SeidoListPage() {
   return (
     <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 py-5">
-        <div className="mb-4 flex items-center gap-2">
-          <Link href="/" aria-label="トップへ戻る">
+        <div className="mb-4">
+          <Link href="/" aria-label="トップへ戻る" className="mb-2 inline-block">
             <IconArrowLeft size={20} className="text-[#5F5E5A]" />
           </Link>
-          <p className="text-sm font-medium">支援制度一覧</p>
+          <p className="text-lg font-medium">支援制度一覧</p>
         </div>
 
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
