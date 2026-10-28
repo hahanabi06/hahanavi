@@ -75,59 +75,62 @@ const PROGRAMS = programsData.programs.map((p) => ({
   value: p.headline ?? "詳細を見る",
 }));
 
-const DUMMY_RANKING = [
+type RankItem = { text: string; href: string | null; isNew?: boolean };
+
+const DUMMY_NEW: RankItem[] = [
   { text: "資格、お金かけずに取れるって本当?", href: null },
   { text: "元夫からの連絡、もう無視していいよ", href: null },
 ];
 
-// アクセス数が多いもの(最大2件)+新着(残り枠)の順で並べる。記事が無い/取得失敗時はダミーで埋める
-async function getRanking(): Promise<
-  { text: string; href: string | null }[]
-> {
+const DUMMY_TOP3: RankItem[] = [
+  { text: "え、知らなかった。月1万円以上増える制度があった", href: null },
+  { text: "資格、お金かけずに取れるって本当?", href: null },
+  { text: "元夫からの連絡、もう無視していいよ", href: null },
+];
+
+function padWithDummy(items: RankItem[], dummy: RankItem[], n: number): RankItem[] {
+  const result = [...items];
+  let i = 0;
+  while (result.length < n && i < dummy.length) {
+    result.push(dummy[i]);
+    i++;
+  }
+  return result.slice(0, n);
+}
+
+// 新着(最大2件・NEWバッジ付き)とTOP3(アクセス数順)をそれぞれ計算する。記事が足りない分はダミーで埋める
+async function getHomeArticles(): Promise<{ newest: RankItem[]; top3: RankItem[] }> {
   "use cache";
   cacheLife("minutes");
   try {
-    const articles = await listPublishedArticles();
-    if (articles.length === 0) return DUMMY_RANKING;
+    const articles = await listPublishedArticles(); // 新着順(created_time desc)で返る
+    if (articles.length === 0) {
+      return { newest: DUMMY_NEW, top3: DUMMY_TOP3 };
+    }
 
     const views = await getArticleViewCounts(articles.map((a) => a.id));
-
     const byViews = [...articles].sort(
       (a, b) => (views[b.id] ?? 0) - (views[a.id] ?? 0),
     );
-    const byNew = [...articles].sort(
-      (a, b) =>
-        new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime(),
+
+    const newest = padWithDummy(
+      articles.slice(0, 2).map((a) => ({
+        text: a.title,
+        href: `/kiji/${a.id}`,
+        isNew: true,
+      })),
+      DUMMY_NEW,
+      2,
+    );
+    const top3 = padWithDummy(
+      byViews.slice(0, 3).map((a) => ({ text: a.title, href: `/kiji/${a.id}` })),
+      DUMMY_TOP3,
+      3,
     );
 
-    const picked: typeof articles = [];
-    const seen = new Set<string>();
-    for (const a of byViews) {
-      if (picked.length >= 2) break;
-      if (!seen.has(a.id)) {
-        picked.push(a);
-        seen.add(a.id);
-      }
-    }
-    for (const a of byNew) {
-      if (picked.length >= 3) break;
-      if (!seen.has(a.id)) {
-        picked.push(a);
-        seen.add(a.id);
-      }
-    }
-
-    const result: { text: string; href: string | null }[] = picked.map(
-      (a) => ({ text: a.title, href: `/kiji/${a.id}` }),
-    );
-    let dummyIndex = 0;
-    while (result.length < 3 && dummyIndex < DUMMY_RANKING.length) {
-      result.push(DUMMY_RANKING[dummyIndex]);
-      dummyIndex++;
-    }
-    return result;
+    return { newest, top3 };
   } catch {
-    return DUMMY_RANKING;
+    return { newest: DUMMY_NEW, top3: DUMMY_TOP3 };
   }
 }
 
@@ -146,7 +149,7 @@ const NAV_ITEMS = [
 ];
 
 export default async function Home() {
-  const ranking = await getRanking();
+  const { newest, top3 } = await getHomeArticles();
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#E6F1FB]">
@@ -212,11 +215,42 @@ export default async function Home() {
           <LineButton>LINEで簡単手当診断をしてみる</LineButton>
         </section>
 
-        {/* 記事ランキング */}
+        {/* 記事: 新着 + TOP3 */}
         <section className="mb-6">
-          <SectionHeading title="お役立ち記事、今週の人気ランキング" />
+          <SectionHeading title="お役立ち記事" href="/kiji" />
+
+          <div className="mb-3 flex flex-col gap-1.5">
+            {newest.map((item) => {
+              const inner = (
+                <>
+                  <span className="shrink-0 rounded-full bg-[#D85A30] px-2 py-0.5 text-[10px] font-semibold text-white">
+                    NEW
+                  </span>
+                  <p className="text-sm leading-snug">{item.text}</p>
+                </>
+              );
+              return item.href ? (
+                <Link
+                  key={item.text}
+                  href={item.href}
+                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                >
+                  {inner}
+                </Link>
+              ) : (
+                <div
+                  key={item.text}
+                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                >
+                  {inner}
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="mb-1.5 text-xs font-medium text-[#888780]">TOP3</p>
           <div className="flex flex-col gap-1.5">
-            {ranking.map((item, i) => {
+            {top3.map((item, i) => {
               const inner = (
                 <>
                   <span className="text-base font-medium text-[#B4B2A9]">
