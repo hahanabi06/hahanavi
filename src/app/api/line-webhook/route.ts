@@ -44,7 +44,17 @@ export async function POST(req: NextRequest) {
   const signature = req.headers.get("x-line-signature");
 
   if (!verifyLineSignature(rawBody, signature, channelSecret)) {
-    return NextResponse.json({ error: "invalid signature" }, { status: 401 });
+    return NextResponse.json(
+      {
+        error: "invalid signature",
+        debug: {
+          secretLen: channelSecret.length,
+          secretFirst2: channelSecret.slice(0, 2),
+          secretLast2: channelSecret.slice(-2),
+        },
+      },
+      { status: 401 }
+    );
   }
 
   const body = JSON.parse(rawBody) as { events: LineEvent[] };
