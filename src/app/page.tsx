@@ -333,6 +333,7 @@ export default async function Home() {
         </div>
 
         <div className="mt-5 flex justify-center gap-3 text-xs text-[#888780]">
+          <Link href="/about">運営者情報</Link>
           <Link href="/privacy">プライバシーポリシー</Link>
           <Link href="/terms">利用規約</Link>
         </div>

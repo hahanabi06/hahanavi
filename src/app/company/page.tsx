@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { CompanyInquiryForm } from "@/components/CompanyInquiryForm";
 import { BearParentChild } from "@/components/Bear";
@@ -56,6 +57,21 @@ export default function CompanyPage() {
               <p className="text-base leading-relaxed">
                 人手不足にお悩みの地方企業様へ。住まいの支援や生活環境の変化を前向きに考えているシングルマザーに向けて、「地方での仕事・暮らし」の魅力を伝える形でのご紹介も可能です。
               </p>
+            </div>
+          </section>
+
+          <section className="mb-5">
+            <p className="mb-2.5 text-lg font-medium">運営者について</p>
+            <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-3">
+              <p className="text-base leading-relaxed">
+                一橋大学経済学部卒業後、電通マクロミルインサイト、クニエ、PwCコンサルティング(戦略部門)を経て、ハハナビを立ち上げました。
+              </p>
+              <Link
+                href="/about"
+                className="mt-1.5 inline-block text-sm text-[#185FA5] underline"
+              >
+                運営者情報を見る
+              </Link>
             </div>
           </section>
 
