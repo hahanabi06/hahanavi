@@ -46,6 +46,12 @@ type Exception = {
   area: string;
   description: string;
   note?: string;
+  source?: string;
+};
+
+type ExampleSource = {
+  area: string;
+  url: string;
 };
 
 type Program = {
@@ -69,6 +75,7 @@ type Program = {
   source?: string;
   verifiedAt?: string;
   exception?: Exception;
+  exampleSource?: ExampleSource;
 };
 
 const programs = programsData.programs as Program[];
@@ -318,6 +325,16 @@ export default async function ProgramDetailPage({
                     {program.exception.note}
                   </p>
                 )}
+                {program.exception.source && (
+                  <a
+                    href={program.exception.source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1.5 inline-block text-[11px] text-[#1F7A3D] underline"
+                  >
+                    {program.exception.area}の条例・公式ページで確認する
+                  </a>
+                )}
               </dd>
             </div>
           )}
@@ -358,6 +375,19 @@ export default async function ProgramDetailPage({
                   >
                     公式ページで確認する(最終確認 {program.verifiedAt})
                   </a>
+                  {program.exampleSource && (
+                    <>
+                      <br />
+                      <a
+                        href={program.exampleSource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#185FA5] underline"
+                      >
+                        {program.exampleSource.area}の案内ページ(具体的な金額の例)
+                      </a>
+                    </>
+                  )}
                 </dd>
               </div>
             )

@@ -81,8 +81,13 @@
       "window": "お住まいの区市町村役場の窓口(子育て支援課など、自治体によって名称が異なります)",
       "kumaNote": "東京都に住んでいるひとり親なら、子ども1人につき月13,500円もらえるよ。児童扶養手当とは別のお金だから、両方もらえることも多いんだ。区はどこでも大丈夫だよ。",
       "verifyNeeded": false,
-      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidoikuseiteate.html",
-      "verifiedAt": "2026-10-28"
+      "source": "https://www.fukushi.metro.tokyo.lg.jp/kodomo/kosodate/teate/zidouikuseiteate",
+      "verifiedAt": "2026-10-28",
+      "exampleSource": {
+        "area": "台東区",
+        "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidoikuseiteate.html"
+      },
+      "note": "東京都福祉局のページでは制度の概要のみ記載(具体的な金額や所得制限は区市町村ごとの案内に記載)。月13,500円・所得制限額は台東区の案内ページで確認(都内共通の制度のため他区でも同額)"
     },
     {
       "id": "jidou-teate",
@@ -172,16 +177,17 @@
       "category": "childcare",
       "amount": "0〜2歳の第1子保育料は2025年9月から東京都内どこでも無償(国の制度+都の上乗せ)",
       "eligibility": "0〜2歳の第1子で、都内の認可保育所等を利用する世帯(全世帯共通、ひとり親に限らない)",
-      "window": "お住まいの区の保育課(台東区は保育課)",
+      "window": "お住まいの区の保育担当窓口(自治体によって名称が異なります)",
       "kumaNote": "0〜2歳の第1子が無料なのは、実は東京都内どこに住んでても同じだよ。ちなみに台東区は、それを超えて何歳の子でも何人目でも保育料がずっと0円になる、区独自のルールまであるんだ。",
       "verifyNeeded": false,
-      "source": "https://www1.g-reiki.net/taito/reiki_honbun/g107RG00000451.html",
+      "source": "https://www.fukushi.metro.tokyo.lg.jp/kodomo/hoiku/mushouka",
       "verifiedAt": "2026-10-28",
-      "note": "令和5年6月29日条例第32号で台東区が無償化、令和7年7月20日に条文を最新改正。都の基準(0-2歳第1子)はどこでも共通、全年齢無償化は台東区固有の上乗せと整理",
+      "note": "東京都福祉局が無償化の対象範囲を公表(令和7年9月開始)。都の基準(0-2歳第1子)はどこでも共通、全年齢無償化は台東区固有の上乗せ(条例の詳細は下記「台東区だけの上乗せ」欄のリンクを参照)",
       "exception": {
         "area": "台東区",
         "description": "全世帯・全年齢の保育料が0円",
-        "note": "区独自の条例(令和5年6月29日条例第32号)で、東京都の基準を超えて区内全世帯の保育料を無料にしている。他区では0〜2歳第1子を超える部分は通常の所得階層表が適用される見込み(他区の詳細は未調査)"
+        "note": "区独自の条例(令和5年6月29日条例第32号)で、東京都の基準を超えて区内全世帯の保育料を無料にしている。他区では0〜2歳第1子を超える部分は通常の所得階層表が適用される見込み(他区の詳細は未調査)",
+        "source": "https://www1.g-reiki.net/taito/reiki_honbun/g107RG00000451.html"
       }
     },
     {
@@ -305,7 +311,7 @@
       "category": "housing",
       "amount": "都営住宅: 家族向け募集でひとり親世帯は当選倍率7倍の優遇。家賃等債務保証制度: 保証会社利用時の初回保証料の1/2を助成(上限 単身2万円・2人3万円・3人以上4万円)。立ち退きによる転居の場合は転居費用を別途助成(高齢者等住み替え居住支援制度)",
       "eligibility": "ひとり親世帯。家賃保証料助成に類する制度は他区にもあるが、ここでは台東区の金額・条件を掲載。住み替え居住支援制度は立ち退き等やむを得ない事情での転居が前提",
-      "window": "台東区 住宅課",
+      "window": "お住まいの区の住宅課(ここでは台東区の制度・金額を掲載)",
       "kumaNote": "都営住宅に当たりやすくなったり、お部屋を借りるときの保証料を助けてもらえたりする制度だよ。困ったら相談窓口もあるよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kenchiku/jutaku/sumai/yachinhojo/saimuhosho.html",
