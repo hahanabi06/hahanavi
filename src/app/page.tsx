@@ -229,14 +229,14 @@ export default async function Home() {
                 <Link
                   key={item.text}
                   href={item.href}
-                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
                 >
                   {inner}
                 </Link>
               ) : (
                 <div
                   key={item.text}
-                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
                 >
                   {inner}
                 </div>
@@ -264,14 +264,14 @@ export default async function Home() {
                 <Link
                   key={item.text}
                   href={item.href}
-                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
                 >
                   {inner}
                 </Link>
               ) : (
                 <div
                   key={item.text}
-                  className="flex h-16 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
+                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
                 >
                   {inner}
                 </div>
