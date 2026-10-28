@@ -8,13 +8,43 @@
     {
       "id": "jidou-fuyou-teate",
       "name": "児童扶養手当",
+      "headline": "月48,050円〜",
       "layer": "national",
       "category": "cash",
       "amount": "全部支給: 1人48,050円 / 2人59,400円 / 3人70,750円 / 4人以上1人につき11,350円加算。一部支給: 1人11,340〜48,040円 / 2人以上1人につき5,680〜11,340円加算",
+      "byChildren": {
+        "note": "「全部支給」は所得が低い場合の満額、「一部支給」は所得に応じて少し減った額だよ",
+        "rows": [
+          {
+            "children": 1,
+            "full": 48050,
+            "partialMin": 11340,
+            "partialMax": 48040
+          },
+          {
+            "children": 2,
+            "full": 59400,
+            "partialMin": 17020,
+            "partialMax": 59380
+          },
+          {
+            "children": 3,
+            "full": 70750,
+            "partialMin": 22700,
+            "partialMax": 70720
+          }
+        ],
+        "extraPerChild": {
+          "full": 11350,
+          "partialMin": 5680,
+          "partialMax": 11340
+        }
+      },
       "incomeLimit": "令和8年度。扶養0人: 全部支給77万円未満・一部支給216万円未満。扶養1人: 全部支給115万円未満・一部支給254万円未満。扶養2人: 全部支給153万円未満・一部支給292万円未満(以降1人ごとに加算、配偶者・扶養義務者は別基準)",
       "eligibility": "18歳になった最初の3月31日まで(中度以上の障害がある場合20歳未満)の児童を養育するひとり親",
       "requiredDocs": "申請者および児童の戸籍謄本(発行後1ヶ月以内)、申請者名義の預金通帳、マイナンバーカード等、場合により独身証明書等",
-      "window": "台東区 子育て支援課給付担当(03-5246-1232)",
+      "window": "お住まいの区市町村役場の窓口(子育て支援課、子ども家庭課など、自治体によって名称が異なります)",
+      "kumaNote": "ひとりで子どもを育てている人が、国からもらえるお金だよ。収入が低いほど多くもらえて、だいたい月1万円台〜5万円くらい。2か月に1回、まとめて口座に振り込まれるよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidofuyoteate.html",
       "verifiedAt": "2026-10-28"
@@ -22,13 +52,34 @@
     {
       "id": "jidou-ikusei-teate",
       "name": "児童育成手当",
+      "headline": "月13,500円",
       "layer": "prefecture",
       "category": "cash",
       "amount": "児童1人につき月13,500円(東京都内なら区市町村を問わず同一制度)",
+      "byChildren": {
+        "rows": [
+          {
+            "children": 1,
+            "full": 13500
+          },
+          {
+            "children": 2,
+            "full": 27000
+          },
+          {
+            "children": 3,
+            "full": 40500
+          }
+        ],
+        "extraPerChild": {
+          "full": 13500
+        }
+      },
       "incomeLimit": "令和8年度(令和7年分所得)。扶養0人: 383.8万円未満 / 1人: 421.8万円未満 / 2人: 459.8万円未満 / 3人: 497.8万円未満(4人以上は1人につき38万円加算)",
       "eligibility": "18歳になった最初の3月31日までの児童を養育する父・母・養育者で、両親の離婚・死亡・重度障害・1年以上の遺棄・DV保護命令・1年以上の拘禁・婚外子等に該当する場合。東京都独自制度のため都内在住なら区を問わず対象",
       "requiredDocs": "戸籍謄本、申請者名義の預金通帳、個人番号カードまたは通知カード+本人確認書類",
-      "window": "お住まいの区の子育て支援課給付担当(台東区の場合 03-5246-1232)",
+      "window": "お住まいの区市町村役場の窓口(子育て支援課など、自治体によって名称が異なります)",
+      "kumaNote": "東京都に住んでいるひとり親なら、子ども1人につき月13,500円もらえるよ。児童扶養手当とは別のお金だから、両方もらえることも多いんだ。区はどこでも大丈夫だよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidoikuseiteate.html",
       "verifiedAt": "2026-10-28"
@@ -36,36 +87,93 @@
     {
       "id": "jidou-teate",
       "name": "児童手当",
+      "headline": "月1万円〜3万円",
       "layer": "national",
       "category": "cash",
       "amount": "3歳未満: 月15,000円(第3子以降30,000円) / 3歳〜高校生年代: 月10,000円(第3子以降30,000円)",
+      "tiers": [
+        {
+          "label": "3歳未満",
+          "value": "月15,000円",
+          "note": "第3子以降は月30,000円"
+        },
+        {
+          "label": "3歳〜高校生年代",
+          "value": "月10,000円",
+          "note": "第3子以降は月30,000円"
+        }
+      ],
       "incomeLimit": "2024年10月より所得制限撤廃",
       "eligibility": "0歳〜高校卒業年度までの子がいる世帯(全世帯共通)",
       "window": "お住まいの区役所",
+      "kumaNote": "子どもがいる家庭なら、ひとり親じゃなくてももらえるお金だよ。所得制限が無くなったから、高校生までずっと誰でももらえるよ。",
       "verifyNeeded": true
     },
     {
       "id": "maruoya-iryouhi",
       "name": "ひとり親家庭等医療費助成(マル親)",
+      "headline": "ほぼ無料に",
       "layer": "municipal",
       "category": "medical",
       "amount": "健康保険診療の自己負担分の全部または一部を助成(住民税非課税世帯は全額、課税世帯は通院1割負担・月上限18,000円・年上限144,000円を除いた額が目安、健診・予防接種・差額ベッド代等は対象外)",
-      "incomeLimit": "令和7年度。扶養0人: 保護者216万円未満・扶養義務者244万円未満。扶養1人: 保護者254万円未満・扶養義務者282万円未満(以降1人につき38万円加算)",
+      "wardPatterns": [
+        {
+          "label": "パターン①(20区)",
+          "limits": "扶養0人 208万円未満 / 1人 246万円未満 / 2人 284万円未満",
+          "wards": [
+            "千代田区",
+            "中央区",
+            "港区",
+            "新宿区",
+            "文京区",
+            "墨田区",
+            "江東区",
+            "品川区",
+            "目黒区",
+            "大田区",
+            "世田谷区",
+            "渋谷区",
+            "中野区",
+            "杉並区",
+            "荒川区",
+            "足立区",
+            "葛飾区",
+            "江戸川区",
+            "北区",
+            "板橋区"
+          ]
+        },
+        {
+          "label": "パターン②(3区)",
+          "limits": "扶養0人 216万円未満 / 1人 254万円未満 / 2人 292万円未満",
+          "wards": [
+            "台東区",
+            "練馬区",
+            "豊島区"
+          ]
+        }
+      ],
+      "incomeLimitNote": "以降は1人につき38万円加算、配偶者・扶養義務者は別基準",
       "eligibility": "離婚・死亡・重度障害・生死不明・遺棄・DV保護命令・拘禁・婚外子等により、18歳になった最初の3月31日まで(中度以上の障害がある場合20歳未満)の児童を養育する保護者と児童。生活保護受給者・健康保険未加入者・児童福祉施設入所児童は対象外",
       "requiredDocs": "健康保険加入状況確認書、戸籍謄本(1ヶ月以内発行)、個人番号カードまたは通知カード+本人確認書類",
-      "window": "台東区 子育て支援課給付担当(03-5246-1232)",
+      "window": "お住まいの区の子育て支援課(ひとり親家庭等医療費助成・マル親担当)",
+      "kumaNote": "病院に行ったときに払うお金(自己負担)が、ぐっと安くなる制度だよ。所得の基準は区によって2パターンに分かれてるけど、どの区に住んでても使える制度だよ。",
       "verifyNeeded": false,
-      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/iryohijosei/hitorioya.html",
-      "verifiedAt": "2026-10-28"
+      "source": "https://www.fukushi.metro.tokyo.lg.jp/seikatsu/josei/maruoya",
+      "verifiedAt": "2026-10-28",
+      "areaBadgeOverride": "東京都23区",
+      "note": "23区分の所得基準は各区公式サイトで個別に確認済み(2026-10-28)。出典欄のリンクは東京都福祉局の制度概要ページ(区ごとの詳細は都のページに掲載無し、各区の窓口で最終確認を)"
     },
     {
       "id": "hoikuryou-genmen",
       "name": "保育料減免",
+      "headline": "0円",
       "layer": "municipal",
       "category": "childcare",
       "amount": "台東区立・私立の認可保育所等の保育料は所得・階層にかかわらず全世帯0円(条例第2条に明記)",
       "eligibility": "台東区の認可保育所等を利用する全世帯(ひとり親に限らない)。認証保育所等の利用料助成は別途あり",
       "window": "台東区 保育課",
+      "kumaNote": "台東区の保育園は、所得に関係なくみんな無料になったよ。手続きで何かを申請する必要もないよ。",
       "verifyNeeded": false,
       "source": "https://www1.g-reiki.net/taito/reiki_honbun/g107RG00000451.html",
       "verifiedAt": "2026-10-28",
@@ -74,12 +182,26 @@
     {
       "id": "koutou-shokugyou-kunren",
       "name": "高等職業訓練促進給付金",
+      "headline": "月7万円台〜15万円",
       "layer": "national",
       "category": "career",
       "amount": "住民税非課税世帯: 月150,000円(修学期間12ヶ月以上、最終年度も同額) / 課税世帯: 月70,500円(最終1年は110,500円)。修了支援給付金: 非課税世帯50,000円・課税世帯25,000円",
+      "tiers": [
+        {
+          "label": "住民税非課税世帯",
+          "value": "月150,000円",
+          "note": "修学期間12ヶ月以上、最終年度も同額。修了時さらに+50,000円"
+        },
+        {
+          "label": "住民税課税世帯",
+          "value": "月70,500円",
+          "note": "最終1年は月110,500円。修了時さらに+25,000円"
+        }
+      ],
       "eligibility": "児童扶養手当の受給者、または受給者と同等の所得水準のひとり親で、看護師・介護福祉士など対象資格(21職種)取得のため修業する方。事前相談(予約制)が必須",
       "requiredDocs": "事前相談後に案内。課税判定には扶養義務者の所得も含む",
-      "window": "台東区 子育て支援課庶務担当(03-5246-1237)",
+      "window": "お住まいの区市町村役場の窓口(子育て支援課など、自治体によって名称が異なります)",
+      "kumaNote": "看護師や介護福祉士みたいな資格を取るために学校に通っている間、生活費としてお金をもらえる制度だよ。長く通うほど金額が上がるよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/shokugyou_kyufu.html",
       "verifiedAt": "2026-10-28"
@@ -87,11 +209,25 @@
     {
       "id": "jiritsu-shien-kyouiku-kunren",
       "name": "自立支援教育訓練給付金",
+      "headline": "受講料の60%戻る",
       "layer": "national",
       "category": "career",
       "amount": "一般教育訓練給付対象講座: 受講料の60%(上限12,000円〜200,000円) / 専門実践教育訓練給付対象講座: 60%(上限160万円、40万円×4年)",
+      "tiers": [
+        {
+          "label": "一般教育訓練給付対象講座",
+          "value": "受講料の60%",
+          "note": "上限12,000円〜200,000円"
+        },
+        {
+          "label": "専門実践教育訓練給付対象講座",
+          "value": "受講料の60%",
+          "note": "上限160万円(40万円×4年)"
+        }
+      ],
       "eligibility": "ひとり親家庭の父・母で、事前に相談員との面談を経て対象講座(介護福祉士、医療事務、簿記、MOS、TOEIC等)を受講・修了した方",
-      "window": "台東区 子育て支援課",
+      "window": "お住まいの区市町村役場の窓口(子育て支援課など、自治体によって名称が異なります)",
+      "kumaNote": "資格を取るための学校の受講料、6割くらい戻ってくるよ。医療事務やパソコンの資格みたいな、身近な講座も対象だよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/kyouikukunren_kyufu.html",
       "verifiedAt": "2026-10-28"
@@ -99,12 +235,14 @@
     {
       "id": "hitorioya-koujo",
       "name": "ひとり親控除(税制)",
+      "headline": "税金が35万円控除",
       "layer": "national",
       "category": "tax",
       "amount": "所得税・住民税から35万円の控除",
       "incomeLimit": "本人の合計所得金額500万円以下",
       "eligibility": "婚姻していない(または配偶者の生死不明)方で、事実婚状態になく、総所得金額等58万円以下(2025年分以降)の子と生計を一にしている",
       "window": "確定申告 または 勤務先の年末調整",
+      "kumaNote": "確定申告か年末調整のときに申請すると、税金の計算のもとになる所得が35万円分減って、払う税金が安くなるよ。お金はかからないから、やらないと損だよ。",
       "verifyNeeded": false,
       "source": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1171.htm",
       "verifiedAt": "2026-10-28"
@@ -112,34 +250,58 @@
     {
       "id": "kokumin-nenkin-menjo",
       "name": "国民年金保険料の免除",
+      "headline": "全額免除も",
       "layer": "national",
       "category": "insurance",
       "amount": "条件を満たすと保険料が全額免除",
       "incomeLimit": "前年所得135万円以下(ひとり親・寡婦・障害者の特例基準。平成31年度税制改正で未婚のひとり親も対象化)",
       "eligibility": "自動では適用されず、区役所の国民年金窓口または年金事務所での申請が必要",
-      "window": "台東区役所 国民年金係 または 年金事務所",
+      "window": "お住まいの区市町村役場の国民年金担当窓口、または年金事務所",
+      "kumaNote": "年金の支払いがきついときに使える制度だよ。収入が低ければ、全額払わなくて良くなることもあるよ。自動ではならないから、窓口で申請してね。",
       "verifyNeeded": true,
       "note": "135万円という基準額は複数の自治体公式サイト(藤沢市・大阪市・浜松市など)で独立して一致確認(いずれも全国共通の国の制度を説明したもの)。日本年金機構(nenkin.go.jp)のページ内に特例基準の具体額を記載したページが見当たらず、複数回の検索でも一次ソースには到達できなかった。公開前に年金事務所へ電話確認するのが望ましい"
     },
     {
       "id": "kokuho-keigen",
       "name": "国民健康保険料の軽減・減免",
-      "layer": "municipal",
+      "headline": "7割軽減も",
+      "layer": "national",
       "category": "insurance",
       "amount": "7割軽減: 世帯の所得合計が基礎控除額43万円以下 / 5割軽減: 43万円+31万円×(加入者数+特定同一世帯所属者数)以下 / 2割軽減: 43万円+57万円×(同人数)以下。未就学児がいる世帯はさらに軽減率が上乗せ(7割→8.5割、5割→7.5割、2割→6割)",
-      "window": "台東区 保険料係",
+      "tiers": [
+        {
+          "label": "7割軽減",
+          "value": "所得合計 43万円以下",
+          "note": "未就学児がいる世帯は実質8.5割軽減"
+        },
+        {
+          "label": "5割軽減",
+          "value": "43万円+31万円×加入者数 以下",
+          "note": "未就学児がいる世帯は実質7.5割軽減"
+        },
+        {
+          "label": "2割軽減",
+          "value": "43万円+57万円×加入者数 以下",
+          "note": "未就学児がいる世帯は実質6割軽減"
+        }
+      ],
+      "window": "お住まいの区市町村役場の国民健康保険担当窓口",
+      "kumaNote": "国民健康保険料が、所得が低いと自動で安くなる制度だよ。多くの場合、自分で申請しなくても区の方で計算してくれるよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kurashi/zeikin/kokuminkenkohoken/hokenryou/20130605110058881.html",
-      "verifiedAt": "2026-10-28"
+      "verifiedAt": "2026-10-28",
+      "note": "軽減判定の基準額(43万円等)は地方税法で全国一律に定められている。ただし実際の保険料率は自治体ごとに異なるため、最終的な保険料額は窓口で確認を"
     },
     {
       "id": "jyutaku-shien",
       "name": "住宅支援(都営住宅優先・家賃保証)",
+      "headline": "引っ越し費用を助成",
       "layer": "prefecture_municipal",
       "category": "housing",
       "amount": "都営住宅: 家族向け募集でひとり親世帯は当選倍率7倍の優遇。家賃等債務保証制度: 保証会社利用時の初回保証料の1/2を助成(上限 単身2万円・2人3万円・3人以上4万円)。立ち退きによる転居の場合は転居費用を別途助成(高齢者等住み替え居住支援制度)",
       "eligibility": "ひとり親世帯。住み替え居住支援制度は立ち退き等やむを得ない事情での転居が前提",
       "window": "台東区 住宅課",
+      "kumaNote": "都営住宅に当たりやすくなったり、お部屋を借りるときの保証料を助けてもらえたりする制度だよ。困ったら相談窓口もあるよ。",
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kenchiku/jutaku/sumai/yachinhojo/saimuhosho.html",
       "verifiedAt": "2026-10-28"

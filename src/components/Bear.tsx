@@ -18,6 +18,26 @@ export function BearFace({ size = 48 }: { size?: number }) {
   );
 }
 
+export function BearCub({ size = 20 }: { size?: number }) {
+  const height = size * (17 / 20);
+  return (
+    <svg
+      width={size}
+      height={height}
+      viewBox="0 0 20 17"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <circle cx="7" cy="3" r="2.6" fill="#F0997B" />
+      <circle cx="13" cy="3" r="2.6" fill="#F0997B" />
+      <circle cx="10" cy="9" r="7" fill="#F5C4B3" />
+      <circle cx="8" cy="8" r="1" fill="#4A1B0C" />
+      <circle cx="12" cy="8" r="1" fill="#4A1B0C" />
+      <ellipse cx="10" cy="11" rx="1.8" ry="1.2" fill="#FAECE7" />
+    </svg>
+  );
+}
+
 export function BearParentChild({ size = 44 }: { size?: number }) {
   const scale = size / 44;
   const height = 40 * scale;

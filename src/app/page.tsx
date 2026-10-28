@@ -139,7 +139,7 @@ export default function Home() {
               </Link>
             ))}
           </div>
-          <LineButton>LINEで簡単手当診断</LineButton>
+          <LineButton>LINEで簡単手当診断をしてみる</LineButton>
         </section>
 
         {/* 記事ランキング */}
@@ -226,7 +226,7 @@ export default function Home() {
         {/* bottom LINE bar */}
         <div className="flex items-center gap-2.5 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={32} />
-          <p className="flex-1 text-[11.5px]">LINEで簡単手当診断</p>
+          <p className="flex-1 text-[11.5px]">LINEで簡単手当診断をしてみる</p>
           <a
             href={LINE_ADD_FRIEND_URL}
             target="_blank"
