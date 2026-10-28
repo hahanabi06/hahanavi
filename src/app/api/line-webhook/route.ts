@@ -18,7 +18,11 @@ function formatDiagnosisReply(text: string): string {
 
   const lines = result.items.map((item) => {
     const amount = item.monthlyYen ? `(月${item.monthlyYen.toLocaleString()}円)` : "";
-    return `・${item.name}: ${item.status}${amount}\n  ${item.note}`;
+    const windowLine = item.window ? `\n  申請窓口: ${item.window}` : "";
+    const linkLine = item.programId
+      ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
+      : "";
+    return `・${item.name}: ${item.status}${amount}\n  ${item.note}${windowLine}${linkLine}`;
   });
 
   const totalLine =
