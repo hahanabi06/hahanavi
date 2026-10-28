@@ -1,12 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import {
-  IconArrowLeft,
-  IconChevronRight,
-  IconMessageCircle2,
-} from "@tabler/icons-react";
+import { IconChevronRight, IconMessageCircle2 } from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
 import { ReportForm } from "@/components/ReportForm";
+import { PageHeader } from "@/components/PageHeader";
 import programsData from "@/data/programs.json";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
@@ -125,15 +122,10 @@ export default async function ProgramDetailPage({
   const related = programs.filter((p) => p.id !== program.id).slice(0, 2);
 
   return (
-    <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 py-5">
-        <div className="mb-4 flex items-center gap-2">
-          <Link href="/seido" className="flex items-center gap-2">
-            <IconArrowLeft size={20} className="text-[#5F5E5A]" />
-            <span className="text-xs text-[#888780]">手当一覧へ</span>
-          </Link>
-        </div>
-
+    <>
+      <PageHeader backHref="/seido" backLabel="手当一覧へ" />
+      <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
+      <main className="w-full max-w-md px-4 pt-16 pb-5">
         <div className="mb-2 flex flex-wrap gap-1.5">
           <span className="inline-block w-fit rounded-full bg-[#F1EFE8] px-3 py-1 text-xs font-medium text-[#5F5E5A]">
             {CATEGORY_LABEL[program.category] ?? program.category}
@@ -449,6 +441,7 @@ export default async function ProgramDetailPage({
           </a>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   );
 }

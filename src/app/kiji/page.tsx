@@ -1,21 +1,17 @@
 import Link from "next/link";
-import { IconArrowLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
+import { PageHeader } from "@/components/PageHeader";
 import { listPublishedArticles } from "@/lib/notion";
 
 export default async function KijiListPage() {
   const articles = await listPublishedArticles().catch(() => []);
 
   return (
-    <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 py-5">
-        <div className="mb-4">
-          <Link href="/" aria-label="トップへ戻る" className="mb-2 inline-block">
-            <IconArrowLeft size={20} className="text-[#5F5E5A]" />
-          </Link>
-          <p className="text-lg font-medium">お役立ち記事</p>
-        </div>
-
+    <>
+      <PageHeader title="お役立ち記事" backHref="/" />
+      <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
+      <main className="w-full max-w-md px-4 pt-20 pb-5">
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={40} />
           <p className="text-sm leading-relaxed">
@@ -42,6 +38,7 @@ export default async function KijiListPage() {
           </div>
         )}
       </main>
-    </div>
+      </div>
+    </>
   );
 }
