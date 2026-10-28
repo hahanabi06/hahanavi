@@ -31,6 +31,27 @@ export async function replyToLine(
   });
 }
 
+export async function pushToLine(
+  userId: string,
+  text: string,
+  channelAccessToken: string
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetch("https://api.line.me/v2/bot/message/push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${channelAccessToken}`,
+    },
+    body: JSON.stringify({
+      to: userId,
+      messages: [{ type: "text", text: text.slice(0, 5000) }],
+    }),
+  });
+  if (res.ok) return { ok: true };
+  const body = await res.text().catch(() => "");
+  return { ok: false, error: `${res.status} ${body}` };
+}
+
 export const WELCOME_MESSAGE = `ハハナビに登録してくれてありがとう。
 
 使えるお金を診断するよ。この1行の形で送ってみてね。

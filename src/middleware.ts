@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_COOKIE_NAME, getAdminToken } from "@/lib/admin-auth";
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
 
 export async function middleware(req: NextRequest) {
@@ -14,6 +14,9 @@ export async function middleware(req: NextRequest) {
   const expected = await getAdminToken();
 
   if (cookie !== expected) {
+    if (req.nextUrl.pathname.startsWith("/api/admin/")) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
     const loginUrl = new URL("/admin/login", req.url);
     return NextResponse.redirect(loginUrl);
   }

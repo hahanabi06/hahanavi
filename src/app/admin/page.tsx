@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
 import { listPublishedArticles } from "@/lib/notion";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
+import { LinePushForm } from "@/components/LinePushForm";
 
 export const instant = false;
 export const metadata = { title: "管理画面 | ハハナビ" };
@@ -390,6 +391,7 @@ export default async function AdminDashboard() {
                         </p>
                       ))}
                     </div>
+                    <LinePushForm lineUserId={userId} />
                   </div>
                 ))}
               </div>
