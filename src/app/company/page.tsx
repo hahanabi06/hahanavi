@@ -64,7 +64,7 @@ export default function CompanyPage() {
             <p className="mb-2.5 text-lg font-medium">運営者について</p>
             <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-3">
               <p className="text-base leading-relaxed">
-                一橋大学経済学部卒業後、電通マクロミルインサイト、クニエ、PwCコンサルティング(戦略部門)を経て、ハハナビを立ち上げました。
+                一橋大学経済学部を卒業後、マーケティングリサーチ会社、日系大手コンサルティングファームの公共分野における新規事業部門、外資系コンサルティングファームの戦略部門を経て、ハハナビを立ち上げました。
               </p>
               <Link
                 href="/about"
