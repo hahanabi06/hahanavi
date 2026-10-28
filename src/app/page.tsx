@@ -46,17 +46,19 @@ function LineButton({
 function SectionHeading({
   title,
   showAll = true,
+  href = "#",
 }: {
   title: string;
   showAll?: boolean;
+  href?: string;
 }) {
   return (
     <div className="mb-2.5 flex items-baseline justify-between">
       <p className="text-base font-medium">{title}</p>
       {showAll && (
-        <a href="#" className="text-xs text-[#993C1D]">
+        <Link href={href} className="text-xs text-[#993C1D]">
           全部見る ›
-        </a>
+        </Link>
       )}
     </div>
   );
@@ -142,7 +144,7 @@ export default function Home() {
 
         {/* 支援制度 */}
         <section className="mb-6">
-          <SectionHeading title="支援制度" />
+          <SectionHeading title="支援制度" href="/seido" />
           <div className="mb-2.5 flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PROGRAMS.map((p) => (
               <Link
