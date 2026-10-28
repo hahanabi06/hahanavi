@@ -331,6 +331,11 @@ export default async function Home() {
             追加
           </a>
         </div>
+
+        <div className="mt-5 flex justify-center gap-3 text-xs text-[#888780]">
+          <Link href="/privacy">プライバシーポリシー</Link>
+          <Link href="/terms">利用規約</Link>
+        </div>
         </main>
       </div>
     </>
