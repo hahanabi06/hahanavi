@@ -11,7 +11,6 @@ import {
   IconKeyboard,
   IconMessageCircle2,
 } from "@tabler/icons-react";
-import { Suspense } from "react";
 import Link from "next/link";
 import { Zen_Maru_Gothic } from "next/font/google";
 import { BearParentChild } from "@/components/Bear";
@@ -192,15 +191,7 @@ export default async function Home() {
         </div>
 
         {/* greeting */}
-        <Suspense
-          fallback={
-            <div className="mb-5 flex h-[60px] items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
-              <BearParentChild size={56} />
-            </div>
-          }
-        >
-          <BearGreeting />
-        </Suspense>
+        <BearGreeting />
 
         {/* 支援制度 */}
         <section className="mb-6">

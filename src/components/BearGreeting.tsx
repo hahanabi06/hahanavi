@@ -1,4 +1,4 @@
-import { connection } from "next/server";
+import { cacheLife } from "next/cache";
 import { BearParentChild } from "@/components/Bear";
 
 const MESSAGES = [
@@ -16,7 +16,12 @@ function splitLines(text: string): string[] {
   return text.split("。").filter(Boolean);
 }
 
-function getTodaysMessage(): string {
+// 1日に1回しか変わらない値なので、都度サーバーに取りに行く(Suspenseで動的化)
+// のではなく、"use cache"で静的ページの一部として焼き込み、1時間おきに
+// 再計算する。これで初期表示から常に正しいメッセージが出て、ラグが一切出ない。
+async function getTodaysMessage(): Promise<string> {
+  "use cache";
+  cacheLife("hours");
   const now = new Date();
   const startOfYear = new Date(now.getFullYear(), 0, 0);
   const dayOfYear = Math.floor(
@@ -25,12 +30,8 @@ function getTodaysMessage(): string {
   return MESSAGES[dayOfYear % MESSAGES.length];
 }
 
-// 日付で変わる値なのでクライアント側で遅延評価せず、サーバー側でリクエストごとに
-// 計算する(connection()でCache Componentsの静的プリレンダー対象から外す)。
-// これで初期表示が空になったり違うメッセージが一瞬見えたりしない。
 export async function BearGreeting() {
-  await connection();
-  const lines = splitLines(getTodaysMessage());
+  const lines = splitLines(await getTodaysMessage());
 
   return (
     <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
