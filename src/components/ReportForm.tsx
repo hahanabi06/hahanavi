@@ -39,7 +39,7 @@ export function ReportForm({
 
   if (status === "sent") {
     return (
-      <p className="py-3 text-xs leading-relaxed text-[#888780]">
+      <p className="py-3 text-sm leading-relaxed text-[#5F5E5A]">
         報告ありがとうございます。確認して必要があれば修正します。
       </p>
     );
