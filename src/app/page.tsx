@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { Zen_Maru_Gothic } from "next/font/google";
 import { BearParentChild } from "@/components/Bear";
+import { BearGreeting } from "@/components/BearGreeting";
 import { RequestForm } from "@/components/RequestForm";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import { listPublishedArticles } from "@/lib/notion";
@@ -190,12 +191,7 @@ export default async function Home() {
         </div>
 
         {/* greeting */}
-        <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
-          <BearParentChild size={56} />
-          <p className="text-base leading-relaxed">
-            今日、しんどかったね。ここにいるよ。
-          </p>
-        </div>
+        <BearGreeting />
 
         {/* 支援制度 */}
         <section className="mb-6">
