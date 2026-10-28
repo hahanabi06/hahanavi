@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { BearFace, BearParentChild } from "@/components/Bear";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
+import programsData from "@/data/programs.json";
 
 function LineButton({
   children,
@@ -55,13 +56,12 @@ function SectionHeading({
   );
 }
 
-// 検証済みデータ(src/data/programs.json)から抜粋した要約。詳細・最新の出典は各詳細ページ側で確認できる。
-const PROGRAMS = [
-  { id: "jidou-fuyou-teate", label: "児童扶養手当", value: "月48,050円〜" },
-  { id: "maruoya-iryouhi", label: "マル親医療費助成", value: "ほぼ無料に" },
-  { id: "jidou-ikusei-teate", label: "児童育成手当", value: "月13,500円" },
-  { id: "koutou-shokugyou-kunren", label: "資格取得の生活費支援", value: "月15万円まで" },
-];
+// src/data/programs.json の全項目をカードとして使う。名前と見出し用の短い金額(headline)はデータ側で管理。
+const PROGRAMS = programsData.programs.map((p) => ({
+  id: p.id,
+  label: p.name,
+  value: p.headline ?? "詳細を見る",
+}));
 
 const RANKING = [
   {
