@@ -18,11 +18,20 @@ function splitLines(text: string): string[] {
   return text.split("。").filter(Boolean);
 }
 
+function getTodaysMessage(): string {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor(
+    (now.getTime() - startOfYear.getTime()) / 86400000,
+  );
+  return MESSAGES[dayOfYear % MESSAGES.length];
+}
+
 export function BearGreeting() {
   const [message, setMessage] = useState(MESSAGES[0]);
 
   useEffect(() => {
-    setMessage(MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
+    setMessage(getTodaysMessage());
   }, []);
 
   const lines = splitLines(message);

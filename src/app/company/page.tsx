@@ -45,22 +45,6 @@ export default function CompanyPage() {
                   性別・年齢を問わず、意欲のある人材を幅広く採用したい企業にとって、新しい採用チャネルになります。
                 </p>
               </div>
-              <div className="rounded-xl bg-[#FAECE7] px-3.5 py-3">
-                <p className="mb-1 text-sm leading-snug font-medium text-[#712B13]">
-                  国の助成金が使える場合があります
-                </p>
-                <p className="text-xs leading-relaxed text-[#993C1D]">
-                  ハローワーク等の紹介でシングルマザー(母子家庭の母等)を雇い入れた場合、特定求職者雇用開発助成金として中小企業で最大60万円(大企業は最大50万円)が支給される制度があります(週の所定労働時間20時間未満は対象外、短時間(週20〜30時間未満)は中小企業40万円/大企業30万円。直接応募・求人サイト経由の採用は対象外)。
-                </p>
-                <a
-                  href="https://www.mhlw.go.jp/content/001684468.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-1.5 inline-block text-[11px] text-[#185FA5] underline"
-                >
-                  厚生労働省の制度案内(PDF)で詳しく見る
-                </a>
-              </div>
             </div>
           </section>
 
