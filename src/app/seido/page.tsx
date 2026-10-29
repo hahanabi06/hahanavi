@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { IconChevronRight, IconMessageCircle2 } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconMessageCircle2,
+  IconMapPin,
+} from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
-import { PageHeader } from "@/components/PageHeader";
 import programsData from "@/data/programs.json";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL, PREFECTURES } from "@/lib/constants";
 import { TOKYO_WARDS } from "@/lib/diagnosis";
@@ -145,41 +148,50 @@ export default function SeidoListPage() {
 
   return (
     <>
-      <PageHeader title="支援制度一覧" backHref="/" />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 pt-20 pb-5">
+      <main className="w-full max-w-md px-4 pt-6 pb-5">
+        <h1 className="mb-4 text-lg font-medium">支援制度一覧</h1>
+
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={40} />
           <p className="text-sm leading-relaxed">
-            使える制度は、お住まいの地域によって変わるよ。「全国」「都道府県」「市区町村」の順に、対象が広い制度から並べているから、上から見てみてね。
+            使える制度は、お住まいの地域によって変わるよ。「全国」「都道府県」「市区町村」の順に、対象が広い制度から並べているから、上から見てみてね。47都道府県・東京23区まで調査済み。
           </p>
         </div>
 
-        <div className="mb-5 flex flex-wrap gap-2">
-          <select
-            value={prefecture}
-            onChange={(e) => setPrefecture(e.target.value)}
-            className="rounded-full bg-[#F1EFE8] px-3 py-1.5 text-xs font-medium text-[#5F5E5A]"
-          >
-            {PREFECTURES.map((pref) => (
-              <option key={pref} value={pref}>
-                {pref}
-              </option>
-            ))}
-          </select>
-          {isTokyo && (
+        <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
+          <p className="mb-2.5 flex items-center gap-1.5 text-xs font-medium text-[#5F5E5A]">
+            <IconMapPin size={16} className="text-[#D85A30]" />
+            お住まいの地域を選んでね
+          </p>
+          <div className="flex flex-wrap gap-2">
             <select
-              value={ward}
-              onChange={(e) => setWard(e.target.value)}
-              className="rounded-full bg-[#F1EFE8] px-3 py-1.5 text-xs font-medium text-[#5F5E5A]"
+              value={prefecture}
+              onChange={(e) => setPrefecture(e.target.value)}
+              aria-label="都道府県"
+              className="min-w-0 flex-1 rounded-xl border border-[#E3E0D6] bg-white px-3 py-2.5 text-sm font-medium"
             >
-              {TOKYO_WARDS.map((w) => (
-                <option key={w} value={w}>
-                  {w}
+              {PREFECTURES.map((pref) => (
+                <option key={pref} value={pref}>
+                  {pref}
                 </option>
               ))}
             </select>
-          )}
+            {isTokyo && (
+              <select
+                value={ward}
+                onChange={(e) => setWard(e.target.value)}
+                aria-label="市区町村"
+                className="min-w-0 flex-1 rounded-xl border border-[#E3E0D6] bg-white px-3 py-2.5 text-sm font-medium"
+              >
+                {TOKYO_WARDS.map((w) => (
+                  <option key={w} value={w}>
+                    {w}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
 
         <ProgramGroup
