@@ -368,12 +368,12 @@ export default async function ProgramDetailPage({
             <dd className="text-sm leading-relaxed">{program.window}</dd>
           </div>
 
-          {program.verifyNeeded ? (
-            <p className="py-3 text-xs text-[#BA7517]">
+          {program.verifyNeeded && (
+            <p className="pt-3 text-xs text-[#BA7517]">
               この制度の数字は現在確認中です。公開前に最新情報を確認します。
             </p>
-          ) : (
-            program.source && (
+          )}
+          {program.source && (
               <div className="py-3">
                 <dt className="mb-1 text-sm font-medium text-[#5F5E5A]">
                   詳しくはこちら
@@ -402,7 +402,6 @@ export default async function ProgramDetailPage({
                   )}
                 </dd>
               </div>
-            )
           )}
         </div>
 
