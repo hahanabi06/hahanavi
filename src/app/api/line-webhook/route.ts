@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyLineSignature, replyToLine, WELCOME_MESSAGE, type QuickReplyItem } from "@/lib/line";
 import { parseMessage, diagnose, type ParsedInput } from "@/lib/diagnosis";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import programsData from "@/data/programs.json";
 import {
   REGIONS,
   WARD_PAGES,
@@ -119,6 +120,66 @@ async function getLineUserMode(
   } catch (err) {
     console.error("[line_users] mode select unexpected error", userId, err);
     return null;
+  }
+}
+
+// 「申請制度リマインダー」用: 前回の診断で保存されたプロフィール(ward/人数/年収)を読む。
+// prefectureや子の年齢は保存していないので、ward(東京都の区)がある場合のみ再診断できる
+async function getLineUserProfile(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string
+): Promise<{ ward: string | null; numChildren: number | null; incomeManYen: number | null } | null> {
+  try {
+    const { data, error } = await supabase
+      .from("line_users")
+      .select("ward, num_children, income_man_yen")
+      .eq("line_user_id", userId)
+      .maybeSingle();
+    if (error) {
+      console.error("[line_users] profile select failed", userId, error);
+      return null;
+    }
+    if (!data) return null;
+    return {
+      ward: data.ward ?? null,
+      numChildren: data.num_children ?? null,
+      incomeManYen: data.income_man_yen ?? null,
+    };
+  } catch (err) {
+    console.error("[line_users] profile select unexpected error", userId, err);
+    return null;
+  }
+}
+
+// 「申請制度更新リマインダー」で、診断履歴が無い人にも見せる代表的な国の制度(登録してもらう候補)
+const FALLBACK_REGISTER_PROGRAM_IDS = [
+  "jidou-fuyou-teate",
+  "jidou-teate",
+  "maruoya-iryouhi",
+  "koutou-shokugyou-kunren",
+  "jiritsu-shien-kyouiku-kunren",
+  "hitorioya-koujo",
+];
+
+function programNameById(programId: string): string | null {
+  return programsData.programs.find((p) => p.id === programId)?.name ?? null;
+}
+
+async function saveRegisteredProgram(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string,
+  programId: string,
+  programName: string
+): Promise<void> {
+  try {
+    const { error } = await supabase.from("line_program_registrations").insert({
+      line_user_id: userId,
+      program_id: programId,
+      program_name: programName,
+    });
+    if (error) console.error("[line_program_registrations] insert failed", userId, error);
+  } catch (err) {
+    console.error("[line_program_registrations] unexpected error", userId, err);
   }
 }
 
@@ -378,6 +439,59 @@ export async function POST(req: NextRequest) {
           tasks.push(setLineUserMode(supabase, event.source.userId, encodeState({ step: "region" })));
         }
         await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data === "action=register_program") {
+        const userId = event.source?.userId;
+        if (!userId) return;
+        const supabase = getSupabaseServerClient();
+        const profile = userId ? await getLineUserProfile(supabase, userId) : null;
+
+        // 前回の診断情報があれば、実際に対象になりそうだった制度を候補にする。無ければ代表的な国の制度を出す
+        let candidates: { id: string; name: string }[];
+        if (profile?.ward && profile.numChildren !== null && profile.incomeManYen !== null) {
+          const result = diagnose({
+            ward: profile.ward,
+            prefecture: "東京都",
+            isTokyo: true,
+            numChildren: profile.numChildren,
+            incomeManYen: profile.incomeManYen,
+            childAges: null,
+          });
+          candidates = result.items
+            .filter((i) => (i.status === "全部支給" || i.status === "一部支給") && i.programId)
+            .map((i) => ({ id: i.programId!, name: i.name }));
+        } else {
+          candidates = FALLBACK_REGISTER_PROGRAM_IDS.map((id) => ({
+            id,
+            name: programNameById(id) ?? id,
+          }));
+        }
+
+        const items: QuickReplyItem[] = candidates
+          .slice(0, 13)
+          .map((c) => ({ label: c.name, data: `register_program=${c.id}` }));
+        const reply =
+          "申請した制度を登録しておくと、更新が必要なタイミングでお知らせできるように準備していくね。どの制度を申請した?";
+        await replyToLine(event.replyToken, reply, channelAccessToken, items);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("register_program=")) {
+        const programId = event.postback.data.slice("register_program=".length);
+        const userId = event.source?.userId;
+        if (!userId) return;
+        const name = programNameById(programId) ?? programId;
+        const supabase = getSupabaseServerClient();
+        await Promise.all([
+          saveRegisteredProgram(supabase, userId, programId, name),
+          replyToLine(
+            event.replyToken,
+            `「${name}」を登録したよ!更新が必要なタイミングでお知らせできるように準備してるから、楽しみにしてて。`,
+            channelAccessToken
+          ),
+        ]);
         return;
       }
 

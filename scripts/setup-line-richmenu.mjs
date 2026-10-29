@@ -41,22 +41,14 @@ if (!ACCESS_TOKEN) {
 
 const SITE_URL = "https://hahanavi.vercel.app";
 
-// 2500x1686を2x2(1250x843ずつ)に分割
+// 2500x1686を2x2(1250x843ずつ)に分割。左上から時計回りに ハハナビTOP → ご意見箱 → 支援制度診断 → 申請制度更新リマインダー
 const AREAS = [
   {
     bounds: { x: 0, y: 0, width: 1250, height: 843 },
-    action: { type: "postback", data: "action=diagnose", displayText: "支援制度診断" },
+    action: { type: "uri", uri: `${SITE_URL}/` },
   },
   {
     bounds: { x: 1250, y: 0, width: 1250, height: 843 },
-    action: { type: "uri", uri: `${SITE_URL}/kiji` },
-  },
-  {
-    bounds: { x: 0, y: 843, width: 1250, height: 843 },
-    action: { type: "uri", uri: `${SITE_URL}/kyujin` },
-  },
-  {
-    bounds: { x: 1250, y: 843, width: 1250, height: 843 },
     // ご意見箱はこの後すぐ自由入力してもらうフローなので、タップ直後にキーボードを自動で開く
     action: {
       type: "postback",
@@ -64,6 +56,14 @@ const AREAS = [
       displayText: "ご意見箱",
       inputOption: "openKeyboard",
     },
+  },
+  {
+    bounds: { x: 1250, y: 843, width: 1250, height: 843 },
+    action: { type: "postback", data: "action=diagnose", displayText: "支援制度診断" },
+  },
+  {
+    bounds: { x: 0, y: 843, width: 1250, height: 843 },
+    action: { type: "postback", data: "action=register_program", displayText: "申請制度更新リマインダー" },
   },
 ];
 
