@@ -46,8 +46,12 @@
       "window": "お住まいの区市町村役場の窓口(子育て支援課、子ども家庭課など、自治体によって名称が異なります)",
       "kumaNote": "ひとりで子どもを育てている人が、国からもらえるお金だよ。収入が低いほど多くもらえて、だいたい月1万円台〜5万円くらい。2か月に1回、まとめて口座に振り込まれるよ。",
       "verifyNeeded": false,
-      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidofuyoteate.html",
-      "verifiedAt": "2026-10-28"
+      "source": "https://www.cfa.go.jp/policies/hitori-oya/fuyou-teate/",
+      "verifiedAt": "2026-10-29",
+      "exampleSource": {
+        "area": "台東区",
+        "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidofuyoteate.html"
+      }
     },
     {
       "id": "jidou-ikusei-teate",
@@ -433,20 +437,20 @@
     {
       "id": "koutou-shokugyou-kunren",
       "name": "高等職業訓練促進給付金",
-      "headline": "月7万円台〜15万円",
+      "headline": "月7万円台〜14万円",
       "layer": "national",
       "category": "career",
-      "amount": "住民税非課税世帯: 月150,000円(修学期間12ヶ月以上、最終年度も同額) / 課税世帯: 月70,500円(最終1年は110,500円)。修了支援給付金: 非課税世帯50,000円・課税世帯25,000円",
+      "amount": "住民税非課税世帯: 月100,000円(修業期間の最後の12ヶ月は140,000円) / 課税世帯: 月70,500円(最後の12ヶ月は110,500円)。修了支援給付金: 非課税世帯50,000円・課税世帯25,000円",
       "tiers": [
         {
           "label": "住民税非課税世帯",
-          "value": "月150,000円",
-          "note": "修学期間12ヶ月以上、最終年度も同額。修了時さらに+50,000円"
+          "value": "月100,000円",
+          "note": "修業期間の最後の12ヶ月は140,000円に増額。修了時さらに+50,000円"
         },
         {
           "label": "住民税課税世帯",
           "value": "月70,500円",
-          "note": "最終1年は月110,500円。修了時さらに+25,000円"
+          "note": "最後の12ヶ月は110,500円に増額。修了時さらに+25,000円"
         }
       ],
       "eligibility": "児童扶養手当の受給者、または受給者と同等の所得水準のひとり親で、看護師・介護福祉士など対象資格(21職種)取得のため修業する方。事前相談(予約制)が必須",
@@ -454,8 +458,13 @@
       "window": "お住まいの区市町村役場の窓口(子育て支援課など、自治体によって名称が異なります)",
       "kumaNote": "看護師や介護福祉士みたいな資格を取るために学校に通っている間、生活費としてお金をもらえる制度だよ。長く通うほど金額が上がるよ。",
       "verifyNeeded": false,
-      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/shokugyou_kyufu.html",
-      "verifiedAt": "2026-10-28"
+      "source": "https://www.cfa.go.jp/policies/hitori-oya/syokugyou-kunren/",
+      "verifiedAt": "2026-10-29",
+      "exampleSource": {
+        "area": "台東区",
+        "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/shokugyou_kyufu.html"
+      },
+      "note": "こども家庭庁および東京都福祉局の公式ページで月額100,000円(最終12ヶ月は140,000円)を確認(2026-10-29)。台東区の公式ページには「非課税世帯 月額15万円」と記載されていたが、東京都・国の案内および世田谷区の案内(最終12ヶ月14万円)と一致しないため、台東区ページの誤り・古い情報の可能性が高いと判断し採用しなかった。"
     },
     {
       "id": "koutou-gakkou-sotsugyou-nintei-shien",
@@ -496,8 +505,12 @@
       "window": "お住まいの区市町村役場の窓口(子育て支援課など、自治体によって名称が異なります)",
       "kumaNote": "資格を取るための学校の受講料、6割くらい戻ってくるよ。医療事務やパソコンの資格みたいな、身近な講座も対象だよ。",
       "verifyNeeded": false,
-      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/kyouikukunren_kyufu.html",
-      "verifiedAt": "2026-10-28"
+      "source": "https://www.cfa.go.jp/policies/hitori-oya/jiritsu-shien-kyuufukin/",
+      "verifiedAt": "2026-10-29",
+      "exampleSource": {
+        "area": "台東区",
+        "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/hitorioya/shugyou/kyouikukunren_kyufu.html"
+      }
     },
     {
       "id": "hitorioya-koujo",
@@ -608,9 +621,13 @@
       "window": "お住まいの区市町村役場の窓口(福祉課・子育て支援課など)",
       "kumaNote": "児童扶養手当をもらってるなら、都バスや都営地下鉄が無料になる乗車券ももらえるんだよ。世帯で1人分だけだけど、普段電車やバスをよく使うなら結構助かるはず。",
       "verifyNeeded": false,
-      "source": "https://www.city.minato.tokyo.jp/kodomokyufu/kodomo/kodomo/hitorioya/kotsu.html",
+      "source": "https://www.kotsu.metro.tokyo.jp/other/kanren/fare/free.html",
       "verifiedAt": "2026-10-29",
-      "note": "都営交通(東京都交通局)が運営する全都共通の制度で、23区だけでなく立川市・調布市など市部でも同様の案内を確認(港区のページを代表例として出典にしている)。更新手続きや有効期限は自治体ごとに案内されるため、詳細は窓口で確認を。"
+      "note": "都営交通(東京都交通局)が運営する全都共通の制度で、23区だけでなく立川市・調布市など市部でも同様の案内を確認(港区のページを代表例として出典にしている)。更新手続きや有効期限は自治体ごとに案内されるため、詳細は窓口で確認を。",
+      "exampleSource": {
+        "area": "港区",
+        "url": "https://www.city.minato.tokyo.jp/kodomokyufu/kodomo/kodomo/hitorioya/kotsu.html"
+      }
     },
     {
       "id": "koutou-kyouiku-shugaku-shien",
