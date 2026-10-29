@@ -4,7 +4,7 @@ import { parseMessage, diagnose, type ParsedInput } from "@/lib/diagnosis";
 import { getSupabaseServerClient } from "@/lib/supabase";
 import {
   REGIONS,
-  WARD_AREAS,
+  WARD_PAGES,
   CHILD_COUNT_OPTIONS,
   INCOME_BRACKET_OPTIONS,
   encodeState,
@@ -32,12 +32,13 @@ function prefectureQuickReply(region: string): QuickReplyItem[] {
   const found = REGIONS.find((r) => r.name === region);
   return (found?.prefectures ?? []).map((p) => ({ label: p, data: `diag_prefecture=${p}` }));
 }
-function wardAreaQuickReply(): QuickReplyItem[] {
-  return WARD_AREAS.map((a) => ({ label: a.name, data: `diag_ward_area=${a.name}` }));
-}
-function wardQuickReply(areaName: string): QuickReplyItem[] {
-  const found = WARD_AREAS.find((a) => a.name === areaName);
-  return (found?.wards ?? []).map((w) => ({ label: w, data: `diag_ward=${w}` }));
+function wardQuickReply(page: number): QuickReplyItem[] {
+  const wards = WARD_PAGES[page] ?? [];
+  const items = wards.map((w) => ({ label: w, data: `diag_ward=${w}` }));
+  if (page + 1 < WARD_PAGES.length) {
+    items.push({ label: "次の区を見る", data: `diag_ward_page=${page + 1}` });
+  }
+  return items;
 }
 function childrenQuickReply(): QuickReplyItem[] {
   return CHILD_COUNT_OPTIONS.map((c) => ({ label: c.label, data: `diag_children=${c.value}` }));
@@ -282,16 +283,12 @@ export async function POST(req: NextRequest) {
         const prefecture = event.postback.data.slice("diag_prefecture=".length);
         if (prefecture === "東京都") {
           const tasks = [
-            replyToLine(event.replyToken, "どのエリア?", channelAccessToken, wardAreaQuickReply()),
+            replyToLine(event.replyToken, "どの区?", channelAccessToken, wardQuickReply(0)),
           ];
           if (event.source?.userId) {
             const supabase = getSupabaseServerClient();
             tasks.push(
-              setLineUserMode(
-                supabase,
-                event.source.userId,
-                encodeState({ step: "ward_area", prefecture })
-              )
+              setLineUserMode(supabase, event.source.userId, encodeState({ step: "ward", prefecture }))
             );
           }
           await Promise.all(tasks);
@@ -310,22 +307,9 @@ export async function POST(req: NextRequest) {
         return;
       }
 
-      if (event.type === "postback" && event.postback?.data?.startsWith("diag_ward_area=")) {
-        const wardArea = event.postback.data.slice("diag_ward_area=".length);
-        const tasks = [
-          replyToLine(event.replyToken, "どの区?", channelAccessToken, wardQuickReply(wardArea)),
-        ];
-        if (event.source?.userId) {
-          const supabase = getSupabaseServerClient();
-          tasks.push(
-            setLineUserMode(
-              supabase,
-              event.source.userId,
-              encodeState({ step: "ward", prefecture: "東京都", wardArea })
-            )
-          );
-        }
-        await Promise.all(tasks);
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_ward_page=")) {
+        const page = parseInt(event.postback.data.slice("diag_ward_page=".length), 10);
+        await replyToLine(event.replyToken, "どの区?", channelAccessToken, wardQuickReply(page));
         return;
       }
 

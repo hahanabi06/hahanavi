@@ -1,6 +1,7 @@
 // LINEのボタン(クイックリプライ)で地域・子供の人数・年収を順番に聞いていく、
 // 診断フローの状態遷移をまとめたもの。state(line_usersのmode列、JSON文字列)を
 // 1ステップずつ進めながら、最終的にdiagnosis.tsのdiagnose()に渡す値を組み立てる。
+import { TOKYO_WARDS } from "@/lib/diagnosis";
 
 export const REGIONS: { name: string; prefectures: string[] }[] = [
   { name: "北海道・東北", prefectures: ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
@@ -12,13 +13,9 @@ export const REGIONS: { name: string; prefectures: string[] }[] = [
   { name: "九州・沖縄", prefectures: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] },
 ];
 
-export const WARD_AREAS: { name: string; wards: string[] }[] = [
-  { name: "都心エリア", wards: ["千代田区", "中央区", "港区", "新宿区", "文京区", "台東区"] },
-  { name: "城東エリア", wards: ["墨田区", "江東区", "荒川区", "足立区", "葛飾区", "江戸川区"] },
-  { name: "城南エリア", wards: ["品川区", "目黒区", "大田区", "世田谷区", "渋谷区"] },
-  { name: "城西エリア", wards: ["中野区", "杉並区", "練馬区"] },
-  { name: "城北エリア", wards: ["豊島区", "北区", "板橋区"] },
-];
+// LINEのクイックリプライは1メッセージ最大13個までなので、23区を2ページに分けて出す。
+// 「都心/城東」のようなエリア名は馴染みがない人も多いので使わず、単純にページ送りする
+export const WARD_PAGES: string[][] = [TOKYO_WARDS.slice(0, 12), TOKYO_WARDS.slice(12)];
 
 export const CHILD_COUNT_OPTIONS = [
   { label: "1人", value: 1 },
@@ -40,8 +37,7 @@ export const INCOME_BRACKET_OPTIONS = [
 export type DiagFlowState =
   | { step: "region" }
   | { step: "prefecture"; region: string }
-  | { step: "ward_area" ; prefecture: string }
-  | { step: "ward"; prefecture: string; wardArea: string }
+  | { step: "ward"; prefecture: string }
   | { step: "children"; prefecture: string; ward?: string }
   | { step: "income"; prefecture: string; ward?: string; numChildren: number };
 
