@@ -37,14 +37,14 @@ const MENU_SUB_LINKS = [
   { icon: IconFileText, label: "利用規約", href: "/terms" },
 ];
 
-// ホームページ上部のロゴ+ハンバーガーメニュー。メニューはヘッダー直下に
-// 開く小さめのドロップダウンにして、全画面に差し替わる唐突さを避ける
+// ホームページ上部のロゴ+ハンバーガーメニュー。メニューは左寄せで画面の
+// 6割程度の幅だけ覆うドロワーにして、全幅オーバーレイの圧迫感を避ける
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative -mx-4 mb-5">
-      <div className="flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
+    <>
+      <div className="mb-5 -mx-4 flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
         <div className="flex items-center gap-1.5">
           <BearParentChild size={42} />
           <div className="text-left">
@@ -56,57 +56,72 @@ export function SiteHeader() {
         </div>
         <button
           type="button"
-          aria-label={open ? "メニューを閉じる" : "メニューを開く"}
-          onClick={() => setOpen((v) => !v)}
+          aria-label="メニューを開く"
+          onClick={() => setOpen(true)}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white"
         >
-          {open ? (
-            <IconX size={18} className="text-[#5F5E5A]" />
-          ) : (
-            <IconMenu2 size={18} className="text-[#5F5E5A]" />
-          )}
+          <IconMenu2 size={18} className="text-[#5F5E5A]" />
         </button>
       </div>
 
       {open && (
         <>
-          {/* 裏の画面をうっすら暗くして、外側タップで閉じられるようにする */}
+          {/* 裏の画面をうっすら暗くして、タップで閉じられるようにする */}
           <button
             type="button"
             aria-label="メニューを閉じる"
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-40 bg-black/15"
+            className="fixed inset-0 z-40 bg-black/25"
           />
-          <div className="absolute top-full right-0 left-0 z-50 flex flex-col gap-1 rounded-b-2xl bg-[var(--background)] px-4 pt-2 pb-3 shadow-lg">
-            {MENU_LINKS.map(({ icon: Icon, label, href }) => (
-              <Link
-                key={label}
-                href={href}
+          <div className="fixed inset-y-0 left-0 z-50 flex w-[62%] max-w-[280px] flex-col overflow-y-auto bg-[var(--background)] px-4 pt-4 pb-5 shadow-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <BearParentChild size={32} />
+                <p className={`${zenMaruGothic.className} text-lg leading-tight text-[#D85A30]`}>
+                  ハハナビ
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-label="メニューを閉じる"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]"
               >
-                <Icon size={18} className="text-[#5F5E5A]" />
-                <p className="flex-1 text-sm font-medium">{label}</p>
-                <IconChevronRight size={16} className="text-[#888780]" />
-              </Link>
-            ))}
+                <IconX size={16} className="text-[#5F5E5A]" />
+              </button>
+            </div>
 
-            <div className="mt-2 mb-1 h-px bg-[#E3E0D6]" />
+            <div className="flex flex-col gap-1">
+              {MENU_LINKS.map(({ icon: Icon, label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-xl bg-[#F1EFE8] px-3 py-2.5"
+                >
+                  <Icon size={16} className="shrink-0 text-[#5F5E5A]" />
+                  <p className="flex-1 text-sm font-medium">{label}</p>
+                  <IconChevronRight size={14} className="shrink-0 text-[#888780]" />
+                </Link>
+              ))}
 
-            {MENU_SUB_LINKS.map(({ icon: Icon, label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 rounded-xl px-3.5 py-2"
-              >
-                <Icon size={16} className="text-[#888780]" />
-                <p className="flex-1 text-sm text-[#5F5E5A]">{label}</p>
-              </Link>
-            ))}
+              <div className="mt-2 mb-1 h-px bg-[#E3E0D6]" />
+
+              {MENU_SUB_LINKS.map(({ icon: Icon, label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-xl px-3 py-2"
+                >
+                  <Icon size={14} className="shrink-0 text-[#888780]" />
+                  <p className="flex-1 text-xs text-[#5F5E5A]">{label}</p>
+                </Link>
+              ))}
+            </div>
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }
