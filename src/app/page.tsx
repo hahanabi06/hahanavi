@@ -295,7 +295,7 @@ export default async function Home() {
             <div>
               <p className="text-sm font-medium text-[#712B13]">士業の方へ</p>
               <p className="text-xs text-[#993C1D]">
-                シングルマザーのお悩み・困りごとのサポートをしてくれる方はこちら
+                お悩み相談でのご協力はこちら
               </p>
             </div>
             <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
