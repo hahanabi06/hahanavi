@@ -34,7 +34,7 @@ export async function BearGreeting() {
   const lines = splitLines(await getTodaysMessage());
 
   return (
-    <div className="mb-9 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
+    <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
       <BearParentChild size={56} />
       <p className="text-base leading-relaxed">
         {lines.map((line, i) => (
