@@ -414,6 +414,20 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
       programId: "koutou-shokugyou-kunren",
     });
 
+    // 資格取得支援と同じ仲間の制度(どちらも「申し込んで初めて使える」もので、対象となりそうな
+    // 制度とは分けて案内する)
+    for (const studySupportId of ["jiritsu-shien-kyouiku-kunren", "koutou-gakkou-sotsugyou-nintei-shien"]) {
+      const studyProgram = programs.find((p) => p.id === studySupportId);
+      if (studyProgram) {
+        items.push({
+          name: studyProgram.name,
+          status: "要確認",
+          note: studyProgram.kumaNote ?? "",
+          programId: studyProgram.id,
+        });
+      }
+    }
+
     const jrProgram = programs.find((p) => p.id === "jr-teikiken-waribiki");
     if (jrProgram) {
       items.push({
@@ -448,6 +462,18 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         programId: loanProgram.id,
       });
     }
+  }
+
+  // 児童手当: 所得制限なしで全世帯対象だが、金額が子の年齢・第何子かで変わり今の質問だけでは
+  // 正確な金額が出せないため、給付額の計算には入れず案内のみ
+  const jidouTeateProgram = programs.find((p) => p.id === "jidou-teate");
+  if (jidouTeateProgram) {
+    items.push({
+      name: jidouTeateProgram.name,
+      status: "要確認",
+      note: jidouTeateProgram.kumaNote ?? "",
+      programId: jidouTeateProgram.id,
+    });
   }
 
   const koujoProgram = programs.find((p) => p.id === "hitorioya-koujo");
