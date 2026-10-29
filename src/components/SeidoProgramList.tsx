@@ -183,7 +183,7 @@ export function SeidoProgramList({ programs }: { programs: Program[] }) {
       <ProgramGroup
         title={`${prefecture}にお住まいなら使える制度`}
         items={prefectureItems}
-        emptyMessage={`47都道府県すべて調べたけど、${prefecture}独自の上乗せ制度は見つからなかったよ(国の制度は上の「全国」欄をチェックしてね)。`}
+        emptyMessage={`今のところ${prefecture}独自の上乗せ制度は見つけられてないよ(国の制度は上の「全国」欄をチェックしてね)。見つかり次第追加していくね。`}
       />
       {isTokyo && (
         <ProgramGroup
