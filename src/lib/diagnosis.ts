@@ -36,9 +36,10 @@ export type BenefitResult = {
   name: string;
   status: "全部支給" | "一部支給" | "対象外" | "要確認";
   note: string; // kumaNoteがあればそれ、無ければ簡潔な説明
-  monthlyYen?: number; // 全部支給の確定額
-  monthlyYenRange?: { min: number; max: number }; // 一部支給の概算レンジ
-  isReduction?: boolean; // 現金給付じゃなく「費用が軽くなる」系の制度か
+  monthlyYen?: number; // 全部支給の確定額(現金給付のみ。見出しの合計に使う)
+  monthlyYenRange?: { min: number; max: number }; // 一部支給の概算レンジ(現金給付のみ)
+  yearlyYen?: number; // 保険料軽減・免除など、年額のほうが分かりやすい制度用(見出しの現金合計には含めない)
+  reductionKind?: "medical" | "insurance" | "pension"; // 費用軽減系の制度の種類(見出しの文言出し分け用)
   office?: string; // 対象となりそうな制度を窓口ごとに束ねるための簡易カテゴリ
   window?: string;
   programId?: string;
@@ -61,7 +62,7 @@ type IncomeAmountTable = {
   amountPerChild?: number;
 };
 
-type DiagnosisRule = {
+type CashDiagnosisRule = {
   scope: "national" | "tokyo" | "tokyo_ward";
   fullSupport: IncomeAmountTable;
   partialSupport?: {
@@ -77,6 +78,28 @@ type DiagnosisRule = {
   };
 };
 
+type InsuranceReductionRule = {
+  scope: "national";
+  kind: "insurance_reduction";
+  nationalAverageBaseYen: number; // 全国平均の均等割+平等割(年額、目安計算のベース)
+  tiers: {
+    label: string;
+    rate: number;
+    rateWithYoungChild: number;
+    limitManYen?: number; // 7割軽減のような定額しきい値
+    limitFormula?: { base: number; perMember: number }; // 5割・2割軽減のような人数連動しきい値
+  }[];
+};
+
+type PensionExemptionRule = {
+  scope: "national";
+  kind: "pension_exemption";
+  monthlyPremiumYen: number;
+  specialLimitManYen: number;
+};
+
+type DiagnosisRule = CashDiagnosisRule | InsuranceReductionRule | PensionExemptionRule;
+
 type ProgramWithRule = {
   id: string;
   name: string;
@@ -91,6 +114,7 @@ type PrefectureProgram = {
   headline?: string;
   layer: string;
   prefecture?: string;
+  wardsAvailable?: "all" | string[];
 };
 
 const programs = programsData.programs as unknown as (ProgramWithRule & PrefectureProgram)[];
@@ -121,7 +145,7 @@ function diagnoseRuleBasedProgram(
   office: string,
   extraNote: string
 ): BenefitResult {
-  const rule = program.diagnosisRule!;
+  const rule = program.diagnosisRule as CashDiagnosisRule;
   const fullLimit = limitForCount(
     rule.fullSupport.limitByChildren,
     rule.fullSupport.extraLimitPerChild,
@@ -178,6 +202,67 @@ function diagnoseRuleBasedProgram(
   };
 }
 
+// 国民健康保険料の軽減(均等割・平等割のみ対象)。実際の保険料は自治体ごとに違うため、
+// 全国平均(厚労省『国民健康保険事業年報』)をベースにした「めやす」として年額を出す
+function diagnoseKokuhoKeigen(
+  program: ProgramWithRule,
+  count: number,
+  income: number,
+  office: string
+): BenefitResult | null {
+  const rule = program.diagnosisRule as InsuranceReductionRule;
+  const members = count + 1; // ひとり親(本人)+子供の人数を加入者数とみなす
+
+  for (const tier of rule.tiers) {
+    const limit =
+      tier.limitManYen ??
+      (tier.limitFormula ? tier.limitFormula.base + tier.limitFormula.perMember * members : null);
+    if (limit === null) continue;
+    if (income < limit) {
+      const estimatedYen = Math.round(rule.nationalAverageBaseYen * tier.rate);
+      return {
+        name: program.name,
+        status: "全部支給",
+        note: `${tier.label}の対象になりそうです。未就学のお子さんがいる場合はさらに軽減されるよ。全国平均ベースの目安だから、正確な金額はお住まいの窓口で確認してね`,
+        yearlyYen: estimatedYen,
+        reductionKind: "insurance",
+        office,
+        window: program.window,
+        programId: program.id,
+      };
+    }
+  }
+  return null; // どの軽減にも該当しない場合は案内しない(軽減が無いだけで制度自体は使えるため対象外表示はしない)
+}
+
+// 国民年金保険料の免除(ひとり親・寡婦等の特例基準、令和8年度保険料ベース)
+function diagnosePensionExemption(
+  program: ProgramWithRule,
+  income: number,
+  office: string
+): BenefitResult {
+  const rule = program.diagnosisRule as PensionExemptionRule;
+  if (income < rule.specialLimitManYen) {
+    const yearlyYen = rule.monthlyPremiumYen * 12;
+    return {
+      name: program.name,
+      status: "全部支給",
+      note: `${program.kumaNote ?? "国民年金保険料が全額免除になりそうです"}(自動では適用されないので窓口での申請が必要だよ)`,
+      yearlyYen,
+      reductionKind: "pension",
+      office,
+      window: program.window,
+      programId: program.id,
+    };
+  }
+  return {
+    name: program.name,
+    status: "対象外",
+    note: `年収${rule.specialLimitManYen.toLocaleString()}万円未満の方が対象だけど、今回の年収(${income.toLocaleString()}万円)だと基準を超えてるみたい。一般の減免基準(所得や扶養人数による段階免除)は別にあるから、気になる場合は窓口で確認してね`,
+    programId: program.id,
+  };
+}
+
 export function diagnose(input: ParsedInput): DiagnosisResult {
   const items: BenefitResult[] = [];
   const missingInfo: string[] = [];
@@ -194,6 +279,8 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   const income = input.incomeManYen!;
   const KOSODATE_OFFICE = "区市町村役場の子育て支援課";
   const IRYOHI_OFFICE = "区市町村役場の医療費助成担当";
+  const KOKUHO_OFFICE = "区市町村役場の国民健康保険担当";
+  const NENKIN_OFFICE = "区市町村役場の国民年金担当、または年金事務所";
 
   // 児童扶養手当(国の制度、全国どこでも対象)
   const fuyouProgram = programs.find((p) => p.id === "jidou-fuyou-teate")!;
@@ -201,18 +288,12 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   items.push(fuyouResult);
   if (fuyouResult.monthlyYen) totalMonthlyYen += fuyouResult.monthlyYen;
 
-  // 一部支給の判定にも使うため、しきい値だけ再計算(資格取得支援の案内に流用)
-  const partialLimit = fuyouProgram.diagnosisRule!.partialSupport
-    ? limitForCount(
-        fuyouProgram.diagnosisRule!.partialSupport!.limitByChildren,
-        fuyouProgram.diagnosisRule!.partialSupport!.extraLimitPerChild,
-        count
-      )
-    : limitForCount(
-        fuyouProgram.diagnosisRule!.fullSupport.limitByChildren,
-        fuyouProgram.diagnosisRule!.fullSupport.extraLimitPerChild,
-        count
-      );
+  const fuyouRule = fuyouProgram.diagnosisRule as CashDiagnosisRule;
+  // 一部支給の判定にも使うため、しきい値だけ再計算(資格取得支援・交通系の案内に流用)
+  const partialLimit = fuyouRule.partialSupport
+    ? limitForCount(fuyouRule.partialSupport.limitByChildren, fuyouRule.partialSupport.extraLimitPerChild, count)
+    : limitForCount(fuyouRule.fullSupport.limitByChildren, fuyouRule.fullSupport.extraLimitPerChild, count);
+  const fuyouIsEligible = income < partialLimit;
 
   // 児童育成手当・マル親(東京都独自、都内在住なら対象)
   if (input.isTokyo) {
@@ -230,7 +311,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
     // マル親医療費助成: 23区それぞれの所得基準で判定(ward指定のある区のみ基準が異なる)
     if (input.ward) {
       const maruoyaProgram = programs.find((p) => p.id === "maruoya-iryouhi")!;
-      const rule = maruoyaProgram.diagnosisRule!;
+      const rule = maruoyaProgram.diagnosisRule as CashDiagnosisRule;
       const useWardOverride = rule.wardOverride?.wards.includes(input.ward) ?? false;
       const table = useWardOverride ? rule.wardOverride! : rule.fullSupport;
       const limit = limitForCount(table.limitByChildren, table.extraLimitPerChild, count);
@@ -240,7 +321,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
           name: maruoyaProgram.name,
           status: "全部支給",
           note: maruoyaProgram.kumaNote ?? "医療費の自己負担がほぼ無料になりそうです",
-          isReduction: true,
+          reductionKind: "medical",
           office: IRYOHI_OFFICE,
           window: maruoyaProgram.window,
           programId: maruoyaProgram.id,
@@ -259,6 +340,25 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         status: "要確認",
         note: "医療費の自己負担が軽くなる制度です。区が分かるとここも診断できます",
       });
+    }
+
+    // 区市町村独自の制度(千代田区の中高生世代応援手当など)も、分かる場合は案内する
+    if (input.ward) {
+      const municipalPrograms = programs.filter(
+        (p) =>
+          (p.layer === "municipal" || p.layer === "prefecture_municipal") &&
+          p.id !== "maruoya-iryouhi" &&
+          (p.wardsAvailable === "all" ||
+            (Array.isArray(p.wardsAvailable) && p.wardsAvailable.includes(input.ward!)))
+      );
+      for (const p of municipalPrograms) {
+        items.push({
+          name: p.name,
+          status: "要確認",
+          note: `${input.ward}独自の制度だよ。${p.headline ?? ""}。詳しい条件はリンクで確認してね`,
+          programId: p.id,
+        });
+      }
     }
   } else if (input.prefecture) {
     // 東京都以外: その県独自の上乗せ制度があれば案内のみ(所得条件が複雑/別の質問が必要なため自動判定はしない)
@@ -289,8 +389,21 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
     });
   }
 
-  // 児童扶養手当の対象(全部・一部支給どちらか)なら、資格取得支援もセットで案内
-  if (income < partialLimit) {
+  // 国民健康保険料の軽減(全国共通、所得が基準内なら案内)
+  const kokuhoProgram = programs.find((p) => p.id === "kokuho-keigen");
+  if (kokuhoProgram?.diagnosisRule) {
+    const kokuhoResult = diagnoseKokuhoKeigen(kokuhoProgram, count, income, KOKUHO_OFFICE);
+    if (kokuhoResult) items.push(kokuhoResult);
+  }
+
+  // 国民年金保険料の免除(全国共通)
+  const nenkinProgram = programs.find((p) => p.id === "kokumin-nenkin-menjo");
+  if (nenkinProgram?.diagnosisRule) {
+    items.push(diagnosePensionExemption(nenkinProgram, income, NENKIN_OFFICE));
+  }
+
+  // 児童扶養手当の対象なら一緒に使える制度(資格取得支援・交通系の割引・貸付金)をまとめて案内
+  if (fuyouIsEligible) {
     const kunrenProgram = programs.find((p) => p.id === "koutou-shokugyou-kunren");
     items.push({
       name: "資格取得支援(高等職業訓練促進給付金 等)",
@@ -300,6 +413,41 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         "看護師・介護福祉士などの資格取得を目指すなら、月7万円台〜14万円の生活費支援が受けられる可能性があります。資格に興味があれば詳細ページをチェックしてね",
       programId: "koutou-shokugyou-kunren",
     });
+
+    const jrProgram = programs.find((p) => p.id === "jr-teikiken-waribiki");
+    if (jrProgram) {
+      items.push({
+        name: jrProgram.name,
+        status: "要確認",
+        note: jrProgram.kumaNote ?? "JRの通勤定期券が3割引で購入できるよ",
+        programId: jrProgram.id,
+      });
+    }
+
+    if (input.isTokyo) {
+      const toeiProgram = programs.find((p) => p.id === "toei-koutsu-muryo-josyaken");
+      if (toeiProgram) {
+        items.push({
+          name: toeiProgram.name,
+          status: "要確認",
+          note: toeiProgram.kumaNote ?? "都バスや都営地下鉄が無料になる乗車券がもらえるよ",
+          programId: toeiProgram.id,
+        });
+      }
+    }
+  }
+
+  // 貸付系(借りるお金なので「もらえる」制度とは分けて、誰にでも案内)
+  for (const loanId of ["boshifushikahu-fukushi-shikin", "hitorioya-juutaku-shien-shikin"]) {
+    const loanProgram = programs.find((p) => p.id === loanId);
+    if (loanProgram) {
+      items.push({
+        name: loanProgram.name,
+        status: "要確認",
+        note: loanProgram.kumaNote ?? "返済が必要な貸付金だよ",
+        programId: loanProgram.id,
+      });
+    }
   }
 
   const koujoProgram = programs.find((p) => p.id === "hitorioya-koujo");

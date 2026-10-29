@@ -209,7 +209,9 @@ function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
     ? `: 月${item.monthlyYen.toLocaleString()}円`
     : item.monthlyYenRange
       ? `: 月${item.monthlyYenRange.min.toLocaleString()}円〜${item.monthlyYenRange.max.toLocaleString()}円`
-      : "";
+      : item.yearlyYen
+        ? `: 年${item.yearlyYen.toLocaleString()}円くらい`
+        : "";
   const linkLine = item.programId
     ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
     : "";
@@ -239,7 +241,9 @@ function formatDiagnosisReply(input: ParsedInput): string {
       maxTotal += item.monthlyYenRange.max;
     }
   }
-  const hasReduction = eligible.some((i) => i.isReduction);
+  const medicalItem = eligible.find((i) => i.reductionKind === "medical");
+  const insuranceItem = eligible.find((i) => i.reductionKind === "insurance");
+  const pensionItem = eligible.find((i) => i.reductionKind === "pension");
 
   const headlineLines: string[] = [];
   if (maxTotal > 0) {
@@ -249,8 +253,14 @@ function formatDiagnosisReply(input: ParsedInput): string {
         : `💰 月${minTotal.toLocaleString()}円〜${maxTotal.toLocaleString()}円くらいの給付が受けられそうだよ`
     );
   }
-  if (hasReduction) {
+  if (medicalItem) {
     headlineLines.push("🏥 医療費の自己負担もほぼ無料になりそう");
+  }
+  if (insuranceItem?.yearlyYen) {
+    headlineLines.push(`🧾 国保の保険料も年${insuranceItem.yearlyYen.toLocaleString()}円くらい軽くなりそう(全国平均ベースの目安)`);
+  }
+  if (pensionItem?.yearlyYen) {
+    headlineLines.push(`📋 国民年金保険料が年${pensionItem.yearlyYen.toLocaleString()}円くらい免除されそう`);
   }
   const headline = headlineLines.length > 0 ? headlineLines.join("\n") + "\n\n" : "";
 
@@ -266,7 +276,7 @@ function formatDiagnosisReply(input: ParsedInput): string {
     const groupBlocks = Array.from(officeGroups.entries()).map(
       ([office, items]) => `▶ 申請窓口: ${office}\n${items.map(itemLine).join("\n")}`
     );
-    sections.push(`【対象となりそうな制度】\n\n${groupBlocks.join("\n\n")}`);
+    sections.push(`【対象となりそうな制度】(申請窓口ごとに整理したよ)\n\n${groupBlocks.join("\n\n")}`);
   }
 
   if (info.length > 0) {

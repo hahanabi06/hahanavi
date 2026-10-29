@@ -609,9 +609,15 @@
       "window": "お住まいの区市町村役場の国民年金担当窓口、または年金事務所",
       "kumaNote": "年金の支払いがきついときに使える制度だよ。収入が低ければ、全額払わなくて良くなることもあるよ。自動ではならないから、窓口で申請してね。",
       "verifyNeeded": false,
-      "note": "制度自体は日本年金機構(国)が所管。135万円という寡婦・ひとり親・障害者向け特例基準は神戸市公式ページで一次情報として確認(全国共通の国の制度のため自治体問わず同条件)。一般の全額免除基準(35万円×(扶養人数+1)+32万円)とは別枠の基準であることに注意",
+      "note": "制度自体は日本年金機構(国)が所管。135万円という寡婦・ひとり親・障害者向け特例基準は神戸市公式ページで一次情報として確認(全国共通の国の制度のため自治体問わず同条件)。一般の全額免除基準(35万円×(扶養人数+1)+32万円)とは別枠の基準であることに注意 令和8年度の国民年金保険料(月額17,920円)は日本年金機構公式ページ(https://www.nenkin.go.jp/service/kokunen/hokenryo/hokenryo.html)で確認(2026-10-29)。",
       "source": "https://www.city.kobe.lg.jp/a52670/kurashi/support/pension/03.html",
-      "verifiedAt": "2026-10-29"
+      "verifiedAt": "2026-10-29",
+      "diagnosisRule": {
+        "scope": "national",
+        "kind": "pension_exemption",
+        "monthlyPremiumYen": 17920,
+        "specialLimitManYen": 135
+      }
     },
     {
       "id": "kokuho-keigen",
@@ -642,7 +648,38 @@
       "verifyNeeded": false,
       "source": "https://www.city.taito.lg.jp/kurashi/zeikin/kokuminkenkohoken/hokenryou/20130605110058881.html",
       "verifiedAt": "2026-10-28",
-      "note": "軽減判定の基準額(43万円等)は地方税法で全国一律に定められている。ただし実際の保険料率は自治体ごとに異なるため、最終的な保険料額は窓口で確認を。また軽減対象は均等割・平等割のみで所得割は軽減されない。ごく一部の市町村では実施困難と認められる場合に例外的な軽減率を用いることがある(2026-10-29 Web調査で確認)"
+      "note": "軽減判定の基準額(43万円等)は地方税法で全国一律に定められている。ただし実際の保険料率は自治体ごとに異なるため、最終的な保険料額は窓口で確認を。また軽減対象は均等割・平等割のみで所得割は軽減されない。ごく一部の市町村では実施困難と認められる場合に例外的な軽減率を用いることがある(2026-10-29 Web調査で確認)",
+      "diagnosisRule": {
+        "scope": "national",
+        "kind": "insurance_reduction",
+        "nationalAverageBaseYen": 82427,
+        "tiers": [
+          {
+            "label": "7割軽減(未就学児がいる世帯は8.5割)",
+            "limitManYen": 43,
+            "rate": 0.7,
+            "rateWithYoungChild": 0.85
+          },
+          {
+            "label": "5割軽減(未就学児がいる世帯は7.5割)",
+            "limitFormula": {
+              "base": 43,
+              "perMember": 31
+            },
+            "rate": 0.5,
+            "rateWithYoungChild": 0.75
+          },
+          {
+            "label": "2割軽減(未就学児がいる世帯は6割)",
+            "limitFormula": {
+              "base": 43,
+              "perMember": 57
+            },
+            "rate": 0.2,
+            "rateWithYoungChild": 0.6
+          }
+        ]
+      }
     },
     {
       "id": "jyutaku-shien",
