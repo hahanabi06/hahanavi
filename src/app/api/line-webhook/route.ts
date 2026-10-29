@@ -212,7 +212,10 @@ function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
       : item.yearlyYen
         ? `: 年${item.yearlyYen.toLocaleString()}円くらい`
         : "";
-  return `・${item.name}${amount}\n  ${item.note}`;
+  const linkLine = item.programId
+    ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
+    : "";
+  return `・${item.name}${amount}\n  ${item.note}${linkLine}`;
 }
 
 function formatDiagnosisReply(input: ParsedInput): string {
@@ -275,7 +278,7 @@ function formatDiagnosisReply(input: ParsedInput): string {
       officeGroups.get(key)!.push(item);
     }
     const groupBlocks = Array.from(officeGroups.entries()).map(
-      ([office, items]) => `▶ 申請窓口: ${office}\n${items.map(itemLine).join("\n")}`
+      ([office, items]) => `▶ 申請窓口: ${office}\n\n${items.map(itemLine).join("\n\n")}`
     );
     sections.push(`【対象となりそうな制度】(申請窓口ごとに整理したよ)\n\n${groupBlocks.join("\n\n")}`);
   }
