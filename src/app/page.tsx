@@ -149,7 +149,7 @@ export default async function Home() {
   return (
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 pt-6 pb-5">
+        <main className="w-full max-w-md px-4 pb-5">
         {/* header: ロゴ + メニュー(中身は未実装) */}
         <div className="mb-5 -mx-4 flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
           <div className="flex items-center gap-1.5">
