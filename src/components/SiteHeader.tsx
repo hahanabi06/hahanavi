@@ -28,7 +28,7 @@ const MENU_LINKS = [
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
   { icon: IconCertificate, label: "おすすめ資格", href: "/shikaku" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
-  { icon: IconBuildingStore, label: "企業の方へ", href: "/company" },
+  { icon: IconBuildingStore, label: "企業・士業の方へ", href: "/company" },
 ];
 
 const MENU_SUB_LINKS = [

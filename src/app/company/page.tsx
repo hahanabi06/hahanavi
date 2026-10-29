@@ -3,7 +3,7 @@ import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { CompanyInquiryForm } from "@/components/CompanyInquiryForm";
 import { BearParentChild } from "@/components/Bear";
 
-export const metadata = { title: "企業の方へ | ハハナビ" };
+export const metadata = { title: "企業・士業の方へ | ハハナビ" };
 
 export default function CompanyPage() {
   return (
