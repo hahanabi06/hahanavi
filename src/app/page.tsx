@@ -191,7 +191,7 @@ export default async function Home() {
         <BearGreeting />
 
         {/* 支援制度 */}
-        <section className="mb-6">
+        <section className="mb-9">
           <SectionHeading title="支援制度" href="/seido" />
           <div className="mb-2.5 flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PROGRAMS.map((p) => (
@@ -209,7 +209,7 @@ export default async function Home() {
         </section>
 
         {/* 記事: 新着2件 + ランダム3件 */}
-        <section className="mb-6">
+        <section className="mb-9">
           <SectionHeading title="お役立ち記事" href="/kiji" linkLabel="記事一覧へ" />
 
           <div className="flex flex-col gap-1.5">
@@ -250,7 +250,7 @@ export default async function Home() {
         </section>
 
         {/* おすすめ資格 */}
-        <section className="mb-6">
+        <section className="mb-9">
           <SectionHeading title="おすすめ資格" href="/shikaku" linkLabel="資格制度一覧へ" />
           <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {QUALIFICATIONS.map(({ icon: Icon, label, note }) => (
@@ -268,7 +268,7 @@ export default async function Home() {
         </section>
 
         {/* 求人 */}
-        <section className="mb-6">
+        <section className="mb-9">
           <p className="mb-2.5 text-base font-medium">ママ向け求人</p>
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#F1EFE8] px-3.5 py-3.5">
             <IconBriefcase size={18} className="text-[#888780]" />
