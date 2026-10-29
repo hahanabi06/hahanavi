@@ -281,7 +281,7 @@ export default async function Home() {
             className="mb-5 flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
           >
             <div>
-              <p className="text-sm font-medium text-[#712B13]">企業・士業の方へ</p>
+              <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
               <p className="text-xs text-[#993C1D]">
                 採用・PRでのご活用はこちら
               </p>
