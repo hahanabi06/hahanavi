@@ -20,6 +20,7 @@ export type Program = {
   areaBadgeOverride?: string;
   category: string;
   wardsAvailable?: "all" | string[];
+  hitorioyaOnly?: boolean; // 未指定(true扱い)ならひとり親限定、falseなら子育て世帯全般が対象
 };
 
 // 市区町村レベル(マル親など)の詳細データがあるのは今のところ東京都23区だけ。
@@ -68,11 +69,18 @@ function ProgramCard({ p }: { p: Program }) {
       className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
     >
       <div className="flex flex-col gap-1">
-        <span
-          className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_BADGE[type]}`}
-        >
-          {type}
-        </span>
+        <div className="flex items-center gap-1">
+          <span
+            className={`w-fit rounded-full px-2 py-0.5 text-[10px] font-medium ${TYPE_BADGE[type]}`}
+          >
+            {type}
+          </span>
+          {p.hitorioyaOnly === false && (
+            <span className="w-fit rounded-full bg-[#E9F3EA] px-2 py-0.5 text-[10px] font-medium text-[#1F7A3D]">
+              限定なし
+            </span>
+          )}
+        </div>
         <p className="text-sm leading-snug">{p.name}</p>
       </div>
       <div className="flex shrink-0 items-center gap-1">

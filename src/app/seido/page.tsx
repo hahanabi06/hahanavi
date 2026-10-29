@@ -18,6 +18,7 @@ const programs: Program[] = programsData.programs.map((p) => ({
   areaBadgeOverride: p.areaBadgeOverride,
   category: p.category,
   wardsAvailable: p.wardsAvailable as Program["wardsAvailable"],
+  hitorioyaOnly: p.hitorioyaOnly,
 }));
 
 export default function SeidoListPage() {

@@ -82,6 +82,7 @@ type Program = {
   exceptions?: Exception[];
   exampleSource?: ExampleSource;
   wardsAvailable?: "all" | string[];
+  hitorioyaOnly?: boolean; // 未指定(true扱い)ならひとり親限定、falseなら子育て世帯全般が対象
 };
 
 const programs = programsData.programs as Program[];
@@ -157,6 +158,11 @@ export default async function ProgramDetailPage({
           <span className="inline-block w-fit rounded-full bg-[#E6F1FB] px-3 py-1 text-xs font-medium text-[#0C447C]">
             もらえるエリア: {areaBadgeFor(program)}
           </span>
+          {program.hitorioyaOnly === false && (
+            <span className="inline-block w-fit rounded-full bg-[#E9F3EA] px-3 py-1 text-xs font-medium text-[#1F7A3D]">
+              ひとり親限定じゃない
+            </span>
+          )}
         </div>
         <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <h1 className="text-xl leading-snug font-medium">{program.name}</h1>
