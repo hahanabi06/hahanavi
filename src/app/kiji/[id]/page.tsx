@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { IconMessageCircle2 } from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
 import { ViewTracker } from "@/components/ViewTracker";
-import { PageHeader } from "@/components/PageHeader";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
@@ -23,9 +22,8 @@ export default async function ArticlePage({
 
   return (
     <>
-      <PageHeader backHref="/kiji" backLabel="記事一覧へ" />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 pt-16 pb-5">
+      <main className="w-full max-w-md px-4 pt-6 pb-5">
         <ViewTracker articleId={id} />
 
         <h1 className="mb-5 text-lg leading-snug font-medium">{article.title}</h1>

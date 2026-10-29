@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { IconChevronRight } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
-import { PageHeader } from "@/components/PageHeader";
 import { listPublishedArticles } from "@/lib/notion";
 
 export default async function KijiListPage() {
@@ -9,9 +8,9 @@ export default async function KijiListPage() {
 
   return (
     <>
-      <PageHeader title="お役立ち記事" backHref="/" />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-      <main className="w-full max-w-md px-4 pt-20 pb-5">
+      <main className="w-full max-w-md px-4 pt-6 pb-5">
+        <h1 className="mb-4 text-lg font-medium">お役立ち記事</h1>
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={40} />
           <p className="text-sm leading-relaxed">
