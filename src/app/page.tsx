@@ -1,5 +1,4 @@
 import {
-  IconMenu2,
   IconCoin,
   IconNews,
   IconCertificate,
@@ -10,6 +9,7 @@ import {
   IconHeartHandshake,
   IconKeyboard,
   IconMessageCircle2,
+  IconMenu2,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { Zen_Maru_Gothic } from "next/font/google";
@@ -148,10 +148,11 @@ export default async function Home() {
   const { articles: homeArticles } = await getHomeArticles();
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#E6F1FB]">
-        <div className="grid w-full max-w-md grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-3">
-          <IconMenu2 size={20} className="text-[#5F5E5A]" />
-          <div className="flex items-center justify-center gap-1.5">
+      <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
+        <main className="w-full max-w-md px-4 pt-6 pb-5">
+        {/* logo + 企業向け導線(ハンバーガー) */}
+        <div className="mb-1 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
             <BearParentChild size={42} />
             <div className="text-left">
               <p
@@ -164,13 +165,15 @@ export default async function Home() {
               </p>
             </div>
           </div>
-          <Link href="/company" className="text-xs text-[#888780]">
-            企業の方へ
+          <Link
+            href="/company"
+            aria-label="企業の方へ"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]"
+          >
+            <IconMenu2 size={18} className="text-[#5F5E5A]" />
           </Link>
         </div>
-      </header>
-      <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 pt-20 pb-5">
+
         {/* icon nav */}
         <div className="my-5 flex justify-between">
           {NAV_ITEMS.map(({ icon: Icon, label }) => (
@@ -293,6 +296,19 @@ export default async function Home() {
             追加
           </a>
         </div>
+
+        <Link
+          href="/company"
+          className="mb-5 flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
+        >
+          <div>
+            <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
+            <p className="text-xs text-[#993C1D]">
+              採用・PRでのご活用はこちら
+            </p>
+          </div>
+          <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
+        </Link>
 
         <div className="mt-5 flex justify-center gap-3 text-xs text-[#888780]">
           <Link href="/about">運営者情報</Link>
