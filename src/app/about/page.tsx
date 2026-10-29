@@ -1,13 +1,14 @@
-import { PageHeader } from "@/components/PageHeader";
+import { SiteLogoLink } from "@/components/SiteLogoLink";
 
 export const metadata = { title: "運営者情報 | ハハナビ" };
 
 export default function About() {
   return (
     <>
-      <PageHeader title="運営者情報" backHref="/" fixed={false} />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 py-5">
+        <main className="w-full max-w-md px-4 pt-6 pb-5">
+          <SiteLogoLink />
+          <h1 className="mb-4 text-lg font-medium">運営者情報</h1>
           <div className="flex flex-col gap-4 text-base leading-relaxed">
             <section>
               <h2 className="mb-1 font-medium">サイト名</h2>
