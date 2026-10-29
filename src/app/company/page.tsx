@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PageHeader } from "@/components/PageHeader";
+import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { CompanyInquiryForm } from "@/components/CompanyInquiryForm";
 import { BearParentChild } from "@/components/Bear";
 
@@ -8,9 +8,9 @@ export const metadata = { title: "企業の方へ | ハハナビ" };
 export default function CompanyPage() {
   return (
     <>
-      <PageHeader title="企業の方へ" backHref="/" fixed={false} />
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
-        <main className="w-full max-w-md px-4 py-5">
+        <main className="w-full max-w-md px-4 pt-6 pb-5">
+          <SiteLogoLink />
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
             <BearParentChild size={44} />
             <p className="text-base leading-relaxed">
@@ -61,18 +61,13 @@ export default function CompanyPage() {
           </section>
 
           <section className="mb-5">
-            <p className="mb-2.5 text-lg font-medium">運営者について</p>
-            <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-3">
-              <p className="text-base leading-relaxed">
-                一橋大学経済学部を卒業後、マーケティングリサーチ会社、日系大手コンサルティングファームの公共分野における新規事業部門、外資系コンサルティングファームの戦略部門を経て、ハハナビを立ち上げました。
-              </p>
-              <Link
-                href="/about"
-                className="mt-1.5 inline-block text-sm text-[#185FA5] underline"
-              >
-                運営者情報を見る
-              </Link>
-            </div>
+            <Link
+              href="/about"
+              className="flex items-center justify-between rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-base leading-relaxed"
+            >
+              運営情報はこちら
+              <span className="text-sm text-[#185FA5] underline">見る</span>
+            </Link>
           </section>
 
           <section className="mb-5">

@@ -150,8 +150,8 @@ export default async function Home() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
-        {/* logo + 企業向け導線(ハンバーガー) */}
-        <div className="mb-1 flex items-center justify-between">
+        {/* header: ロゴ + メニュー(中身は未実装) */}
+        <div className="mb-5 -mx-4 flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
           <div className="flex items-center gap-1.5">
             <BearParentChild size={42} />
             <div className="text-left">
@@ -165,13 +165,13 @@ export default async function Home() {
               </p>
             </div>
           </div>
-          <Link
-            href="/company"
-            aria-label="企業の方へ"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]"
+          <button
+            type="button"
+            aria-label="メニュー"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white"
           >
             <IconMenu2 size={18} className="text-[#5F5E5A]" />
-          </Link>
+          </button>
         </div>
 
         {/* icon nav */}
@@ -297,18 +297,20 @@ export default async function Home() {
           </a>
         </div>
 
-        <Link
-          href="/company"
-          className="mb-5 flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
-        >
-          <div>
-            <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
-            <p className="text-xs text-[#993C1D]">
-              採用・PRでのご活用はこちら
-            </p>
-          </div>
-          <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
-        </Link>
+        <div className="mt-8 border-t border-[#E3E0D6] pt-5">
+          <Link
+            href="/company"
+            className="mb-5 flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
+          >
+            <div>
+              <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
+              <p className="text-xs text-[#993C1D]">
+                採用・PRでのご活用はこちら
+              </p>
+            </div>
+            <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
+          </Link>
+        </div>
 
         <div className="mt-5 flex justify-center gap-3 text-xs text-[#888780]">
           <Link href="/about">運営者情報</Link>
