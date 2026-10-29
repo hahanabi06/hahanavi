@@ -19,6 +19,7 @@ type Program = {
     | "prefecture"
     | "municipal"
     | "prefecture_municipal";
+  prefecture?: string;
   areaBadgeOverride?: string;
   category: string;
   wardsAvailable?: "all" | string[];
@@ -26,7 +27,8 @@ type Program = {
 
 const programs = programsData.programs as Program[];
 
-// 今のところ詳しいデータがあるのは東京都・台東区だけ。他の都道府県・区市町村は今後広げていく
+// 市区町村レベル(マル親など)の詳細データがあるのは今のところ東京都23区だけ。
+// 都道府県レベルの制度は prefectureItems 側でprograms.jsonのprefecture一致で判定する
 const SUPPORTED_PREFECTURE = "東京都";
 
 // お金がもらえる制度 → 負担が軽くなる制度 → 返済が必要な貸付、の順でわかりやすく並べる
@@ -125,9 +127,9 @@ export default function SeidoListPage() {
 
   const isTokyo = prefecture === SUPPORTED_PREFECTURE;
 
-  const prefectureItems = isTokyo
-    ? programs.filter((p) => p.layer === "prefecture")
-    : [];
+  const prefectureItems = programs.filter(
+    (p) => p.layer === "prefecture" && p.prefecture === prefecture,
+  );
 
   const municipalItems = isTokyo
     ? programs.filter(

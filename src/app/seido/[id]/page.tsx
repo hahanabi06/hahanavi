@@ -62,6 +62,7 @@ type Program = {
     | "prefecture"
     | "municipal"
     | "prefecture_municipal";
+  prefecture?: string;
   areaBadgeOverride?: string;
   category: string;
   amount: string;
@@ -93,6 +94,14 @@ const AREA_BADGE: Record<Program["layer"], string> = {
   prefecture_municipal: "東京都・台東区",
 };
 
+// prefectureフィールドがある場合はそれを優先(都道府県が増えてきたため、
+// 「prefecture層=東京都」決め打ちのAREA_BADGEだけだと他県の制度を誤表示してしまう)
+function areaBadgeFor(program: Program): string {
+  if (program.areaBadgeOverride) return program.areaBadgeOverride;
+  if (program.prefecture) return program.prefecture;
+  return AREA_BADGE[program.layer];
+}
+
 const CATEGORY_LABEL: Record<string, string> = {
   cash: "現金給付",
   medical: "医療費の助成",
@@ -119,7 +128,17 @@ export default async function ProgramDetailPage({
   const program = programs.find((p) => p.id === id);
   if (!program) return notFound();
 
-  const related = programs.filter((p) => p.id !== program.id).slice(0, 2);
+  // 都道府県・市区町村限定の制度は、関連制度も同じエリアのものを優先して出す
+  // (例: 大阪府の制度の関連に東京都の制度を出すと混乱するため)
+  const otherPrograms = programs.filter((p) => p.id !== program.id);
+  const sameAreaFirst = program.prefecture
+    ? [...otherPrograms].sort((a, b) => {
+        const aMatch = a.prefecture === program.prefecture ? 0 : 1;
+        const bMatch = b.prefecture === program.prefecture ? 0 : 1;
+        return aMatch - bMatch;
+      })
+    : otherPrograms;
+  const related = sameAreaFirst.slice(0, 2);
 
   return (
     <>
@@ -131,7 +150,7 @@ export default async function ProgramDetailPage({
             {CATEGORY_LABEL[program.category] ?? program.category}
           </span>
           <span className="inline-block w-fit rounded-full bg-[#E6F1FB] px-3 py-1 text-xs font-medium text-[#0C447C]">
-            もらえるエリア: {program.areaBadgeOverride ?? AREA_BADGE[program.layer]}
+            もらえるエリア: {areaBadgeFor(program)}
           </span>
         </div>
         <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">

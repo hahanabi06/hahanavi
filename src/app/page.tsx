@@ -69,12 +69,15 @@ function SectionHeading({
   );
 }
 
-// src/data/programs.json の全項目をカードとして使う。名前と見出し用の短い金額(headline)はデータ側で管理。
-const PROGRAMS = programsData.programs.map((p) => ({
-  id: p.id,
-  label: p.name,
-  value: p.headline ?? "詳細を見る",
-}));
+// トップページはまだ都道府県セレクターが無いので、全国制度+東京都の制度だけを表示する
+// (他県の制度を都道府県未選択のまま全員に見せると混乱を招くため)。
+const PROGRAMS = programsData.programs
+  .filter((p) => !p.prefecture || p.prefecture === "東京都")
+  .map((p) => ({
+    id: p.id,
+    label: p.name,
+    value: p.headline ?? "詳細を見る",
+  }));
 
 type RankItem = { text: string; href: string | null; isNew?: boolean };
 
