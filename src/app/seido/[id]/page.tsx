@@ -78,7 +78,7 @@ type Program = {
   verifyNeeded: boolean;
   source?: string;
   verifiedAt?: string;
-  exception?: Exception;
+  exceptions?: Exception[];
   exampleSource?: ExampleSource;
 };
 
@@ -320,33 +320,40 @@ export default async function ProgramDetailPage({
             )}
           </div>
 
-          {program.exception && (
+          {program.exceptions && program.exceptions.length > 0 && (
             <div className="border-b border-[#D3D1C7] py-3">
               <dt className="mb-2 text-sm font-medium text-[#5F5E5A]">
                 さらに上乗せがある市区町村
               </dt>
-              <dd className="rounded-xl bg-[#EAF7EE] px-3.5 py-3">
-                <span className="mb-1.5 inline-block rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#1F7A3D]">
-                  {program.exception.area}だけの上乗せ
-                </span>
-                <p className="text-sm leading-snug font-semibold text-[#1F7A3D]">
-                  {program.exception.description}
-                </p>
-                {program.exception.note && (
-                  <p className="mt-1.5 text-[11px] leading-relaxed text-[#3C8C57]">
-                    {program.exception.note}
-                  </p>
-                )}
-                {program.exception.source && (
-                  <a
-                    href={program.exception.source}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1.5 inline-block text-[11px] text-[#1F7A3D] underline"
+              <dd className="flex flex-col gap-2">
+                {program.exceptions.map((exception, i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl bg-[#EAF7EE] px-3.5 py-3"
                   >
-                    {program.exception.area}の条例・公式ページで確認する
-                  </a>
-                )}
+                    <span className="mb-1.5 inline-block rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#1F7A3D]">
+                      {exception.area}だけの上乗せ
+                    </span>
+                    <p className="text-sm leading-snug font-semibold text-[#1F7A3D]">
+                      {exception.description}
+                    </p>
+                    {exception.note && (
+                      <p className="mt-1.5 text-[11px] leading-relaxed text-[#3C8C57]">
+                        {exception.note}
+                      </p>
+                    )}
+                    {exception.source && (
+                      <a
+                        href={exception.source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1.5 inline-block text-[11px] text-[#1F7A3D] underline"
+                      >
+                        {exception.area}の条例・公式ページで確認する
+                      </a>
+                    )}
+                  </div>
+                ))}
               </dd>
             </div>
           )}
