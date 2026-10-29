@@ -23,6 +23,7 @@ export type ArticleSummary = {
   id: string;
   title: string;
   createdTime: string;
+  category?: string;
 };
 
 export async function listPublishedArticles(): Promise<ArticleSummary[]> {
@@ -42,6 +43,7 @@ export async function listPublishedArticles(): Promise<ArticleSummary[]> {
     id: page.id,
     title: plainText(page.properties?.Name?.title) || "無題",
     createdTime: page.created_time,
+    category: page.properties?.カテゴリ?.select?.name,
   }));
 }
 

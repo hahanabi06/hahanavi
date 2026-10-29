@@ -3,6 +3,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { listPublishedArticles } from "@/lib/notion";
+import { ArticleEyecatch } from "@/lib/article-category";
 
 export default async function KijiListPage() {
   const articles = await listPublishedArticles().catch(() => []);
@@ -26,9 +27,10 @@ export default async function KijiListPage() {
               <Link
                 key={a.id}
                 href={`/kiji/${a.id}`}
-                className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
+                className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3 py-2"
               >
-                <p className="text-sm leading-snug">{a.title}</p>
+                <ArticleEyecatch category={a.category} size={48} />
+                <p className="flex-1 text-sm leading-snug">{a.title}</p>
                 <IconChevronRight size={16} className="shrink-0 text-[#888780]" />
               </Link>
             ))}

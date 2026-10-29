@@ -20,6 +20,7 @@ import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import { listPublishedArticles } from "@/lib/notion";
 import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
+import { ArticleEyecatch } from "@/lib/article-category";
 
 const zenMaruGothic = Zen_Maru_Gothic({
   subsets: ["latin"],
@@ -78,14 +79,19 @@ const PROGRAMS = programsData.programs
     value: p.headline ?? "詳細を見る",
   }));
 
-type RankItem = { text: string; href: string | null; isNew?: boolean };
+type RankItem = {
+  text: string;
+  href: string | null;
+  isNew?: boolean;
+  category?: string;
+};
 
 const DUMMY_ARTICLES: RankItem[] = [
-  { text: "え、知らなかった。月1万円以上増える制度があった", href: null },
-  { text: "資格、お金かけずに取れるって本当?", href: null },
-  { text: "元夫からの連絡、もう無視していいよ", href: null },
-  { text: "ひとりで抱え込まなくていいよ、って話", href: null },
-  { text: "知らないと損する、使える制度まとめ", href: null },
+  { text: "え、知らなかった。月1万円以上増える制度があった", href: null, category: "お金" },
+  { text: "資格、お金かけずに取れるって本当?", href: null, category: "資格・仕事" },
+  { text: "元夫からの連絡、もう無視していいよ", href: null, category: "人間関係・気持ち" },
+  { text: "ひとりで抱え込まなくていいよ、って話", href: null, category: "人間関係・気持ち" },
+  { text: "知らないと損する、使える制度まとめ", href: null, category: "お金" },
 ];
 
 function shuffle<T>(items: T[]): T[] {
@@ -111,10 +117,11 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
       text: a.title,
       href: `/kiji/${a.id}`,
       isNew: true,
+      category: a.category,
     }));
     const randomRest = shuffle(articles.slice(2))
       .slice(0, 3)
-      .map((a) => ({ text: a.title, href: `/kiji/${a.id}` }));
+      .map((a) => ({ text: a.title, href: `/kiji/${a.id}`, category: a.category }));
 
     const combined: RankItem[] = [...newest, ...randomRest];
     const padded = [...combined];
@@ -217,10 +224,15 @@ export default async function Home() {
             {homeArticles.map((item) => {
               const inner = (
                 <>
-                  <p className="line-clamp-2 flex-1 text-base leading-snug">{item.text}</p>
-                  {item.isNew && (
+                  <ArticleEyecatch category={item.category} size={48} />
+                  <p className="line-clamp-2 flex-1 text-sm leading-snug">{item.text}</p>
+                  {item.isNew ? (
                     <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
                       NEW
+                    </span>
+                  ) : (
+                    <span className="shrink-0 rounded-full bg-[#E6F1FB] px-2 py-0.5 text-[10px] font-semibold text-[#0C447C]">
+                      PICK
                     </span>
                   )}
                 </>
@@ -229,14 +241,14 @@ export default async function Home() {
                 <Link
                   key={item.text}
                   href={item.href}
-                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
+                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3 py-2"
                 >
                   {inner}
                 </Link>
               ) : (
                 <div
                   key={item.text}
-                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
+                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3 py-2"
                 >
                   {inner}
                 </div>
