@@ -31,7 +31,8 @@
     <path d="M-28,21 L-38,40 L-10,21"/>
   </g>
   <text x="1875" y="490" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="92" font-weight="700" fill="#2B2924">ご意見箱</text>
-  <text x="1875" y="580" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="60" fill="#5F5E5A">悩み・要望を送る</text>
+  <text x="1875" y="568" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="55" fill="#5F5E5A">ハハナビへのご要望や</text>
+  <text x="1875" y="628" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="55" fill="#5F5E5A">今のお悩みについて送ってね</text>
 
   <!-- cell 3 (bottom-right): 支援制度診断 -->
   <circle cx="1875" cy="1143" r="86" fill="#F3C65C"/>
@@ -43,14 +44,16 @@
   <text x="1875" y="1413" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="58" fill="#5F5E5A">ボタンをポチポチ、</text>
   <text x="1875" y="1478" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="58" fill="#5F5E5A">関係する制度をまとめて表示</text>
 
-  <!-- cell 4 (bottom-left): 申請制度更新リマインダー(クリップボード+チェック) -->
+  <!-- cell 4 (bottom-left): 申請制度更新リマインダー(クリップボード+チェック)。開発中のためボタンは無反応にしてある -->
   <circle cx="625" cy="1143" r="86" fill="#1F7A3D"/>
   <g transform="translate(625,1143)" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none">
     <rect x="-38" y="-48" width="76" height="96" rx="10"/>
     <rect x="-16" y="-58" width="32" height="16" rx="6" fill="white" stroke="none"/>
     <path d="M-18 -4 L-5 10 L20 -22"/>
   </g>
+  <rect x="970" y="878" width="220" height="68" rx="34" fill="#8A6D1F"/>
+  <text x="1080" y="922" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="44" font-weight="700" fill="white">開発中</text>
   <text x="625" y="1333" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="80" font-weight="700" fill="#2B2924">申請制度更新リマインダー</text>
-  <text x="625" y="1413" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="58" fill="#5F5E5A">申請制度を登録しておくと</text>
+  <text x="625" y="1413" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="58" fill="#5F5E5A">支援制度を登録しておくと</text>
   <text x="625" y="1478" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="58" fill="#5F5E5A">更新時期にお知らせ</text>
 </svg>

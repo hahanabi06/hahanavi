@@ -63,7 +63,9 @@ const AREAS = [
   },
   {
     bounds: { x: 0, y: 843, width: 1250, height: 843 },
-    action: { type: "postback", data: "action=register_program", displayText: "申請制度更新リマインダー" },
+    // 開発中(更新時期のリマインド送信は未実装)のため、タップしても何も起きないようにdisplayTextも付けない。
+    // 登録フロー自体はaction=register_programとしてroute.tsに実装済みなので、公開するときはdataをそれに戻すだけでよい
+    action: { type: "postback", data: "action=register_program_wip" },
   },
 ];
 
