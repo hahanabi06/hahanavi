@@ -95,9 +95,11 @@ function ProgramCard({ p }: { p: Program }) {
 function ProgramGroup({
   title,
   items,
+  emptyMessage,
 }: {
   title: string;
   items: Program[];
+  emptyMessage: string;
 }) {
   return (
     <section className="mb-6">
@@ -110,7 +112,7 @@ function ProgramGroup({
         </div>
       ) : (
         <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-4 text-xs leading-relaxed text-[#888780]">
-          準備中です。今は東京都のデータのみ対応しています。エリアを順次広げていくので、もうしばらく待ってね。
+          {emptyMessage}
         </div>
       )}
     </section>
@@ -180,15 +182,21 @@ export default function SeidoListPage() {
           )}
         </div>
 
-        <ProgramGroup title="全国どこでも使える制度" items={nationalItems} />
+        <ProgramGroup
+          title="全国どこでも使える制度"
+          items={nationalItems}
+          emptyMessage="準備中です。もうしばらく待ってね。"
+        />
         <ProgramGroup
           title={`${prefecture}にお住まいなら使える制度`}
           items={prefectureItems}
+          emptyMessage={`47都道府県すべて調べたけど、${prefecture}独自の上乗せ制度は見つからなかったよ(国の制度は上の「全国」欄をチェックしてね)。`}
         />
         {isTokyo && (
           <ProgramGroup
             title={`${ward}にお住まいなら使える制度`}
             items={municipalItems}
+            emptyMessage="準備中です。今は東京都23区のデータのみ対応しています。もうしばらく待ってね。"
           />
         )}
 
