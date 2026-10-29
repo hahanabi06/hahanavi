@@ -32,11 +32,14 @@ export function parseMessage(text: string): ParsedInput {
   return { ward, prefecture, isTokyo, numChildren, incomeManYen };
 }
 
-type BenefitResult = {
+export type BenefitResult = {
   name: string;
   status: "全部支給" | "一部支給" | "対象外" | "要確認";
-  note: string;
-  monthlyYen?: number;
+  note: string; // kumaNoteがあればそれ、無ければ簡潔な説明
+  monthlyYen?: number; // 全部支給の確定額
+  monthlyYenRange?: { min: number; max: number }; // 一部支給の概算レンジ
+  isReduction?: boolean; // 現金給付じゃなく「費用が軽くなる」系の制度か
+  office?: string; // 対象となりそうな制度を窓口ごとに束ねるための簡易カテゴリ
   window?: string;
   programId?: string;
 };
@@ -78,6 +81,7 @@ type ProgramWithRule = {
   id: string;
   name: string;
   window: string;
+  kumaNote?: string;
   diagnosisRule?: DiagnosisRule;
 };
 
@@ -110,12 +114,11 @@ function amountForCount(table: IncomeAmountTable, count: number): number {
   return base + over * extra;
 }
 
-const JIDO_FUYOU_WINDOW = "お住まいの区の子育て支援課給付担当";
-
 function diagnoseRuleBasedProgram(
   program: ProgramWithRule,
   count: number,
   income: number,
+  office: string,
   extraNote: string
 ): BenefitResult {
   const rule = program.diagnosisRule!;
@@ -130,41 +133,47 @@ function diagnoseRuleBasedProgram(
     return {
       name: program.name,
       status: "全部支給",
-      note: `全部支給の対象になりそうです${extraNote}`,
+      note: program.kumaNote ?? `全部支給の対象になりそうです${extraNote}`,
       monthlyYen: amount > 0 ? amount : undefined,
+      office,
       window: program.window,
       programId: program.id,
     };
   }
 
-  if (rule.partialSupport) {
-    const partialLimit = limitForCount(
-      rule.partialSupport.limitByChildren,
-      rule.partialSupport.extraLimitPerChild,
-      count
-    );
-    if (income < partialLimit) {
-      const extra = Math.max(0, count - 1);
-      const minAmount =
-        rule.partialSupport.amountRangeBase.min +
-        extra * rule.partialSupport.extraAmountRangePerChild.min;
-      const maxAmount =
-        rule.partialSupport.amountRangeBase.max +
-        extra * rule.partialSupport.extraAmountRangePerChild.max;
-      return {
-        name: program.name,
-        status: "一部支給",
-        note: `一部支給の対象になりそうです。所得に応じて月${minAmount.toLocaleString()}円〜${maxAmount.toLocaleString()}円の間になります`,
-        window: program.window,
-        programId: program.id,
-      };
-    }
+  // 一部支給の枠もある場合は、そちらのしきい値まで判定する。無い場合もfullLimitを
+  // 「本当は対象になる基準」として対象外メッセージに使う
+  const effectiveLimit = rule.partialSupport
+    ? limitForCount(
+        rule.partialSupport.limitByChildren,
+        rule.partialSupport.extraLimitPerChild,
+        count
+      )
+    : fullLimit;
+
+  if (rule.partialSupport && income < effectiveLimit) {
+    const extra = Math.max(0, count - 1);
+    const minAmount =
+      rule.partialSupport.amountRangeBase.min +
+      extra * rule.partialSupport.extraAmountRangePerChild.min;
+    const maxAmount =
+      rule.partialSupport.amountRangeBase.max +
+      extra * rule.partialSupport.extraAmountRangePerChild.max;
+    return {
+      name: program.name,
+      status: "一部支給",
+      note: program.kumaNote ?? `一部支給の対象になりそうです${extraNote}`,
+      monthlyYenRange: { min: minAmount, max: maxAmount },
+      office,
+      window: program.window,
+      programId: program.id,
+    };
   }
 
   return {
     name: program.name,
     status: "対象外",
-    note: `所得基準を超えているため対象外の可能性が高いです${extraNote}`,
+    note: `年収${effectiveLimit.toLocaleString()}万円未満の方が対象だけど、今回の年収(${income.toLocaleString()}万円)だと基準を超えてるみたい`,
     programId: program.id,
   };
 }
@@ -183,10 +192,12 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
 
   const count = input.numChildren!;
   const income = input.incomeManYen!;
+  const KOSODATE_OFFICE = "区市町村役場の子育て支援課";
+  const IRYOHI_OFFICE = "区市町村役場の医療費助成担当";
 
   // 児童扶養手当(国の制度、全国どこでも対象)
   const fuyouProgram = programs.find((p) => p.id === "jidou-fuyou-teate")!;
-  const fuyouResult = diagnoseRuleBasedProgram(fuyouProgram, count, income, "");
+  const fuyouResult = diagnoseRuleBasedProgram(fuyouProgram, count, income, KOSODATE_OFFICE, "");
   items.push(fuyouResult);
   if (fuyouResult.monthlyYen) totalMonthlyYen += fuyouResult.monthlyYen;
 
@@ -210,6 +221,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
       ikuseiProgram,
       count,
       income,
+      KOSODATE_OFFICE,
       "(東京都在住なら区を問わず対象)"
     );
     items.push(ikuseiResult);
@@ -227,7 +239,9 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         items.push({
           name: maruoyaProgram.name,
           status: "全部支給",
-          note: `医療費の自己負担がほぼ無料になりそうです(${input.ward}の基準)`,
+          note: maruoyaProgram.kumaNote ?? "医療費の自己負担がほぼ無料になりそうです",
+          isReduction: true,
+          office: IRYOHI_OFFICE,
           window: maruoyaProgram.window,
           programId: maruoyaProgram.id,
         });
@@ -235,7 +249,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         items.push({
           name: maruoyaProgram.name,
           status: "対象外",
-          note: `所得基準を超えているため対象外の可能性が高いです(${input.ward}の基準)`,
+          note: `年収${limit.toLocaleString()}万円未満の方が対象だけど、今回の年収(${income.toLocaleString()}万円)だと基準を超えてるみたい(${input.ward}の基準)`,
           programId: maruoyaProgram.id,
         });
       }
@@ -277,19 +291,24 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
 
   // 児童扶養手当の対象(全部・一部支給どちらか)なら、資格取得支援もセットで案内
   if (income < partialLimit) {
+    const kunrenProgram = programs.find((p) => p.id === "koutou-shokugyou-kunren");
     items.push({
       name: "資格取得支援(高等職業訓練促進給付金 等)",
       status: "要確認",
-      note: "看護師・介護福祉士などの資格取得を目指すなら、月7万円台〜14万円の生活費支援が受けられる可能性があります。資格に興味があれば詳細ページをチェックしてね",
-      window: JIDO_FUYOU_WINDOW,
+      note:
+        kunrenProgram?.kumaNote ??
+        "看護師・介護福祉士などの資格取得を目指すなら、月7万円台〜14万円の生活費支援が受けられる可能性があります。資格に興味があれば詳細ページをチェックしてね",
       programId: "koutou-shokugyou-kunren",
     });
   }
 
+  const koujoProgram = programs.find((p) => p.id === "hitorioya-koujo");
   items.push({
     name: "ひとり親控除(税制)",
     status: "要確認",
-    note: "所得税・住民税が35万円控除される制度です(本人所得500万円以下が条件)。確定申告か年末調整で忘れずに申請してね",
+    note:
+      koujoProgram?.kumaNote ??
+      "所得税・住民税が35万円控除される制度です(本人所得500万円以下が条件)。確定申告か年末調整で忘れずに申請してね",
     programId: "hitorioya-koujo",
   });
 

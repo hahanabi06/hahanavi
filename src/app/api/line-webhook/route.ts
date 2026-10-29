@@ -163,6 +163,18 @@ async function logLineMessage(
   }
 }
 
+function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
+  const amount = item.monthlyYen
+    ? `: 月${item.monthlyYen.toLocaleString()}円`
+    : item.monthlyYenRange
+      ? `: 月${item.monthlyYenRange.min.toLocaleString()}円〜${item.monthlyYenRange.max.toLocaleString()}円`
+      : "";
+  const linkLine = item.programId
+    ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
+    : "";
+  return `・${item.name}${amount}\n  ${item.note}${linkLine}`;
+}
+
 function formatDiagnosisReply(input: ParsedInput): string {
   const result = diagnose(input);
 
@@ -170,21 +182,61 @@ function formatDiagnosisReply(input: ParsedInput): string {
     return `ごめん、もう少し情報が欲しいな。足りないのは「${result.missingInfo.join("、")}」だよ。\n\n例: 台東区 子供2人 年収300万\nみたいな形で送ってみてね。`;
   }
 
-  const lines = result.items.map((item) => {
-    const amount = item.monthlyYen ? `(月${item.monthlyYen.toLocaleString()}円)` : "";
-    const windowLine = item.window ? `\n  申請窓口: ${item.window}` : "";
-    const linkLine = item.programId
-      ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
-      : "";
-    return `・${item.name}: ${item.status}${amount}\n  ${item.note}${windowLine}${linkLine}`;
-  });
+  const eligible = result.items.filter((i) => i.status === "全部支給" || i.status === "一部支給");
+  const info = result.items.filter((i) => i.status === "要確認");
+  const ineligible = result.items.filter((i) => i.status === "対象外");
 
-  const totalLine =
-    result.totalMonthlyYen > 0
-      ? `\n\nここまでで合計、月${result.totalMonthlyYen.toLocaleString()}円くらいになりそうだよ(全部支給の制度のみの概算)。`
-      : "";
+  // 見出し: もらえそうな給付額のレンジと、費用軽減系の制度があるかどうか
+  let minTotal = 0;
+  let maxTotal = 0;
+  for (const item of eligible) {
+    if (item.monthlyYen) {
+      minTotal += item.monthlyYen;
+      maxTotal += item.monthlyYen;
+    } else if (item.monthlyYenRange) {
+      minTotal += item.monthlyYenRange.min;
+      maxTotal += item.monthlyYenRange.max;
+    }
+  }
+  const hasReduction = eligible.some((i) => i.isReduction);
 
-  return `診断したよ!\n\n${lines.join("\n\n")}${totalLine}\n\nこれは年収ベースの概算だよ。正式な判定は窓口で確認してね。`;
+  const headlineLines: string[] = [];
+  if (maxTotal > 0) {
+    headlineLines.push(
+      minTotal === maxTotal
+        ? `💰 月${minTotal.toLocaleString()}円くらいの給付が受けられそうだよ`
+        : `💰 月${minTotal.toLocaleString()}円〜${maxTotal.toLocaleString()}円くらいの給付が受けられそうだよ`
+    );
+  }
+  if (hasReduction) {
+    headlineLines.push("🏥 医療費の自己負担もほぼ無料になりそう");
+  }
+  const headline = headlineLines.length > 0 ? headlineLines.join("\n") + "\n\n" : "";
+
+  // 対象となりそうな制度を、窓口ごとに束ねて表示
+  const sections: string[] = [];
+  if (eligible.length > 0) {
+    const officeGroups = new Map<string, typeof eligible>();
+    for (const item of eligible) {
+      const key = item.office ?? "その他";
+      if (!officeGroups.has(key)) officeGroups.set(key, []);
+      officeGroups.get(key)!.push(item);
+    }
+    const groupBlocks = Array.from(officeGroups.entries()).map(
+      ([office, items]) => `▶ 申請窓口: ${office}\n${items.map(itemLine).join("\n")}`
+    );
+    sections.push(`【対象となりそうな制度】\n\n${groupBlocks.join("\n\n")}`);
+  }
+
+  if (info.length > 0) {
+    sections.push(`【こんな制度もあるよ】\n\n${info.map(itemLine).join("\n\n")}`);
+  }
+
+  if (ineligible.length > 0) {
+    sections.push(`【今回は対象外かもしれない制度】\n\n${ineligible.map((i) => `・${i.name}\n  ${i.note}`).join("\n\n")}`);
+  }
+
+  return `診断したよ!\n\n${headline}${sections.join("\n\n")}\n\nこれは年収ベースの概算だよ。正式な判定は窓口で確認してね。`;
 }
 
 export async function POST(req: NextRequest) {
