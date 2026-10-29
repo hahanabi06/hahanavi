@@ -24,7 +24,10 @@ const FEEDBACK_PROMPT =
   "どんな悩みか教えてね。制度のことでも、記事のリクエストでも、サイトへの要望でも、どんなことでも大丈夫だよ。\n\n(この後に送ってもらった内容を、そのままご意見として記録するね)";
 const FEEDBACK_THANKS = "送ってくれてありがとう!参考にさせてもらうね。\n\nまた制度を診断したいときは、下のメニューの「支援制度診断」からもう一度試してね。";
 
-// ボタンでの診断フロー(state=line_usersのmode列、DiagFlowStateをJSON化したもの)の質問文とボタン生成
+// ボタンでの診断フロー(state=line_usersのmode列、DiagFlowStateをJSON化したもの)の質問文とボタン生成。
+// 「戻る」を正しい行き先に出せるよう、現在のstate(region/prefecture/wardの引き継ぎ内容)を見て組み立てる
+const BACK_BUTTON_LABEL = "戻る";
+
 function regionQuickReply(): QuickReplyItem[] {
   return REGIONS.map((r) => ({ label: r.name, data: `diag_region=${r.name}` }));
 }
@@ -45,6 +48,44 @@ function childrenQuickReply(): QuickReplyItem[] {
 }
 function incomeQuickReply(): QuickReplyItem[] {
   return INCOME_BRACKET_OPTIONS.map((i) => ({ label: i.label, data: `diag_income=${i.value}` }));
+}
+
+// state.stepだけを見て、その質問文とボタン一覧を組み立てる。
+// 「戻る」から呼ばれたときも、このまま同じUIを再現できるようにする
+function promptForStep(state: DiagFlowState): { text: string; items: QuickReplyItem[] } {
+  switch (state.step) {
+    case "region":
+      return {
+        text: "お住まいの地方を選んでね",
+        items: regionQuickReply(),
+      };
+    case "prefecture":
+      return {
+        text: `${state.region}のどこ?`,
+        items: [
+          ...prefectureQuickReply(state.region!),
+          { label: BACK_BUTTON_LABEL, data: "diag_back=region" },
+        ],
+      };
+    case "ward":
+      return {
+        text: "どの区?",
+        items: [...wardQuickReply(0), { label: BACK_BUTTON_LABEL, data: "diag_back=prefecture" }],
+      };
+    case "children":
+      return {
+        text: "お子さんは何人?",
+        items: [
+          ...childrenQuickReply(),
+          { label: BACK_BUTTON_LABEL, data: state.ward ? "diag_back=ward" : "diag_back=prefecture" },
+        ],
+      };
+    case "income":
+      return {
+        text: "年収(世帯の合計)はどれくらい?",
+        items: [...incomeQuickReply(), { label: BACK_BUTTON_LABEL, data: "diag_back=children" }],
+      };
+  }
 }
 
 async function getLineUserMode(
@@ -295,14 +336,8 @@ export async function POST(req: NextRequest) {
       }
 
       if (event.type === "postback" && event.postback?.data === "action=diagnose") {
-        const tasks = [
-          replyToLine(
-            event.replyToken,
-            "お住まいの地方を選んでね(ボタンで答えられない場合は「台東区 子供2人 年収300万」みたいに打ってもOK)",
-            channelAccessToken,
-            regionQuickReply()
-          ),
-        ];
+        const { text, items } = promptForStep({ step: "region" });
+        const tasks = [replyToLine(event.replyToken, text, channelAccessToken, items)];
         if (event.source?.userId) {
           const supabase = getSupabaseServerClient();
           tasks.push(setLineUserMode(supabase, event.source.userId, encodeState({ step: "region" })));
@@ -311,21 +346,31 @@ export async function POST(req: NextRequest) {
         return;
       }
 
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_back=")) {
+        const targetStep = event.postback.data.slice("diag_back=".length) as DiagFlowState["step"];
+        const userId = event.source?.userId;
+        if (!userId) return;
+        const supabase = getSupabaseServerClient();
+        const current = decodeState(await getLineUserMode(supabase, userId));
+        if (!current) return; // 状態が無い(タイムアウト等)場合は何もしない
+
+        const targetState: DiagFlowState = { ...current, step: targetStep };
+        const { text, items } = promptForStep(targetState);
+        await Promise.all([
+          replyToLine(event.replyToken, text, channelAccessToken, items),
+          setLineUserMode(supabase, userId, encodeState(targetState)),
+        ]);
+        return;
+      }
+
       if (event.type === "postback" && event.postback?.data?.startsWith("diag_region=")) {
         const region = event.postback.data.slice("diag_region=".length);
-        const tasks = [
-          replyToLine(
-            event.replyToken,
-            `${region}のどこ?`,
-            channelAccessToken,
-            prefectureQuickReply(region)
-          ),
-        ];
+        const nextState: DiagFlowState = { step: "prefecture", region };
+        const { text, items } = promptForStep(nextState);
+        const tasks = [replyToLine(event.replyToken, text, channelAccessToken, items)];
         if (event.source?.userId) {
           const supabase = getSupabaseServerClient();
-          tasks.push(
-            setLineUserMode(supabase, event.source.userId, encodeState({ step: "prefecture", region }))
-          );
+          tasks.push(setLineUserMode(supabase, event.source.userId, encodeState(nextState)));
         }
         await Promise.all(tasks);
         return;
@@ -333,27 +378,19 @@ export async function POST(req: NextRequest) {
 
       if (event.type === "postback" && event.postback?.data?.startsWith("diag_prefecture=")) {
         const prefecture = event.postback.data.slice("diag_prefecture=".length);
-        if (prefecture === "東京都") {
-          const tasks = [
-            replyToLine(event.replyToken, "どの区?", channelAccessToken, wardQuickReply(0)),
-          ];
-          if (event.source?.userId) {
-            const supabase = getSupabaseServerClient();
-            tasks.push(
-              setLineUserMode(supabase, event.source.userId, encodeState({ step: "ward", prefecture }))
-            );
-          }
-          await Promise.all(tasks);
-          return;
-        }
-        const tasks = [
-          replyToLine(event.replyToken, "お子さんは何人?", channelAccessToken, childrenQuickReply()),
-        ];
-        if (event.source?.userId) {
-          const supabase = getSupabaseServerClient();
-          tasks.push(
-            setLineUserMode(supabase, event.source.userId, encodeState({ step: "children", prefecture }))
-          );
+        const userId = event.source?.userId;
+        const supabase = userId ? getSupabaseServerClient() : null;
+        const current = supabase && userId ? decodeState(await getLineUserMode(supabase, userId)) : null;
+        const region = current?.region;
+
+        const nextState: DiagFlowState =
+          prefecture === "東京都"
+            ? { step: "ward", region, prefecture }
+            : { step: "children", region, prefecture };
+        const { text, items } = promptForStep(nextState);
+        const tasks = [replyToLine(event.replyToken, text, channelAccessToken, items)];
+        if (supabase && userId) {
+          tasks.push(setLineUserMode(supabase, userId, encodeState(nextState)));
         }
         await Promise.all(tasks);
         return;
@@ -361,24 +398,30 @@ export async function POST(req: NextRequest) {
 
       if (event.type === "postback" && event.postback?.data?.startsWith("diag_ward_page=")) {
         const page = parseInt(event.postback.data.slice("diag_ward_page=".length), 10);
-        await replyToLine(event.replyToken, "どの区?", channelAccessToken, wardQuickReply(page));
+        const items = [
+          ...wardQuickReply(page),
+          { label: BACK_BUTTON_LABEL, data: "diag_back=prefecture" },
+        ];
+        await replyToLine(event.replyToken, "どの区?", channelAccessToken, items);
         return;
       }
 
       if (event.type === "postback" && event.postback?.data?.startsWith("diag_ward=")) {
         const ward = event.postback.data.slice("diag_ward=".length);
-        const tasks = [
-          replyToLine(event.replyToken, "お子さんは何人?", channelAccessToken, childrenQuickReply()),
-        ];
-        if (event.source?.userId) {
-          const supabase = getSupabaseServerClient();
-          tasks.push(
-            setLineUserMode(
-              supabase,
-              event.source.userId,
-              encodeState({ step: "children", prefecture: "東京都", ward })
-            )
-          );
+        const userId = event.source?.userId;
+        const supabase = userId ? getSupabaseServerClient() : null;
+        const current = supabase && userId ? decodeState(await getLineUserMode(supabase, userId)) : null;
+
+        const nextState: DiagFlowState = {
+          step: "children",
+          region: current?.region,
+          prefecture: "東京都",
+          ward,
+        };
+        const { text, items } = promptForStep(nextState);
+        const tasks = [replyToLine(event.replyToken, text, channelAccessToken, items)];
+        if (supabase && userId) {
+          tasks.push(setLineUserMode(supabase, userId, encodeState(nextState)));
         }
         await Promise.all(tasks);
         return;
@@ -389,15 +432,13 @@ export async function POST(req: NextRequest) {
         const userId = event.source?.userId;
         if (!userId) return;
         const supabase = getSupabaseServerClient();
-        const currentMode = await getLineUserMode(supabase, userId);
-        const state = decodeState(currentMode);
-        const prefecture = state && "prefecture" in state ? state.prefecture : null;
-        const ward = state && "ward" in state ? state.ward : undefined;
-        if (!prefecture) return; // 想定外の状態からの遷移は無視
+        const current = decodeState(await getLineUserMode(supabase, userId));
+        if (!current?.prefecture) return; // 想定外の状態からの遷移は無視
 
-        const nextState: DiagFlowState = { step: "income", prefecture, ward, numChildren };
+        const nextState: DiagFlowState = { ...current, step: "income", numChildren };
+        const { text, items } = promptForStep(nextState);
         await Promise.all([
-          replyToLine(event.replyToken, "年収(世帯の合計)はどれくらい?", channelAccessToken, incomeQuickReply()),
+          replyToLine(event.replyToken, text, channelAccessToken, items),
           setLineUserMode(supabase, userId, encodeState(nextState)),
         ]);
         return;
@@ -410,7 +451,9 @@ export async function POST(req: NextRequest) {
         const supabase = getSupabaseServerClient();
         const currentMode = await getLineUserMode(supabase, userId);
         const state = decodeState(currentMode);
-        if (!state || state.step !== "income") return; // 想定外の状態からの遷移は無視
+        if (!state || state.step !== "income" || !state.prefecture || state.numChildren === undefined) {
+          return; // 想定外の状態からの遷移は無視
+        }
 
         const parsed: ParsedInput = {
           ward: state.ward ?? null,

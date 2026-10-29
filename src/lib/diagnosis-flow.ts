@@ -14,8 +14,9 @@ export const REGIONS: { name: string; prefectures: string[] }[] = [
 ];
 
 // LINEのクイックリプライは1メッセージ最大13個までなので、23区を2ページに分けて出す。
-// 「都心/城東」のようなエリア名は馴染みがない人も多いので使わず、単純にページ送りする
-export const WARD_PAGES: string[][] = [TOKYO_WARDS.slice(0, 12), TOKYO_WARDS.slice(12)];
+// 「都心/城東」のようなエリア名は馴染みがない人も多いので使わず、単純にページ送りする。
+// 各ページに「次の区を見る」「戻る」ボタンが乗る分を引いて11+12に分割
+export const WARD_PAGES: string[][] = [TOKYO_WARDS.slice(0, 11), TOKYO_WARDS.slice(11)];
 
 export const CHILD_COUNT_OPTIONS = [
   { label: "1人", value: 1 },
@@ -34,12 +35,15 @@ export const INCOME_BRACKET_OPTIONS = [
   { label: "500万円〜", value: 600 },
 ];
 
-export type DiagFlowState =
-  | { step: "region" }
-  | { step: "prefecture"; region: string }
-  | { step: "ward"; prefecture: string }
-  | { step: "children"; prefecture: string; ward?: string }
-  | { step: "income"; prefecture: string; ward?: string; numChildren: number };
+// 1つ前のステップに「戻る」を実装するため、進むときにそれまで選んだ内容を
+// 消さずに引き継いでいく(stepだけ進める/戻すイメージ)
+export type DiagFlowState = {
+  step: "region" | "prefecture" | "ward" | "children" | "income";
+  region?: string;
+  prefecture?: string;
+  ward?: string;
+  numChildren?: number;
+};
 
 export function encodeState(state: DiagFlowState): string {
   return JSON.stringify(state);

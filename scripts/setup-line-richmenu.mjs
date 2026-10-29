@@ -57,7 +57,13 @@ const AREAS = [
   },
   {
     bounds: { x: 1250, y: 843, width: 1250, height: 843 },
-    action: { type: "postback", data: "action=feedback", displayText: "ご意見箱" },
+    // ご意見箱はこの後すぐ自由入力してもらうフローなので、タップ直後にキーボードを自動で開く
+    action: {
+      type: "postback",
+      data: "action=feedback",
+      displayText: "ご意見箱",
+      inputOption: "openKeyboard",
+    },
   },
 ];
 
