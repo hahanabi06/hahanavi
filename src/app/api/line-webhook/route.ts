@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyLineSignature, replyToLine, WELCOME_MESSAGE } from "@/lib/line";
-import { parseMessage, diagnose } from "@/lib/diagnosis";
+import { verifyLineSignature, replyToLine, WELCOME_MESSAGE, type QuickReplyItem } from "@/lib/line";
+import { parseMessage, diagnose, type ParsedInput } from "@/lib/diagnosis";
 import { getSupabaseServerClient } from "@/lib/supabase";
+import {
+  REGIONS,
+  WARD_AREAS,
+  CHILD_COUNT_OPTIONS,
+  INCOME_BRACKET_OPTIONS,
+  encodeState,
+  decodeState,
+  type DiagFlowState,
+} from "@/lib/diagnosis-flow";
 
 type LineEvent = {
   type: string;
@@ -13,9 +22,29 @@ type LineEvent = {
 
 const FEEDBACK_PROMPT =
   "どんな悩みか教えてね。制度のことでも、記事のリクエストでも、サイトへの要望でも、どんなことでも大丈夫だよ。\n\n(この後に送ってもらった内容を、そのままご意見として記録するね)";
-const DIAGNOSIS_PROMPT =
-  "お住まいの地域・お子さんの人数・年収を教えてね。\n\n例: 台東区 子供2人 年収300万\n\nこの形で送ってくれたら診断するよ!";
-const FEEDBACK_THANKS = "送ってくれてありがとう!参考にさせてもらうね。\n\nまた制度を診断したいときは、いつも通り「台東区 子供2人 年収300万」みたいな形で送ってね。";
+const FEEDBACK_THANKS = "送ってくれてありがとう!参考にさせてもらうね。\n\nまた制度を診断したいときは、下のメニューの「支援制度診断」からもう一度試してね。";
+
+// ボタンでの診断フロー(state=line_usersのmode列、DiagFlowStateをJSON化したもの)の質問文とボタン生成
+function regionQuickReply(): QuickReplyItem[] {
+  return REGIONS.map((r) => ({ label: r.name, data: `diag_region=${r.name}` }));
+}
+function prefectureQuickReply(region: string): QuickReplyItem[] {
+  const found = REGIONS.find((r) => r.name === region);
+  return (found?.prefectures ?? []).map((p) => ({ label: p, data: `diag_prefecture=${p}` }));
+}
+function wardAreaQuickReply(): QuickReplyItem[] {
+  return WARD_AREAS.map((a) => ({ label: a.name, data: `diag_ward_area=${a.name}` }));
+}
+function wardQuickReply(areaName: string): QuickReplyItem[] {
+  const found = WARD_AREAS.find((a) => a.name === areaName);
+  return (found?.wards ?? []).map((w) => ({ label: w, data: `diag_ward=${w}` }));
+}
+function childrenQuickReply(): QuickReplyItem[] {
+  return CHILD_COUNT_OPTIONS.map((c) => ({ label: c.label, data: `diag_children=${c.value}` }));
+}
+function incomeQuickReply(): QuickReplyItem[] {
+  return INCOME_BRACKET_OPTIONS.map((i) => ({ label: i.label, data: `diag_income=${i.value}` }));
+}
 
 async function getLineUserMode(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -133,8 +162,7 @@ async function logLineMessage(
   }
 }
 
-function formatDiagnosisReply(text: string): string {
-  const input = parseMessage(text);
+function formatDiagnosisReply(input: ParsedInput): string {
   const result = diagnose(input);
 
   if (result.missingInfo.length > 0) {
@@ -214,13 +242,156 @@ export async function POST(req: NextRequest) {
       }
 
       if (event.type === "postback" && event.postback?.data === "action=diagnose") {
-        const tasks = [replyToLine(event.replyToken, DIAGNOSIS_PROMPT, channelAccessToken)];
+        const tasks = [
+          replyToLine(
+            event.replyToken,
+            "お住まいの地方を選んでね(ボタンで答えられない場合は「台東区 子供2人 年収300万」みたいに打ってもOK)",
+            channelAccessToken,
+            regionQuickReply()
+          ),
+        ];
         if (event.source?.userId) {
           const supabase = getSupabaseServerClient();
-          // ご意見箱モード中にリッチメニューから診断ボタンを押した場合に備えて、モードを解除しておく
-          tasks.push(setLineUserMode(supabase, event.source.userId, null));
+          tasks.push(setLineUserMode(supabase, event.source.userId, encodeState({ step: "region" })));
         }
         await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_region=")) {
+        const region = event.postback.data.slice("diag_region=".length);
+        const tasks = [
+          replyToLine(
+            event.replyToken,
+            `${region}のどこ?`,
+            channelAccessToken,
+            prefectureQuickReply(region)
+          ),
+        ];
+        if (event.source?.userId) {
+          const supabase = getSupabaseServerClient();
+          tasks.push(
+            setLineUserMode(supabase, event.source.userId, encodeState({ step: "prefecture", region }))
+          );
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_prefecture=")) {
+        const prefecture = event.postback.data.slice("diag_prefecture=".length);
+        if (prefecture === "東京都") {
+          const tasks = [
+            replyToLine(event.replyToken, "どのエリア?", channelAccessToken, wardAreaQuickReply()),
+          ];
+          if (event.source?.userId) {
+            const supabase = getSupabaseServerClient();
+            tasks.push(
+              setLineUserMode(
+                supabase,
+                event.source.userId,
+                encodeState({ step: "ward_area", prefecture })
+              )
+            );
+          }
+          await Promise.all(tasks);
+          return;
+        }
+        const tasks = [
+          replyToLine(event.replyToken, "お子さんは何人?", channelAccessToken, childrenQuickReply()),
+        ];
+        if (event.source?.userId) {
+          const supabase = getSupabaseServerClient();
+          tasks.push(
+            setLineUserMode(supabase, event.source.userId, encodeState({ step: "children", prefecture }))
+          );
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_ward_area=")) {
+        const wardArea = event.postback.data.slice("diag_ward_area=".length);
+        const tasks = [
+          replyToLine(event.replyToken, "どの区?", channelAccessToken, wardQuickReply(wardArea)),
+        ];
+        if (event.source?.userId) {
+          const supabase = getSupabaseServerClient();
+          tasks.push(
+            setLineUserMode(
+              supabase,
+              event.source.userId,
+              encodeState({ step: "ward", prefecture: "東京都", wardArea })
+            )
+          );
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_ward=")) {
+        const ward = event.postback.data.slice("diag_ward=".length);
+        const tasks = [
+          replyToLine(event.replyToken, "お子さんは何人?", channelAccessToken, childrenQuickReply()),
+        ];
+        if (event.source?.userId) {
+          const supabase = getSupabaseServerClient();
+          tasks.push(
+            setLineUserMode(
+              supabase,
+              event.source.userId,
+              encodeState({ step: "children", prefecture: "東京都", ward })
+            )
+          );
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_children=")) {
+        const numChildren = parseInt(event.postback.data.slice("diag_children=".length), 10);
+        const userId = event.source?.userId;
+        if (!userId) return;
+        const supabase = getSupabaseServerClient();
+        const currentMode = await getLineUserMode(supabase, userId);
+        const state = decodeState(currentMode);
+        const prefecture = state && "prefecture" in state ? state.prefecture : null;
+        const ward = state && "ward" in state ? state.ward : undefined;
+        if (!prefecture) return; // 想定外の状態からの遷移は無視
+
+        const nextState: DiagFlowState = { step: "income", prefecture, ward, numChildren };
+        await Promise.all([
+          replyToLine(event.replyToken, "年収(世帯の合計)はどれくらい?", channelAccessToken, incomeQuickReply()),
+          setLineUserMode(supabase, userId, encodeState(nextState)),
+        ]);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_income=")) {
+        const incomeManYen = parseInt(event.postback.data.slice("diag_income=".length), 10);
+        const userId = event.source?.userId;
+        if (!userId) return;
+        const supabase = getSupabaseServerClient();
+        const currentMode = await getLineUserMode(supabase, userId);
+        const state = decodeState(currentMode);
+        if (!state || state.step !== "income") return; // 想定外の状態からの遷移は無視
+
+        const parsed: ParsedInput = {
+          ward: state.ward ?? null,
+          prefecture: state.prefecture,
+          isTokyo: state.prefecture === "東京都",
+          numChildren: state.numChildren,
+          incomeManYen,
+        };
+        const reply = formatDiagnosisReply(parsed);
+        await Promise.all([
+          replyToLine(event.replyToken, reply, channelAccessToken),
+          setLineUserMode(supabase, userId, null),
+          touchLineUser(supabase, userId, {
+            text: `[ボタン診断] ${state.prefecture}${state.ward ? " " + state.ward : ""} 子供${state.numChildren}人 年収${incomeManYen}万`,
+            parsed,
+          }),
+        ]);
         return;
       }
 
@@ -244,14 +415,16 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        const reply = formatDiagnosisReply(text);
+        const parsed = parseMessage(text);
+        const reply = formatDiagnosisReply(parsed);
         const tasks = [replyToLine(event.replyToken, reply, channelAccessToken)];
         if (supabase && userId) {
-          const parsed = parseMessage(text);
           tasks.push(
             touchLineUser(supabase, userId, { text, parsed }),
             logLineMessage(supabase, userId, text, parsed)
           );
+          // ボタン診断フローの途中で自由入力された場合、古いフロー状態が残らないようクリアする
+          if (mode) tasks.push(setLineUserMode(supabase, userId, null));
         }
         await Promise.all(tasks);
       }

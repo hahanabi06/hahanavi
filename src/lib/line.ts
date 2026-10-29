@@ -13,11 +13,34 @@ export function verifyLineSignature(
   return hash === signature;
 }
 
+export type QuickReplyItem = {
+  label: string;
+  data: string;
+};
+
 export async function replyToLine(
   replyToken: string,
   text: string,
-  channelAccessToken: string
+  channelAccessToken: string,
+  quickReplyItems?: QuickReplyItem[]
 ): Promise<void> {
+  const message: Record<string, unknown> = {
+    type: "text",
+    text: text.slice(0, 5000),
+  };
+  if (quickReplyItems && quickReplyItems.length > 0) {
+    message.quickReply = {
+      items: quickReplyItems.slice(0, 13).map((item) => ({
+        type: "action",
+        action: {
+          type: "postback",
+          label: item.label.slice(0, 20),
+          data: item.data,
+          displayText: item.label,
+        },
+      })),
+    };
+  }
   await fetch("https://api.line.me/v2/bot/message/reply", {
     method: "POST",
     headers: {
@@ -26,7 +49,7 @@ export async function replyToLine(
     },
     body: JSON.stringify({
       replyToken,
-      messages: [{ type: "text", text: text.slice(0, 5000) }],
+      messages: [message],
     }),
   });
 }
