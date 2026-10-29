@@ -51,6 +51,39 @@
       "exampleSource": {
         "area": "台東区",
         "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidofuyoteate.html"
+      },
+      "diagnosisRule": {
+        "scope": "national",
+        "fullSupport": {
+          "limitByChildren": [
+            77,
+            115,
+            153
+          ],
+          "extraLimitPerChild": 38,
+          "amountByChildren": [
+            48050,
+            59400,
+            70750
+          ],
+          "extraAmountPerChild": 11350
+        },
+        "partialSupport": {
+          "limitByChildren": [
+            216,
+            254,
+            292
+          ],
+          "extraLimitPerChild": 38,
+          "amountRangeBase": {
+            "min": 11340,
+            "max": 48040
+          },
+          "extraAmountRangePerChild": {
+            "min": 5680,
+            "max": 11340
+          }
+        }
       }
     },
     {
@@ -92,7 +125,20 @@
         "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/teate/jidoikuseiteate.html"
       },
       "note": "東京都福祉局のページでは制度の概要のみ記載(具体的な金額や所得制限は区市町村ごとの案内に記載)。月13,500円・所得制限額は台東区の案内ページで確認(都内共通の制度のため他区でも同額)",
-      "prefecture": "東京都"
+      "prefecture": "東京都",
+      "diagnosisRule": {
+        "scope": "tokyo",
+        "fullSupport": {
+          "limitByChildren": [
+            383.8,
+            421.8,
+            459.8,
+            497.8
+          ],
+          "extraLimitPerChild": 38,
+          "amountPerChild": 13500
+        }
+      }
     },
     {
       "id": "018-support",
@@ -260,7 +306,31 @@
       "verifiedAt": "2026-10-28",
       "areaBadgeOverride": "東京都23区",
       "note": "23区分の所得基準は各区公式サイトで個別に確認済み(2026-10-28)。出典欄のリンクは東京都福祉局の制度概要ページ(区ごとの詳細は都のページに掲載無し、各区の窓口で最終確認を)",
-      "wardsAvailable": "all"
+      "wardsAvailable": "all",
+      "diagnosisRule": {
+        "scope": "tokyo_ward",
+        "fullSupport": {
+          "limitByChildren": [
+            208,
+            246,
+            284
+          ],
+          "extraLimitPerChild": 38
+        },
+        "wardOverride": {
+          "wards": [
+            "台東区",
+            "練馬区",
+            "豊島区"
+          ],
+          "limitByChildren": [
+            216,
+            254,
+            292
+          ],
+          "extraLimitPerChild": 38
+        }
+      }
     },
     {
       "id": "setagaya-yachin-teiren-ka-hojo",

@@ -42,3 +42,6 @@ next-env.d.ts
 
 .vercel
 .env*
+
+# scripts/setup-line-richmenu.mjsが都度生成する画像(richmenu.svgから再生成できる)
+/scripts/assets/richmenu.png

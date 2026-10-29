@@ -1,3 +1,6 @@
+import programsData from "@/data/programs.json";
+import { PREFECTURES } from "@/lib/constants";
+
 export const TOKYO_WARDS = [
   "千代田区", "中央区", "港区", "新宿区", "文京区", "台東区", "墨田区",
   "江東区", "品川区", "目黒区", "大田区", "世田谷区", "渋谷区", "中野区",
@@ -7,6 +10,7 @@ export const TOKYO_WARDS = [
 
 export type ParsedInput = {
   ward: string | null;
+  prefecture: string | null;
   isTokyo: boolean;
   numChildren: number | null;
   incomeManYen: number | null;
@@ -14,7 +18,8 @@ export type ParsedInput = {
 
 export function parseMessage(text: string): ParsedInput {
   const ward = TOKYO_WARDS.find((w) => text.includes(w)) ?? null;
-  const isTokyo = ward !== null || /東京/.test(text);
+  const prefecture = PREFECTURES.find((p) => text.includes(p)) ?? (ward ? "東京都" : null);
+  const isTokyo = ward !== null || prefecture === "東京都" || /東京/.test(text);
 
   const childMatch = text.match(/子(?:供|ども)?\s*(\d+)\s*人/);
   const numChildren = childMatch ? parseInt(childMatch[1], 10) : null;
@@ -24,7 +29,7 @@ export function parseMessage(text: string): ParsedInput {
     text.match(/(\d+(?:\.\d+)?)\s*万円?/);
   const incomeManYen = incomeMatch ? parseFloat(incomeMatch[1]) : null;
 
-  return { ward, isTokyo, numChildren, incomeManYen };
+  return { ward, prefecture, isTokyo, numChildren, incomeManYen };
 }
 
 type BenefitResult = {
@@ -42,37 +47,126 @@ export type DiagnosisResult = {
   missingInfo: string[];
 };
 
-// 扶養人数(≒子の人数)ごとの所得制限額(万円)。表の最後を超える分は1人につき38万円加算。
-const JIDO_FUYOU_FULL_LIMIT = [77, 115, 153];
-const JIDO_FUYOU_PARTIAL_LIMIT = [216, 254, 292];
-const JIDO_FUYOU_FULL_AMOUNT = [48050, 59400, 70750];
-// 一部支給の金額レンジ(1人目の最小・最大、2人目以降1人につき加算される最小・最大)
-const JIDO_FUYOU_PARTIAL_MIN_BASE = 11340;
-const JIDO_FUYOU_PARTIAL_MAX_BASE = 48040;
-const JIDO_FUYOU_PARTIAL_MIN_EXTRA = 5680;
-const JIDO_FUYOU_PARTIAL_MAX_EXTRA = 11340;
-const JIDO_IKUSEI_LIMIT = [383.8, 421.8, 459.8, 497.8];
+// programs.jsonのdiagnosisRuleフィールド(income/children/wardベースで機械的に判定できる制度のみ持つ)の型。
+// サイト表示用の金額・所得制限の文章と、ここで使う数字がズレないよう、programs.json側を単一の情報源にする
+// (以前: diagnosis.tsに独自の定数テーブルを持っていて、programs.json側の修正が反映されず数字がズレる事故があった)
+type IncomeAmountTable = {
+  limitByChildren: number[];
+  extraLimitPerChild: number;
+  amountByChildren?: number[];
+  extraAmountPerChild?: number;
+  amountPerChild?: number;
+};
 
-// マル親の所得制限(本人・保護者基準、万円)。23区は2パターンに分かれる(23区分を公式サイトで確認済み)。
-// 杉並区は3人(322万円)・4人(360万円)分を別ソースでも確認でき、208+38n の式と完全一致(他区の延長計算への信頼度が上がった)。
-// 目黒区は検索結果に令和7年1月の改定前(192万円等)の古い値が混在するため、改定後の208/246/284を正として採用。
-const MARUOYA_PATTERN_A = [208, 246, 284]; // 千代田・中央・港・新宿・文京・墨田・江東・品川・目黒・大田・世田谷・渋谷・中野・杉並・荒川・足立・葛飾・江戸川・北・板橋
-const MARUOYA_PATTERN_B = [216, 254, 292]; // 台東・練馬・豊島
-const MARUOYA_PATTERN_B_WARDS = new Set(["台東区", "練馬区", "豊島区"]);
+type DiagnosisRule = {
+  scope: "national" | "tokyo" | "tokyo_ward";
+  fullSupport: IncomeAmountTable;
+  partialSupport?: {
+    limitByChildren: number[];
+    extraLimitPerChild: number;
+    amountRangeBase: { min: number; max: number };
+    extraAmountRangePerChild: { min: number; max: number };
+  };
+  wardOverride?: {
+    wards: string[];
+    limitByChildren: number[];
+    extraLimitPerChild: number;
+  };
+};
 
-function maruoyaLimitTableForWard(ward: string): number[] {
-  return MARUOYA_PATTERN_B_WARDS.has(ward) ? MARUOYA_PATTERN_B : MARUOYA_PATTERN_A;
-}
+type ProgramWithRule = {
+  id: string;
+  name: string;
+  window: string;
+  diagnosisRule?: DiagnosisRule;
+};
 
-const JIDO_FUYOU_WINDOW = "お住まいの区の子育て支援課給付担当";
-const JIDO_IKUSEI_WINDOW = "お住まいの区の子育て支援課給付担当";
-const MARUOYA_WINDOW = "お住まいの区の子育て支援課(ひとり親家庭等医療費助成担当)";
+type PrefectureProgram = {
+  id: string;
+  name: string;
+  headline?: string;
+  layer: string;
+  prefecture?: string;
+};
 
-function limitForCount(table: number[], count: number): number {
+const programs = programsData.programs as unknown as (ProgramWithRule & PrefectureProgram)[];
+
+function limitForCount(table: number[], extraPerChild: number, count: number): number {
   const idx = Math.min(count, table.length - 1);
   const base = table[idx];
   const extra = Math.max(0, count - (table.length - 1));
-  return base + extra * 38;
+  return base + extra * extraPerChild;
+}
+
+function amountForCount(table: IncomeAmountTable, count: number): number {
+  if (table.amountPerChild !== undefined) {
+    return table.amountPerChild * count;
+  }
+  const byChildren = table.amountByChildren ?? [];
+  const extra = table.extraAmountPerChild ?? 0;
+  const idx = Math.min(count, byChildren.length - 1);
+  const base = byChildren[idx] ?? 0;
+  const over = Math.max(0, count - (byChildren.length - 1));
+  return base + over * extra;
+}
+
+const JIDO_FUYOU_WINDOW = "お住まいの区の子育て支援課給付担当";
+
+function diagnoseRuleBasedProgram(
+  program: ProgramWithRule,
+  count: number,
+  income: number,
+  extraNote: string
+): BenefitResult {
+  const rule = program.diagnosisRule!;
+  const fullLimit = limitForCount(
+    rule.fullSupport.limitByChildren,
+    rule.fullSupport.extraLimitPerChild,
+    count
+  );
+
+  if (income < fullLimit) {
+    const amount = amountForCount(rule.fullSupport, count);
+    return {
+      name: program.name,
+      status: "全部支給",
+      note: `全部支給の対象になりそうです${extraNote}`,
+      monthlyYen: amount > 0 ? amount : undefined,
+      window: program.window,
+      programId: program.id,
+    };
+  }
+
+  if (rule.partialSupport) {
+    const partialLimit = limitForCount(
+      rule.partialSupport.limitByChildren,
+      rule.partialSupport.extraLimitPerChild,
+      count
+    );
+    if (income < partialLimit) {
+      const extra = Math.max(0, count - 1);
+      const minAmount =
+        rule.partialSupport.amountRangeBase.min +
+        extra * rule.partialSupport.extraAmountRangePerChild.min;
+      const maxAmount =
+        rule.partialSupport.amountRangeBase.max +
+        extra * rule.partialSupport.extraAmountRangePerChild.max;
+      return {
+        name: program.name,
+        status: "一部支給",
+        note: `一部支給の対象になりそうです。所得に応じて月${minAmount.toLocaleString()}円〜${maxAmount.toLocaleString()}円の間になります`,
+        window: program.window,
+        programId: program.id,
+      };
+    }
+  }
+
+  return {
+    name: program.name,
+    status: "対象外",
+    note: `所得基準を超えているため対象外の可能性が高いです${extraNote}`,
+    programId: program.id,
+  };
 }
 
 export function diagnose(input: ParsedInput): DiagnosisResult {
@@ -91,86 +185,58 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   const income = input.incomeManYen!;
 
   // 児童扶養手当(国の制度、全国どこでも対象)
-  const fuyoFullLimit = limitForCount(JIDO_FUYOU_FULL_LIMIT, count);
-  const fuyoPartialLimit = limitForCount(JIDO_FUYOU_PARTIAL_LIMIT, count);
-  if (income < fuyoFullLimit) {
-    const amount =
-      count === 0
-        ? 0
-        : JIDO_FUYOU_FULL_AMOUNT[Math.min(count, 3) - 1] +
-          Math.max(0, count - 3) * 11350;
-    items.push({
-      name: "児童扶養手当(国)",
-      status: "全部支給",
-      note: "全部支給の対象になりそうです",
-      monthlyYen: amount,
-      window: JIDO_FUYOU_WINDOW,
-      programId: "jidou-fuyou-teate",
-    });
-    totalMonthlyYen += amount;
-  } else if (income < fuyoPartialLimit) {
-    const extra = Math.max(0, count - 1);
-    const minAmount =
-      JIDO_FUYOU_PARTIAL_MIN_BASE + extra * JIDO_FUYOU_PARTIAL_MIN_EXTRA;
-    const maxAmount =
-      JIDO_FUYOU_PARTIAL_MAX_BASE + extra * JIDO_FUYOU_PARTIAL_MAX_EXTRA;
-    items.push({
-      name: "児童扶養手当(国)",
-      status: "一部支給",
-      note: `一部支給の対象になりそうです。所得に応じて月${minAmount.toLocaleString()}円〜${maxAmount.toLocaleString()}円の間になります`,
-      window: JIDO_FUYOU_WINDOW,
-      programId: "jidou-fuyou-teate",
-    });
-  } else {
-    items.push({
-      name: "児童扶養手当(国)",
-      status: "対象外",
-      note: "所得基準を超えているため対象外の可能性が高いです",
-      programId: "jidou-fuyou-teate",
-    });
-  }
+  const fuyouProgram = programs.find((p) => p.id === "jidou-fuyou-teate")!;
+  const fuyouResult = diagnoseRuleBasedProgram(fuyouProgram, count, income, "");
+  items.push(fuyouResult);
+  if (fuyouResult.monthlyYen) totalMonthlyYen += fuyouResult.monthlyYen;
 
-  // 児童育成手当(東京都独自、都内在住なら23区どこでも対象)
+  // 一部支給の判定にも使うため、しきい値だけ再計算(資格取得支援の案内に流用)
+  const partialLimit = fuyouProgram.diagnosisRule!.partialSupport
+    ? limitForCount(
+        fuyouProgram.diagnosisRule!.partialSupport!.limitByChildren,
+        fuyouProgram.diagnosisRule!.partialSupport!.extraLimitPerChild,
+        count
+      )
+    : limitForCount(
+        fuyouProgram.diagnosisRule!.fullSupport.limitByChildren,
+        fuyouProgram.diagnosisRule!.fullSupport.extraLimitPerChild,
+        count
+      );
+
+  // 児童育成手当・マル親(東京都独自、都内在住なら対象)
   if (input.isTokyo) {
-    const ikuseiLimit = limitForCount(JIDO_IKUSEI_LIMIT, count);
-    if (income < ikuseiLimit) {
-      const amount = 13500 * count;
-      items.push({
-        name: "児童育成手当(東京都)",
-        status: "全部支給",
-        note: "東京都在住なら区を問わず対象になりそうです",
-        monthlyYen: amount,
-        window: JIDO_IKUSEI_WINDOW,
-        programId: "jidou-ikusei-teate",
-      });
-      totalMonthlyYen += amount;
-    } else {
-      items.push({
-        name: "児童育成手当(東京都)",
-        status: "対象外",
-        note: "所得基準を超えているため対象外の可能性が高いです",
-        programId: "jidou-ikusei-teate",
-      });
-    }
+    const ikuseiProgram = programs.find((p) => p.id === "jidou-ikusei-teate")!;
+    const ikuseiResult = diagnoseRuleBasedProgram(
+      ikuseiProgram,
+      count,
+      income,
+      "(東京都在住なら区を問わず対象)"
+    );
+    items.push(ikuseiResult);
+    if (ikuseiResult.monthlyYen) totalMonthlyYen += ikuseiResult.monthlyYen;
 
-    // マル親医療費助成: 23区それぞれの所得基準で判定(台東・練馬・豊島のみ基準が異なる)
+    // マル親医療費助成: 23区それぞれの所得基準で判定(ward指定のある区のみ基準が異なる)
     if (input.ward) {
-      const maruoyaTable = maruoyaLimitTableForWard(input.ward);
-      const maruoyaLimit = limitForCount(maruoyaTable, count);
-      if (income < maruoyaLimit) {
+      const maruoyaProgram = programs.find((p) => p.id === "maruoya-iryouhi")!;
+      const rule = maruoyaProgram.diagnosisRule!;
+      const useWardOverride = rule.wardOverride?.wards.includes(input.ward) ?? false;
+      const table = useWardOverride ? rule.wardOverride! : rule.fullSupport;
+      const limit = limitForCount(table.limitByChildren, table.extraLimitPerChild, count);
+
+      if (income < limit) {
         items.push({
-          name: "ひとり親家庭等医療費助成(マル親)",
+          name: maruoyaProgram.name,
           status: "全部支給",
           note: `医療費の自己負担がほぼ無料になりそうです(${input.ward}の基準)`,
-          window: MARUOYA_WINDOW,
-          programId: "maruoya-iryouhi",
+          window: maruoyaProgram.window,
+          programId: maruoyaProgram.id,
         });
       } else {
         items.push({
-          name: "ひとり親家庭等医療費助成(マル親)",
+          name: maruoyaProgram.name,
           status: "対象外",
           note: `所得基準を超えているため対象外の可能性が高いです(${input.ward}の基準)`,
-          programId: "maruoya-iryouhi",
+          programId: maruoyaProgram.id,
         });
       }
     } else {
@@ -180,16 +246,37 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         note: "医療費の自己負担が軽くなる制度です。区が分かるとここも診断できます",
       });
     }
+  } else if (input.prefecture) {
+    // 東京都以外: その県独自の上乗せ制度があれば案内のみ(所得条件が複雑/別の質問が必要なため自動判定はしない)
+    const prefecturePrograms = programs.filter(
+      (p) => p.layer === "prefecture" && p.prefecture === input.prefecture
+    );
+    if (prefecturePrograms.length > 0) {
+      for (const p of prefecturePrograms) {
+        items.push({
+          name: p.name,
+          status: "要確認",
+          note: `${input.prefecture}独自の制度だよ。${p.headline ?? ""}。詳しい条件はリンクで確認してね`,
+          programId: p.id,
+        });
+      }
+    } else {
+      items.push({
+        name: "お住まいの地域の制度",
+        status: "要確認",
+        note: `${input.prefecture}独自の上乗せ制度は見つけられていません。国の制度(児童扶養手当)のみ診断しています`,
+      });
+    }
   } else {
     items.push({
       name: "お住まいの地域の制度",
       status: "要確認",
-      note: "東京都以外の制度はまだ対応していません。国の制度(児童扶養手当)のみ診断しています",
+      note: "お住まいの都道府県が分かると、その地域独自の制度も案内できるよ",
     });
   }
 
   // 児童扶養手当の対象(全部・一部支給どちらか)なら、資格取得支援もセットで案内
-  if (income < fuyoPartialLimit) {
+  if (income < partialLimit) {
     items.push({
       name: "資格取得支援(高等職業訓練促進給付金 等)",
       status: "要確認",
