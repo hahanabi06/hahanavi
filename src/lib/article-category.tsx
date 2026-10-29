@@ -16,14 +16,6 @@ export const ARTICLE_CATEGORIES = [
 
 export type ArticleCategory = (typeof ARTICLE_CATEGORIES)[number];
 
-const CATEGORY_BG: Record<ArticleCategory, string> = {
-  お金: "#FCEAE3",
-  "病院・健康": "#E6F1FB",
-  "人間関係・気持ち": "#FAECE7",
-  "資格・仕事": "#FDF3D9",
-  暮らし全般: "#F1EFE8",
-};
-
 const CATEGORY_ICON: Record<ArticleCategory, typeof BearMoney> = {
   お金: BearMoney,
   "病院・健康": BearHospital,
@@ -53,7 +45,7 @@ export function ArticleEyecatch({
   return (
     <div
       className="flex shrink-0 items-center justify-center overflow-hidden rounded-xl"
-      style={{ width: size, height: size, backgroundColor: CATEGORY_BG[cat] }}
+      style={{ width: size, height: size }}
     >
       <Icon size={size} />
     </div>
