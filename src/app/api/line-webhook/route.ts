@@ -7,8 +7,69 @@ type LineEvent = {
   type: string;
   replyToken?: string;
   message?: { type: string; text?: string };
+  postback?: { data: string };
   source?: { type: string; userId?: string };
 };
+
+const FEEDBACK_PROMPT =
+  "どんな悩みか教えてね。制度のことでも、記事のリクエストでも、サイトへの要望でも、どんなことでも大丈夫だよ。\n\n(この後に送ってもらった内容を、そのままご意見として記録するね)";
+const DIAGNOSIS_PROMPT =
+  "お住まいの地域・お子さんの人数・年収を教えてね。\n\n例: 台東区 子供2人 年収300万\n\nこの形で送ってくれたら診断するよ!";
+const FEEDBACK_THANKS = "送ってくれてありがとう!参考にさせてもらうね。\n\nまた制度を診断したいときは、いつも通り「台東区 子供2人 年収300万」みたいな形で送ってね。";
+
+async function getLineUserMode(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase
+      .from("line_users")
+      .select("mode")
+      .eq("line_user_id", userId)
+      .maybeSingle();
+    if (error) {
+      console.error("[line_users] mode select failed", userId, error);
+      return null;
+    }
+    return data?.mode ?? null;
+  } catch (err) {
+    console.error("[line_users] mode select unexpected error", userId, err);
+    return null;
+  }
+}
+
+async function setLineUserMode(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string,
+  mode: string | null
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from("line_users")
+      .upsert({ line_user_id: userId, mode }, { onConflict: "line_user_id" });
+    if (error) console.error("[line_users] mode upsert failed", userId, error);
+  } catch (err) {
+    console.error("[line_users] mode upsert unexpected error", userId, err);
+  }
+}
+
+async function saveFeedback(
+  supabase: ReturnType<typeof getSupabaseServerClient>,
+  userId: string,
+  message: string
+): Promise<void> {
+  try {
+    const { error } = await supabase.from("program_reports").insert({
+      program_id: null,
+      program_name: null,
+      message: `【LINEご意見箱 / ${userId}】\n${message}`,
+      source: "line_feedback",
+    });
+    if (error) console.error("[program_reports] line feedback insert failed", userId, error);
+  } catch (err) {
+    console.error("[program_reports] line feedback unexpected error", userId, err);
+  }
+}
 
 // Supabaseクライアントはクエリ失敗時に例外を投げず { error } を返すだけなので、
 // try/catchだけだと書き込み失敗に気づけない。LINEの顧客データは生命線なので、
@@ -142,16 +203,54 @@ export async function POST(req: NextRequest) {
         return;
       }
 
-      if (event.type === "message" && event.message?.type === "text") {
-        const text = event.message.text ?? "";
-        const reply = formatDiagnosisReply(text);
-        const tasks = [replyToLine(event.replyToken, reply, channelAccessToken)];
+      if (event.type === "postback" && event.postback?.data === "action=feedback") {
+        const tasks = [replyToLine(event.replyToken, FEEDBACK_PROMPT, channelAccessToken)];
         if (event.source?.userId) {
           const supabase = getSupabaseServerClient();
+          tasks.push(setLineUserMode(supabase, event.source.userId, "feedback_wait"));
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data === "action=diagnose") {
+        const tasks = [replyToLine(event.replyToken, DIAGNOSIS_PROMPT, channelAccessToken)];
+        if (event.source?.userId) {
+          const supabase = getSupabaseServerClient();
+          // ご意見箱モード中にリッチメニューから診断ボタンを押した場合に備えて、モードを解除しておく
+          tasks.push(setLineUserMode(supabase, event.source.userId, null));
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
+      if (event.type === "message" && event.message?.type === "text") {
+        const text = event.message.text ?? "";
+        const userId = event.source?.userId;
+        const supabase = userId ? getSupabaseServerClient() : null;
+
+        const mode = supabase && userId ? await getLineUserMode(supabase, userId) : null;
+
+        if (mode === "feedback_wait") {
+          const tasks = [replyToLine(event.replyToken, FEEDBACK_THANKS, channelAccessToken)];
+          if (supabase && userId) {
+            tasks.push(
+              saveFeedback(supabase, userId, text),
+              setLineUserMode(supabase, userId, null),
+              touchLineUser(supabase, userId, { text, parsed: parseMessage(text) })
+            );
+          }
+          await Promise.all(tasks);
+          return;
+        }
+
+        const reply = formatDiagnosisReply(text);
+        const tasks = [replyToLine(event.replyToken, reply, channelAccessToken)];
+        if (supabase && userId) {
           const parsed = parseMessage(text);
           tasks.push(
-            touchLineUser(supabase, event.source.userId, { text, parsed }),
-            logLineMessage(supabase, event.source.userId, text, parsed)
+            touchLineUser(supabase, userId, { text, parsed }),
+            logLineMessage(supabase, userId, text, parsed)
           );
         }
         await Promise.all(tasks);

@@ -193,7 +193,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
     items.push({
       name: "資格取得支援(高等職業訓練促進給付金 等)",
       status: "要確認",
-      note: "看護師・介護福祉士などの資格取得を目指すなら、月7万円台〜15万円の生活費支援が受けられる可能性があります。資格に興味があれば詳細ページをチェックしてね",
+      note: "看護師・介護福祉士などの資格取得を目指すなら、月7万円台〜14万円の生活費支援が受けられる可能性があります。資格に興味があれば詳細ページをチェックしてね",
       window: JIDO_FUYOU_WINDOW,
       programId: "koutou-shokugyou-kunren",
     });
