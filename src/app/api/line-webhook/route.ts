@@ -218,6 +218,14 @@ function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
   return `・${item.name}${amount}\n  ${item.note}${linkLine}`;
 }
 
+// 「こんな制度もあるよ」(要確認)は説明文なしで名前+リンクだけにして情報量を抑える
+function infoItemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
+  const linkLine = item.programId
+    ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
+    : "";
+  return `・${item.name}${linkLine}`;
+}
+
 function formatDiagnosisReply(input: ParsedInput): string {
   const result = diagnose(input);
 
@@ -284,7 +292,7 @@ function formatDiagnosisReply(input: ParsedInput): string {
   }
 
   if (info.length > 0) {
-    sections.push(`【こんな制度もあるよ】\n\n${info.map(itemLine).join("\n\n")}`);
+    sections.push(`【こんな制度もあるよ】\n\n${info.map(infoItemLine).join("\n")}`);
   }
 
   if (ineligible.length > 0) {
