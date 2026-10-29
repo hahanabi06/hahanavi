@@ -78,8 +78,10 @@ type Program = {
   verifyNeeded: boolean;
   source?: string;
   verifiedAt?: string;
+  note?: string;
   exceptions?: Exception[];
   exampleSource?: ExampleSource;
+  wardsAvailable?: "all" | string[];
 };
 
 const programs = programsData.programs as Program[];
@@ -99,6 +101,9 @@ const AREA_BADGE: Record<Program["layer"], string> = {
 function areaBadgeFor(program: Program): string {
   if (program.areaBadgeOverride) return program.areaBadgeOverride;
   if (program.prefecture) return program.prefecture;
+  if (program.layer === "municipal" && Array.isArray(program.wardsAvailable)) {
+    return program.wardsAvailable.join("・");
+  }
   return AREA_BADGE[program.layer];
 }
 
@@ -376,9 +381,10 @@ export default async function ProgramDetailPage({
           </div>
 
           {program.verifyNeeded && (
-            <p className="pt-3 text-xs text-[#BA7517]">
-              この制度の数字は現在確認中です。公開前に最新情報を確認します。
-            </p>
+            <div className="pt-3 text-xs leading-relaxed text-[#BA7517]">
+              <p>この制度の数字は現在確認中です。最新情報は窓口で確認してね。</p>
+              {program.note && <p className="mt-1">{program.note}</p>}
+            </div>
           )}
           {program.source && (
               <div className="py-3">
