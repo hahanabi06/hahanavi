@@ -4,10 +4,6 @@ import {
   IconCertificate,
   IconBriefcase,
   IconChevronRight,
-  IconStethoscope,
-  IconBabyCarriage,
-  IconHeartHandshake,
-  IconKeyboard,
   IconMessageCircle2,
   IconMenu2,
 } from "@tabler/icons-react";
@@ -21,6 +17,7 @@ import { listPublishedArticles } from "@/lib/notion";
 import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
 import { ArticleEyecatch } from "@/lib/article-category";
+import { QUALIFICATIONS } from "@/lib/qualifications";
 
 const zenMaruGothic = Zen_Maru_Gothic({
   subsets: ["latin"],
@@ -52,17 +49,19 @@ function SectionHeading({
   title,
   showAll = true,
   href = "#",
+  linkLabel = "全部見る",
 }: {
   title: string;
   showAll?: boolean;
   href?: string;
+  linkLabel?: string;
 }) {
   return (
     <div className="mb-2.5 flex items-baseline justify-between">
       <p className="text-base font-medium">{title}</p>
       {showAll && (
         <Link href={href} className="text-sm text-[#993C1D]">
-          全部見る ›
+          {linkLabel} ›
         </Link>
       )}
     </div>
@@ -137,18 +136,11 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
   }
 }
 
-const QUALIFICATIONS = [
-  { icon: IconStethoscope, label: "医療事務", note: "給付金で実質無料" },
-  { icon: IconBabyCarriage, label: "保育士", note: "需要が高く安定" },
-  { icon: IconHeartHandshake, label: "介護職", note: "未経験でも可" },
-  { icon: IconKeyboard, label: "PCスキル", note: "在宅ワークに" },
-];
-
 const NAV_ITEMS = [
-  { icon: IconCoin, label: "支援制度" },
-  { icon: IconNews, label: "お役立ち記事" },
-  { icon: IconCertificate, label: "おすすめ資格" },
-  { icon: IconBriefcase, label: "ママ向け求人" },
+  { icon: IconCoin, label: "支援制度", href: "/seido" },
+  { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
+  { icon: IconCertificate, label: "おすすめ資格", href: "/shikaku" },
+  { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
 ];
 
 export default async function Home() {
@@ -183,15 +175,15 @@ export default async function Home() {
 
         {/* icon nav */}
         <div className="my-5 flex justify-between">
-          {NAV_ITEMS.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex w-20 flex-col items-center gap-1.5">
+          {NAV_ITEMS.map(({ icon: Icon, label, href }) => (
+            <Link key={label} href={href} className="flex w-20 flex-col items-center gap-1.5">
               <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]">
                 <Icon size={21} className="text-[#5F5E5A]" />
               </div>
               <span className="text-center text-xs leading-tight">
                 {label}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -218,7 +210,7 @@ export default async function Home() {
 
         {/* 記事: 新着2件 + ランダム3件 */}
         <section className="mb-6">
-          <SectionHeading title="お役立ち記事" href="/kiji" />
+          <SectionHeading title="お役立ち記事" href="/kiji" linkLabel="記事一覧へ" />
 
           <div className="flex flex-col gap-1.5">
             {homeArticles.map((item) => {
@@ -259,17 +251,18 @@ export default async function Home() {
 
         {/* おすすめ資格 */}
         <section className="mb-6">
-          <SectionHeading title="おすすめ資格" />
+          <SectionHeading title="おすすめ資格" href="/shikaku" linkLabel="資格制度一覧へ" />
           <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {QUALIFICATIONS.map(({ icon: Icon, label, note }) => (
-              <div
+              <Link
                 key={label}
+                href="/shikaku"
                 className="flex h-[96px] w-[120px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
                 <Icon size={18} className="text-[#5F5E5A]" />
                 <p className="mt-1.5 line-clamp-1 text-sm font-medium">{label}</p>
                 <p className="line-clamp-2 text-xs text-[#888780]">{note}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
