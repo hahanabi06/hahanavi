@@ -5,12 +5,11 @@ import {
   IconBriefcase,
   IconChevronRight,
   IconMessageCircle2,
-  IconMenu2,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { Zen_Maru_Gothic } from "next/font/google";
 import { BearParentChild } from "@/components/Bear";
 import { BearGreeting } from "@/components/BearGreeting";
+import { SiteHeader } from "@/components/SiteHeader";
 import { RequestForm } from "@/components/RequestForm";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import { listPublishedArticles } from "@/lib/notion";
@@ -18,11 +17,6 @@ import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
 import { ArticleEyecatch } from "@/lib/article-category";
 import { QUALIFICATIONS } from "@/lib/qualifications";
-
-const zenMaruGothic = Zen_Maru_Gothic({
-  subsets: ["latin"],
-  weight: ["700"],
-});
 
 function LineButton({
   children,
@@ -149,29 +143,8 @@ export default async function Home() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pb-5">
-        {/* header: ロゴ + メニュー(中身は未実装) */}
-        <div className="mb-5 -mx-4 flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
-          <div className="flex items-center gap-1.5">
-            <BearParentChild size={42} />
-            <div className="text-left">
-              <p
-                className={`${zenMaruGothic.className} text-2xl leading-tight text-[#D85A30]`}
-              >
-                ハハナビ
-              </p>
-              <p className="text-xs text-[#888780]">
-                シングルマザーのための情報サイト
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label="メニュー"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white"
-          >
-            <IconMenu2 size={18} className="text-[#5F5E5A]" />
-          </button>
-        </div>
+        {/* header: ロゴ + メニュー */}
+        <SiteHeader />
 
         {/* icon nav */}
         <div className="my-5 flex justify-between">
