@@ -212,10 +212,7 @@ function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
       : item.yearlyYen
         ? `: 年${item.yearlyYen.toLocaleString()}円くらい`
         : "";
-  const linkLine = item.programId
-    ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}`
-    : "";
-  return `・${item.name}${amount}\n  ${item.note}${linkLine}`;
+  return `・${item.name}${amount}\n  ${item.note}`;
 }
 
 function formatDiagnosisReply(input: ParsedInput): string {
@@ -232,13 +229,16 @@ function formatDiagnosisReply(input: ParsedInput): string {
   // 見出し: もらえそうな給付額のレンジと、費用軽減系の制度があるかどうか
   let minTotal = 0;
   let maxTotal = 0;
+  const cashItemNames: string[] = [];
   for (const item of eligible) {
     if (item.monthlyYen) {
       minTotal += item.monthlyYen;
       maxTotal += item.monthlyYen;
+      cashItemNames.push(item.name);
     } else if (item.monthlyYenRange) {
       minTotal += item.monthlyYenRange.min;
       maxTotal += item.monthlyYenRange.max;
+      cashItemNames.push(item.name);
     }
   }
   const medicalItem = eligible.find((i) => i.reductionKind === "medical");
@@ -247,10 +247,11 @@ function formatDiagnosisReply(input: ParsedInput): string {
 
   const headlineLines: string[] = [];
   if (maxTotal > 0) {
+    const breakdown = cashItemNames.length > 0 ? `(${cashItemNames.join("・")})` : "";
     headlineLines.push(
       minTotal === maxTotal
-        ? `💰 月${minTotal.toLocaleString()}円くらいの給付が受けられそうだよ`
-        : `💰 月${minTotal.toLocaleString()}円〜${maxTotal.toLocaleString()}円くらいの給付が受けられそうだよ`
+        ? `💰 月${minTotal.toLocaleString()}円くらいの給付が受けられそうだよ${breakdown}`
+        : `💰 月${minTotal.toLocaleString()}円〜${maxTotal.toLocaleString()}円くらいの給付が受けられそうだよ${breakdown}`
     );
   }
   if (medicalItem) {
@@ -287,7 +288,7 @@ function formatDiagnosisReply(input: ParsedInput): string {
     sections.push(`【今回は対象外かもしれない制度】\n\n${ineligible.map((i) => `・${i.name}\n  ${i.note}`).join("\n\n")}`);
   }
 
-  return `診断したよ!\n\n${headline}${sections.join("\n\n")}\n\nこれは年収ベースの概算だよ。正式な判定は窓口で確認してね。`;
+  return `診断したよ!\n(これは概算の金額だよ!正確な判定は窓口で確認してね)\n\n${headline}${sections.join("\n\n")}\n\nこれは年収ベースの概算だよ。正式な判定は窓口で確認してね。`;
 }
 
 export async function POST(req: NextRequest) {
