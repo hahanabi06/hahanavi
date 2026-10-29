@@ -14,6 +14,7 @@ export type ParsedInput = {
   isTokyo: boolean;
   numChildren: number | null;
   incomeManYen: number | null;
+  childAges: number[] | null; // 分かる場合のみ(LINEのボタン診断で収集)。自由入力では聞いていないのでnull
 };
 
 export function parseMessage(text: string): ParsedInput {
@@ -29,7 +30,7 @@ export function parseMessage(text: string): ParsedInput {
     text.match(/(\d+(?:\.\d+)?)\s*万円?/);
   const incomeManYen = incomeMatch ? parseFloat(incomeMatch[1]) : null;
 
-  return { ward, prefecture, isTokyo, numChildren, incomeManYen };
+  return { ward, prefecture, isTokyo, numChildren, incomeManYen, childAges: null };
 }
 
 export type BenefitResult = {
@@ -208,7 +209,8 @@ function diagnoseKokuhoKeigen(
   program: ProgramWithRule,
   count: number,
   income: number,
-  office: string
+  office: string,
+  hasPreschoolChild: boolean | null // 年齢が分かる場合のみtrue/false、分からない場合はnull(従来通り注意書きで案内)
 ): BenefitResult | null {
   const rule = program.diagnosisRule as InsuranceReductionRule;
   const members = count + 1; // ひとり親(本人)+子供の人数を加入者数とみなす
@@ -219,11 +221,18 @@ function diagnoseKokuhoKeigen(
       (tier.limitFormula ? tier.limitFormula.base + tier.limitFormula.perMember * members : null);
     if (limit === null) continue;
     if (income < limit) {
-      const estimatedYen = Math.round(rule.nationalAverageBaseYen * tier.rate);
+      const rate = hasPreschoolChild === true ? tier.rateWithYoungChild : tier.rate;
+      const estimatedYen = Math.round(rule.nationalAverageBaseYen * rate);
+      const note =
+        hasPreschoolChild === null
+          ? `${tier.label}の対象になりそうです。未就学のお子さんがいる場合はさらに軽減されるよ。全国平均ベースの目安だから、正確な金額はお住まいの窓口で確認してね`
+          : hasPreschoolChild
+            ? `未就学のお子さんがいるので、通常より多く軽減される${Math.round(rate * 100)}%軽減の対象になりそうです。全国平均ベースの目安だから、正確な金額はお住まいの窓口で確認してね`
+            : `${Math.round(rate * 100)}%軽減の対象になりそうです。全国平均ベースの目安だから、正確な金額はお住まいの窓口で確認してね`;
       return {
         name: program.name,
         status: "全部支給",
-        note: `${tier.label}の対象になりそうです。未就学のお子さんがいる場合はさらに軽減されるよ。全国平均ベースの目安だから、正確な金額はお住まいの窓口で確認してね`,
+        note,
         yearlyYen: estimatedYen,
         reductionKind: "insurance",
         office,
@@ -233,6 +242,25 @@ function diagnoseKokuhoKeigen(
     }
   }
   return null; // どの軽減にも該当しない場合は案内しない(軽減が無いだけで制度自体は使えるため対象外表示はしない)
+}
+
+// 児童手当(令和6年10月改正後)。0〜2歳: 月15,000円、3歳〜高校生年代: 月10,000円、
+// 第3子以降(年齢を問わず)は月30,000円。出生順は不明なので年齢が高い順を出生順の近似として使う
+function calcJidouTeateMonthlyYen(ages: number[]): number {
+  const sorted = [...ages].sort((a, b) => b - a);
+  let total = 0;
+  sorted.forEach((age, idx) => {
+    const order = idx + 1;
+    if (age >= 19) return; // 高校生年代を超えている場合は対象外
+    if (order >= 3) {
+      total += 30000;
+    } else if (age < 3) {
+      total += 15000;
+    } else {
+      total += 10000;
+    }
+  });
+  return total;
 }
 
 // 国民年金保険料の免除(ひとり親・寡婦等の特例基準、令和8年度保険料ベース)
@@ -277,6 +305,9 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
 
   const count = input.numChildren!;
   const income = input.incomeManYen!;
+  const childAges = input.childAges;
+  const hasPreschoolChild = childAges ? childAges.some((age) => age < 6) : null;
+  const hasHighSchoolChild = childAges ? childAges.some((age) => age >= 15 && age <= 18) : false;
   const KOSODATE_OFFICE = "区市町村役場の子育て支援課";
   const IRYOHI_OFFICE = "区市町村役場の医療費助成担当";
   const KOKUHO_OFFICE = "区市町村役場の国民健康保険担当";
@@ -288,22 +319,36 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   items.push(fuyouResult);
   if (fuyouResult.monthlyYen) totalMonthlyYen += fuyouResult.monthlyYen;
 
-  // 児童手当(国の制度、所得制限なしで全世帯対象)。金額は子の年齢(3歳未満/以降)で変わり、
-  // 今の質問では年齢を聞いていないため、人数ベースの概算レンジで出す(第3子以降の加算は見込まない)
+  // 児童手当(国の制度、所得制限なしで全世帯対象)。年齢が分かる場合は3歳未満・第3子以降の
+  // 加算まで含めて正確に計算し、分からない場合(自由入力診断)は人数ベースの概算レンジで出す
   const jidouTeateProgram = programs.find((p) => p.id === "jidou-teate");
   if (jidouTeateProgram) {
-    const minAmount = count * 10000;
-    const maxAmount = count * 15000;
-    items.push({
-      name: jidouTeateProgram.name,
-      status: "全部支給",
-      note: `${jidouTeateProgram.kumaNote ?? ""} お子さんの年齢(3歳未満かどうか)で金額が変わるから、人数ベースの概算だよ`,
-      monthlyYenRange: { min: minAmount, max: maxAmount },
-      office: KOSODATE_OFFICE,
-      window: jidouTeateProgram.window,
-      programId: jidouTeateProgram.id,
-    });
-    totalMonthlyYen += minAmount; // 合計の見出しには、年齢が分からない前提で安全側(最小額)を加算
+    if (childAges && childAges.length > 0) {
+      const amount = calcJidouTeateMonthlyYen(childAges);
+      items.push({
+        name: jidouTeateProgram.name,
+        status: "全部支給",
+        note: jidouTeateProgram.kumaNote ?? "",
+        monthlyYen: amount > 0 ? amount : undefined,
+        office: KOSODATE_OFFICE,
+        window: jidouTeateProgram.window,
+        programId: jidouTeateProgram.id,
+      });
+      totalMonthlyYen += amount;
+    } else {
+      const minAmount = count * 10000;
+      const maxAmount = count * 15000;
+      items.push({
+        name: jidouTeateProgram.name,
+        status: "全部支給",
+        note: `${jidouTeateProgram.kumaNote ?? ""} お子さんの年齢(3歳未満かどうか)で金額が変わるから、人数ベースの概算だよ`,
+        monthlyYenRange: { min: minAmount, max: maxAmount },
+        office: KOSODATE_OFFICE,
+        window: jidouTeateProgram.window,
+        programId: jidouTeateProgram.id,
+      });
+      totalMonthlyYen += minAmount; // 合計の見出しには、年齢が分からない前提で安全側(最小額)を加算
+    }
   }
 
   const fuyouRule = fuyouProgram.diagnosisRule as CashDiagnosisRule;
@@ -410,7 +455,7 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   // 国民健康保険料の軽減(全国共通、所得が基準内なら案内)
   const kokuhoProgram = programs.find((p) => p.id === "kokuho-keigen");
   if (kokuhoProgram?.diagnosisRule) {
-    const kokuhoResult = diagnoseKokuhoKeigen(kokuhoProgram, count, income, KOKUHO_OFFICE);
+    const kokuhoResult = diagnoseKokuhoKeigen(kokuhoProgram, count, income, KOKUHO_OFFICE, hasPreschoolChild);
     if (kokuhoResult) items.push(kokuhoResult);
   }
 
@@ -418,6 +463,21 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   const nenkinProgram = programs.find((p) => p.id === "kokumin-nenkin-menjo");
   if (nenkinProgram?.diagnosisRule) {
     items.push(diagnosePensionExemption(nenkinProgram, income, NENKIN_OFFICE));
+  }
+
+  // 高校生等奨学給付金(国の制度、高校生の子がいると分かっている場合のみ案内。年齢不明時は憶測で出さない)
+  if (hasHighSchoolChild) {
+    const shougakuProgram = programs.find((p) => p.id === "koukou-shougaku-kyuhukin");
+    if (shougakuProgram) {
+      items.push({
+        name: shougakuProgram.name,
+        status: "要確認",
+        note:
+          shougakuProgram.kumaNote ??
+          "高校生のお子さんがいる世帯向けの給付型の奨学金だよ。世帯の年収によって対象かどうかが変わるから、詳細はリンクで確認してね",
+        programId: shougakuProgram.id,
+      });
+    }
   }
 
   // 児童扶養手当の対象なら一緒に使える制度(資格取得支援・交通系の割引・貸付金)をまとめて案内

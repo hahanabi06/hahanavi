@@ -6,6 +6,7 @@ import {
   REGIONS,
   WARD_PAGES,
   CHILD_COUNT_OPTIONS,
+  AGE_BRACKET_OPTIONS,
   INCOME_BRACKET_OPTIONS,
   encodeState,
   decodeState,
@@ -46,6 +47,9 @@ function wardQuickReply(page: number): QuickReplyItem[] {
 function childrenQuickReply(): QuickReplyItem[] {
   return CHILD_COUNT_OPTIONS.map((c) => ({ label: c.label, data: `diag_children=${c.value}` }));
 }
+function ageQuickReply(): QuickReplyItem[] {
+  return AGE_BRACKET_OPTIONS.map((a) => ({ label: a.label, data: `diag_age=${a.value}` }));
+}
 function incomeQuickReply(): QuickReplyItem[] {
   return INCOME_BRACKET_OPTIONS.map((i) => ({ label: i.label, data: `diag_income=${i.value}` }));
 }
@@ -80,10 +84,19 @@ function promptForStep(state: DiagFlowState): { text: string; items: QuickReplyI
           { label: BACK_BUTTON_LABEL, data: state.ward ? "diag_back=ward" : "diag_back=prefecture" },
         ],
       };
+    case "childAge": {
+      const askedSoFar = state.childAges?.length ?? 0;
+      const total = state.numChildren ?? 1;
+      const childNumber = askedSoFar + 1;
+      return {
+        text: total > 1 ? `${childNumber}人目のお子さんの年齢は?` : "お子さんの年齢は?",
+        items: [...ageQuickReply(), { label: BACK_BUTTON_LABEL, data: "diag_back=childAge" }],
+      };
+    }
     case "income":
       return {
         text: "年収(世帯の合計)はどれくらい?",
-        items: [...incomeQuickReply(), { label: BACK_BUTTON_LABEL, data: "diag_back=children" }],
+        items: [...incomeQuickReply(), { label: BACK_BUTTON_LABEL, data: "diag_back=childAge" }],
       };
   }
 }
@@ -376,7 +389,21 @@ export async function POST(req: NextRequest) {
         const current = decodeState(await getLineUserMode(supabase, userId));
         if (!current) return; // 状態が無い(タイムアウト等)場合は何もしない
 
-        const targetState: DiagFlowState = { ...current, step: targetStep };
+        // 年齢質問への「戻る」は人数分ループする特殊ステップなので、配列から1件戻す形にする。
+        // すでに1人目を聞いている途中(配列が空)なら、人数選択まで戻す
+        let targetState: DiagFlowState;
+        if (targetStep === "childAge") {
+          const ages = [...(current.childAges ?? [])];
+          if (ages.length === 0) {
+            targetState = { ...current, step: "children", childAges: undefined };
+          } else {
+            ages.pop();
+            targetState = { ...current, step: "childAge", childAges: ages };
+          }
+        } else {
+          targetState = { ...current, step: targetStep };
+        }
+
         const { text, items } = promptForStep(targetState);
         await Promise.all([
           replyToLine(event.replyToken, text, channelAccessToken, items),
@@ -457,7 +484,31 @@ export async function POST(req: NextRequest) {
         const current = decodeState(await getLineUserMode(supabase, userId));
         if (!current?.prefecture) return; // 想定外の状態からの遷移は無視
 
-        const nextState: DiagFlowState = { ...current, step: "income", numChildren };
+        // 人数を選んだら、1人ずつ年齢を聞くループを開始する(やり直しも想定してchildAgesはリセット)
+        const nextState: DiagFlowState = { ...current, step: "childAge", numChildren, childAges: [] };
+        const { text, items } = promptForStep(nextState);
+        await Promise.all([
+          replyToLine(event.replyToken, text, channelAccessToken, items),
+          setLineUserMode(supabase, userId, encodeState(nextState)),
+        ]);
+        return;
+      }
+
+      if (event.type === "postback" && event.postback?.data?.startsWith("diag_age=")) {
+        const age = parseInt(event.postback.data.slice("diag_age=".length), 10);
+        const userId = event.source?.userId;
+        if (!userId) return;
+        const supabase = getSupabaseServerClient();
+        const current = decodeState(await getLineUserMode(supabase, userId));
+        if (!current || current.step !== "childAge" || current.numChildren === undefined) {
+          return; // 想定外の状態からの遷移は無視
+        }
+
+        const childAges = [...(current.childAges ?? []), age];
+        const nextState: DiagFlowState =
+          childAges.length < current.numChildren
+            ? { ...current, childAges } // まだ聞いていない子がいるので、同じステップで次の子を聞く
+            : { ...current, step: "income", childAges };
         const { text, items } = promptForStep(nextState);
         await Promise.all([
           replyToLine(event.replyToken, text, channelAccessToken, items),
@@ -483,13 +534,14 @@ export async function POST(req: NextRequest) {
           isTokyo: state.prefecture === "東京都",
           numChildren: state.numChildren,
           incomeManYen,
+          childAges: state.childAges ?? null,
         };
         const reply = formatDiagnosisReply(parsed);
         await Promise.all([
           replyToLine(event.replyToken, reply, channelAccessToken),
           setLineUserMode(supabase, userId, null),
           touchLineUser(supabase, userId, {
-            text: `[ボタン診断] ${state.prefecture}${state.ward ? " " + state.ward : ""} 子供${state.numChildren}人 年収${incomeManYen}万`,
+            text: `[ボタン診断] ${state.prefecture}${state.ward ? " " + state.ward : ""} 子供${state.numChildren}人(年齢${state.childAges?.join("/") ?? "不明"}) 年収${incomeManYen}万`,
             parsed,
           }),
         ]);

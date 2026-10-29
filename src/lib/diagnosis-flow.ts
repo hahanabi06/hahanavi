@@ -35,14 +35,27 @@ export const INCOME_BRACKET_OPTIONS = [
   { label: "500万円〜", value: 600 },
 ];
 
+// 子供1人ずつの年齢を、児童手当の金額(3歳未満かどうか)・国保軽減(未就学児がいるか)・
+// 高校生等奨学給付金(高校生がいるか)の判定に使える粒度のブラケットで聞く。各帯の代表値で計算する
+export const AGE_BRACKET_OPTIONS = [
+  { label: "0〜2歳", value: 1 },
+  { label: "3〜5歳(未就学)", value: 4 },
+  { label: "6〜11歳(小学生)", value: 8 },
+  { label: "12〜14歳(中学生)", value: 13 },
+  { label: "15〜18歳(高校生)", value: 16 },
+  { label: "19歳以上", value: 19 },
+];
+
 // 1つ前のステップに「戻る」を実装するため、進むときにそれまで選んだ内容を
-// 消さずに引き継いでいく(stepだけ進める/戻すイメージ)
+// 消さずに引き継いでいく(stepだけ進める/戻すイメージ)。
+// childAgeは人数分ループするステップなので、聞き終わった分だけchildAgesに積んでいく
 export type DiagFlowState = {
-  step: "region" | "prefecture" | "ward" | "children" | "income";
+  step: "region" | "prefecture" | "ward" | "children" | "childAge" | "income";
   region?: string;
   prefecture?: string;
   ward?: string;
   numChildren?: number;
+  childAges?: number[];
 };
 
 export function encodeState(state: DiagFlowState): string {
