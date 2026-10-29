@@ -13,12 +13,10 @@ import {
   IconInfoCircle,
   IconShieldLock,
   IconFileText,
-  IconMessageCircle2,
   IconChevronRight,
 } from "@tabler/icons-react";
 import { Zen_Maru_Gothic } from "next/font/google";
 import { BearParentChild } from "@/components/Bear";
-import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
 const zenMaruGothic = Zen_Maru_Gothic({
   subsets: ["latin"],
@@ -39,14 +37,14 @@ const MENU_SUB_LINKS = [
   { icon: IconFileText, label: "利用規約", href: "/terms" },
 ];
 
-// ホームページ上部のロゴ+ハンバーガーメニュー。メニューの中身はフルスクリーンの
-// オーバーレイで、サイト全体のページ+LINE登録導線をまとめて出す
+// ホームページ上部のロゴ+ハンバーガーメニュー。メニューはヘッダー直下に
+// 開く小さめのドロップダウンにして、全画面に差し替わる唐突さを避ける
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <>
-      <div className="mb-5 -mx-4 flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
+    <div className="relative -mx-4 mb-5">
+      <div className="flex items-center justify-between bg-[#E6F1FB] px-4 py-3">
         <div className="flex items-center gap-1.5">
           <BearParentChild size={42} />
           <div className="text-left">
@@ -58,76 +56,57 @@ export function SiteHeader() {
         </div>
         <button
           type="button"
-          aria-label="メニューを開く"
-          onClick={() => setOpen(true)}
+          aria-label={open ? "メニューを閉じる" : "メニューを開く"}
+          onClick={() => setOpen((v) => !v)}
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white"
         >
-          <IconMenu2 size={18} className="text-[#5F5E5A]" />
+          {open ? (
+            <IconX size={18} className="text-[#5F5E5A]" />
+          ) : (
+            <IconMenu2 size={18} className="text-[#5F5E5A]" />
+          )}
         </button>
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex justify-center bg-[var(--background)]">
-          <div className="flex w-full max-w-md flex-col px-4 pt-3 pb-5">
-            <div className="mb-5 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <BearParentChild size={36} />
-                <p className={`${zenMaruGothic.className} text-xl leading-tight text-[#D85A30]`}>
-                  ハハナビ
-                </p>
-              </div>
-              <button
-                type="button"
-                aria-label="メニューを閉じる"
+        <>
+          {/* 裏の画面をうっすら暗くして、外側タップで閉じられるようにする */}
+          <button
+            type="button"
+            aria-label="メニューを閉じる"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-40 bg-black/15"
+          />
+          <div className="absolute top-full right-0 left-0 z-50 flex flex-col gap-1 rounded-b-2xl bg-[var(--background)] px-4 pt-2 pb-3 shadow-lg">
+            {MENU_LINKS.map(({ icon: Icon, label, href }) => (
+              <Link
+                key={label}
+                href={href}
                 onClick={() => setOpen(false)}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]"
+                className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
               >
-                <IconX size={18} className="text-[#5F5E5A]" />
-              </button>
-            </div>
+                <Icon size={18} className="text-[#5F5E5A]" />
+                <p className="flex-1 text-sm font-medium">{label}</p>
+                <IconChevronRight size={16} className="text-[#888780]" />
+              </Link>
+            ))}
 
-            <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
-              {MENU_LINKS.map(({ icon: Icon, label, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
-                >
-                  <Icon size={18} className="text-[#5F5E5A]" />
-                  <p className="flex-1 text-sm font-medium">{label}</p>
-                  <IconChevronRight size={16} className="text-[#888780]" />
-                </Link>
-              ))}
+            <div className="mt-2 mb-1 h-px bg-[#E3E0D6]" />
 
-              <div className="mt-3 mb-1 h-px bg-[#E3E0D6]" />
-
-              {MENU_SUB_LINKS.map(({ icon: Icon, label, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5"
-                >
-                  <Icon size={16} className="text-[#888780]" />
-                  <p className="flex-1 text-sm text-[#5F5E5A]">{label}</p>
-                </Link>
-              ))}
-            </div>
-
-            <a
-              href={LINE_ADD_FRIEND_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium text-white"
-              style={{ backgroundColor: LINE_GREEN }}
-            >
-              <IconMessageCircle2 size={16} />
-              LINEで簡単手当診断をしてみる
-            </a>
+            {MENU_SUB_LINKS.map(({ icon: Icon, label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 rounded-xl px-3.5 py-2"
+              >
+                <Icon size={16} className="text-[#888780]" />
+                <p className="flex-1 text-sm text-[#5F5E5A]">{label}</p>
+              </Link>
+            ))}
           </div>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 }
