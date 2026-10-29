@@ -288,6 +288,24 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
   items.push(fuyouResult);
   if (fuyouResult.monthlyYen) totalMonthlyYen += fuyouResult.monthlyYen;
 
+  // 児童手当(国の制度、所得制限なしで全世帯対象)。金額は子の年齢(3歳未満/以降)で変わり、
+  // 今の質問では年齢を聞いていないため、人数ベースの概算レンジで出す(第3子以降の加算は見込まない)
+  const jidouTeateProgram = programs.find((p) => p.id === "jidou-teate");
+  if (jidouTeateProgram) {
+    const minAmount = count * 10000;
+    const maxAmount = count * 15000;
+    items.push({
+      name: jidouTeateProgram.name,
+      status: "全部支給",
+      note: `${jidouTeateProgram.kumaNote ?? ""} お子さんの年齢(3歳未満かどうか)で金額が変わるから、人数ベースの概算だよ`,
+      monthlyYenRange: { min: minAmount, max: maxAmount },
+      office: KOSODATE_OFFICE,
+      window: jidouTeateProgram.window,
+      programId: jidouTeateProgram.id,
+    });
+    totalMonthlyYen += minAmount; // 合計の見出しには、年齢が分からない前提で安全側(最小額)を加算
+  }
+
   const fuyouRule = fuyouProgram.diagnosisRule as CashDiagnosisRule;
   // 一部支給の判定にも使うため、しきい値だけ再計算(資格取得支援・交通系の案内に流用)
   const partialLimit = fuyouRule.partialSupport
@@ -462,18 +480,6 @@ export function diagnose(input: ParsedInput): DiagnosisResult {
         programId: loanProgram.id,
       });
     }
-  }
-
-  // 児童手当: 所得制限なしで全世帯対象だが、金額が子の年齢・第何子かで変わり今の質問だけでは
-  // 正確な金額が出せないため、給付額の計算には入れず案内のみ
-  const jidouTeateProgram = programs.find((p) => p.id === "jidou-teate");
-  if (jidouTeateProgram) {
-    items.push({
-      name: jidouTeateProgram.name,
-      status: "要確認",
-      note: jidouTeateProgram.kumaNote ?? "",
-      programId: jidouTeateProgram.id,
-    });
   }
 
   const koujoProgram = programs.find((p) => p.id === "hitorioya-koujo");
