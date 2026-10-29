@@ -21,7 +21,8 @@
     <ellipse cx="0" cy="20" rx="18" ry="12" fill="#FAECE7"/>
   </g>
   <text x="625" y="490" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="92" font-weight="700" fill="#2B2924">ハハナビTOP</text>
-  <text x="625" y="580" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="60" fill="#5F5E5A">記事・制度・資格・求人</text>
+  <text x="625" y="568" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="50" fill="#5F5E5A">シングルマザー向け支援制度、お役立ち記事、</text>
+  <text x="625" y="628" text-anchor="middle" font-family="Hiragino Sans, Noto Sans JP, sans-serif" font-size="50" fill="#5F5E5A">おすすめ資格、おすすめ求人のポータルサイト</text>
 
   <!-- cell 2 (top-right): ご意見箱 -->
   <circle cx="1875" cy="300" r="86" fill="#0C447C"/>
