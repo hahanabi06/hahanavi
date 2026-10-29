@@ -73,7 +73,7 @@ export function SiteHeader() {
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 bg-black/25"
           />
-          <div className="fixed inset-y-0 left-0 z-50 flex w-[62%] max-w-[280px] flex-col overflow-y-auto bg-[var(--background)] px-4 pt-4 pb-5 shadow-xl">
+          <div className="fixed inset-y-0 right-0 z-50 flex w-[62%] max-w-[280px] flex-col overflow-y-auto bg-[var(--background)] px-4 pt-4 pb-5 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <BearParentChild size={32} />
