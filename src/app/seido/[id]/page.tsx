@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { IconChevronRight, IconMessageCircle2 } from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
+import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ReportForm } from "@/components/ReportForm";
 import programsData from "@/data/programs.json";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
@@ -148,6 +149,7 @@ export default async function ProgramDetailPage({
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
+        <SiteLogoLink />
         <div className="mb-2 flex flex-wrap gap-1.5">
           <span className="inline-block w-fit rounded-full bg-[#F1EFE8] px-3 py-1 text-xs font-medium text-[#5F5E5A]">
             {CATEGORY_LABEL[program.category] ?? program.category}

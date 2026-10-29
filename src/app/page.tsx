@@ -18,7 +18,6 @@ import { BearGreeting } from "@/components/BearGreeting";
 import { RequestForm } from "@/components/RequestForm";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import { listPublishedArticles } from "@/lib/notion";
-import { getArticleViewCounts } from "@/lib/article-stats";
 import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
 
@@ -81,60 +80,53 @@ const PROGRAMS = programsData.programs
 
 type RankItem = { text: string; href: string | null; isNew?: boolean };
 
-const DUMMY_NEW: RankItem[] = [
-  { text: "資格、お金かけずに取れるって本当?", href: null },
-  { text: "元夫からの連絡、もう無視していいよ", href: null },
-];
-
-const DUMMY_TOP3: RankItem[] = [
+const DUMMY_ARTICLES: RankItem[] = [
   { text: "え、知らなかった。月1万円以上増える制度があった", href: null },
   { text: "資格、お金かけずに取れるって本当?", href: null },
   { text: "元夫からの連絡、もう無視していいよ", href: null },
+  { text: "ひとりで抱え込まなくていいよ、って話", href: null },
+  { text: "知らないと損する、使える制度まとめ", href: null },
 ];
 
-function padWithDummy(items: RankItem[], dummy: RankItem[], n: number): RankItem[] {
+function shuffle<T>(items: T[]): T[] {
   const result = [...items];
-  let i = 0;
-  while (result.length < n && i < dummy.length) {
-    result.push(dummy[i]);
-    i++;
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
   }
-  return result.slice(0, n);
+  return result;
 }
 
-// 新着(最大2件・NEWバッジ付き)とTOP3(アクセス数順)をそれぞれ計算する。記事が足りない分はダミーで埋める
-async function getHomeArticles(): Promise<{ newest: RankItem[]; top3: RankItem[] }> {
+// 新着2件(NEWバッジ付き)+ランダム3件の、計5件を表示する。記事が足りない分はダミーで埋める
+async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
   "use cache";
   cacheLife("minutes");
   try {
     const articles = await listPublishedArticles(); // 新着順(created_time desc)で返る
     if (articles.length === 0) {
-      return { newest: DUMMY_NEW, top3: DUMMY_TOP3 };
+      return { articles: DUMMY_ARTICLES };
     }
 
-    const views = await getArticleViewCounts(articles.map((a) => a.id));
-    const byViews = [...articles].sort(
-      (a, b) => (views[b.id] ?? 0) - (views[a.id] ?? 0),
-    );
+    const newest = articles.slice(0, 2).map((a) => ({
+      text: a.title,
+      href: `/kiji/${a.id}`,
+      isNew: true,
+    }));
+    const randomRest = shuffle(articles.slice(2))
+      .slice(0, 3)
+      .map((a) => ({ text: a.title, href: `/kiji/${a.id}` }));
 
-    const newest = padWithDummy(
-      articles.slice(0, 2).map((a) => ({
-        text: a.title,
-        href: `/kiji/${a.id}`,
-        isNew: true,
-      })),
-      DUMMY_NEW,
-      2,
-    );
-    const top3 = padWithDummy(
-      byViews.slice(0, 3).map((a) => ({ text: a.title, href: `/kiji/${a.id}` })),
-      DUMMY_TOP3,
-      3,
-    );
+    const combined: RankItem[] = [...newest, ...randomRest];
+    const padded = [...combined];
+    let i = 0;
+    while (padded.length < 5 && i < DUMMY_ARTICLES.length) {
+      padded.push(DUMMY_ARTICLES[i]);
+      i++;
+    }
 
-    return { newest, top3 };
+    return { articles: padded.slice(0, 5) };
   } catch {
-    return { newest: DUMMY_NEW, top3: DUMMY_TOP3 };
+    return { articles: DUMMY_ARTICLES };
   }
 }
 
@@ -153,7 +145,7 @@ const NAV_ITEMS = [
 ];
 
 export default async function Home() {
-  const { newest, top3 } = await getHomeArticles();
+  const { articles: homeArticles } = await getHomeArticles();
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-20 flex justify-center bg-[#E6F1FB]">
@@ -214,51 +206,18 @@ export default async function Home() {
           <LineButton>LINEで簡単手当診断をしてみる</LineButton>
         </section>
 
-        {/* 記事: 新着 + TOP3 */}
+        {/* 記事: 新着2件 + ランダム3件 */}
         <section className="mb-6">
           <SectionHeading title="お役立ち記事" href="/kiji" />
 
-          <div className="mb-3 flex flex-col gap-1.5">
-            {newest.map((item) => {
-              const inner = (
-                <>
-                  <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
-                    NEW
-                  </span>
-                  <p className="line-clamp-2 flex-1 text-base leading-snug">{item.text}</p>
-                </>
-              );
-              return item.href ? (
-                <Link
-                  key={item.text}
-                  href={item.href}
-                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
-                >
-                  {inner}
-                </Link>
-              ) : (
-                <div
-                  key={item.text}
-                  className="flex h-14 items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-1.5"
-                >
-                  {inner}
-                </div>
-              );
-            })}
-          </div>
-
-          <p className="mb-1.5 text-sm font-medium text-[#888780]">TOP3</p>
           <div className="flex flex-col gap-1.5">
-            {top3.map((item, i) => {
+            {homeArticles.map((item) => {
               const inner = (
                 <>
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#FAECE7] text-sm font-bold text-[#712B13]">
-                    {i + 1}
-                  </span>
                   <p className="line-clamp-2 flex-1 text-base leading-snug">{item.text}</p>
-                  {item.href && (
+                  {item.isNew && (
                     <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
-                      人気
+                      NEW
                     </span>
                   )}
                 </>
