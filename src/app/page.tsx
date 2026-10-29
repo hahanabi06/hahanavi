@@ -275,15 +275,27 @@ export default async function Home() {
           </a>
         </div>
 
-        <div className="mt-8 border-t border-[#E3E0D6] pt-5">
+        <div className="mt-8 mb-5 flex flex-col gap-2.5 border-t border-[#E3E0D6] pt-5">
           <Link
             href="/company"
-            className="mb-5 flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
+            className="flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
           >
             <div>
               <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
               <p className="text-xs text-[#993C1D]">
                 採用・PRでのご活用はこちら
+              </p>
+            </div>
+            <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
+          </Link>
+          <Link
+            href="/shigyo"
+            className="flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
+          >
+            <div>
+              <p className="text-sm font-medium text-[#712B13]">士業の方へ</p>
+              <p className="text-xs text-[#993C1D]">
+                ひとり親支援でのご協力はこちら
               </p>
             </div>
             <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
