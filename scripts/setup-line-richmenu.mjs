@@ -78,7 +78,7 @@ async function createRichMenu() {
       size: { width: 2500, height: 1686 },
       selected: true,
       name: "hahanavi-main-menu",
-      chatBarText: "メニュー",
+      chatBarText: "ハハナビメニューを表示",
       areas: AREAS,
     }),
   });
