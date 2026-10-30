@@ -5,9 +5,11 @@ import { useState } from "react";
 export function ReportForm({
   programId,
   programName,
+  source = "program_detail",
 }: {
   programId: string;
   programName: string;
+  source?: "program_detail" | "article";
 }) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
@@ -26,7 +28,7 @@ export function ReportForm({
           programId,
           programName,
           message,
-          source: "program_detail",
+          source,
         }),
       });
       if (!res.ok) throw new Error("failed");

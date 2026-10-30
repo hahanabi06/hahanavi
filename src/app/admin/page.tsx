@@ -37,6 +37,7 @@ function formatDay(d: Date): string {
 const SOURCE_LABEL: Record<string, string> = {
   program_detail: "制度詳細ページ",
   homepage_request: "トップページの要望フォーム",
+  article: "記事ページ",
 };
 
 const PORTAL_LINKS = [

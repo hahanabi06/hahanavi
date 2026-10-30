@@ -11,7 +11,12 @@ export async function POST(req: Request) {
 
   const programId = typeof body?.programId === "string" ? body.programId : null;
   const programName = typeof body?.programName === "string" ? body.programName : null;
-  const source = body?.source === "homepage_request" ? "homepage_request" : "program_detail";
+  const source =
+    body?.source === "homepage_request"
+      ? "homepage_request"
+      : body?.source === "article"
+        ? "article"
+        : "program_detail";
 
   const supabase = getSupabaseServerClient();
   const { error } = await supabase.from("program_reports").insert({

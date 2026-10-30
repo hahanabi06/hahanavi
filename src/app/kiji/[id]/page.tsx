@@ -5,6 +5,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { BearMama, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ViewTracker } from "@/components/ViewTracker";
+import { ReportForm } from "@/components/ReportForm";
 import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
 
@@ -145,6 +146,14 @@ export default async function ArticlePage({
             </div>
           </div>
         )}
+
+        <div className="mb-4 border-b border-[#D3D1C7]">
+          <ReportForm
+            programId={id}
+            programName={article.title}
+            source="article"
+          />
+        </div>
 
         <LineDiagnosisBar className="mt-8" />
       </main>
