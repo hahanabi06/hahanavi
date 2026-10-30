@@ -35,7 +35,7 @@ export default function About() {
             <section>
               <h2 className="mb-1 font-medium">お問い合わせ</h2>
               <p>
-                ホーム画面の「こんな情報、欲しいな?」フォームからご連絡ください。
+                ホーム画面の「こんな情報、欲しいな♪」フォームからご連絡ください。
               </p>
             </section>
           </div>

@@ -68,7 +68,7 @@ export default function Terms() {
             <section>
               <h2 className="mb-1 font-medium">お問い合わせ</h2>
               <p>
-                本規約に関するお問い合わせは、ホーム画面の「こんな情報、欲しいな?」フォームからご連絡ください。
+                本規約に関するお問い合わせは、ホーム画面の「こんな情報、欲しいな♪」フォームからご連絡ください。
               </p>
             </section>
 
