@@ -246,7 +246,7 @@ export default async function Home() {
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#F1EFE8] px-3.5 py-3.5">
             <IconBriefcase size={18} className="text-[#888780]" />
             <p className="text-sm text-[#888780]">
-              近日公開。LINEでお知らせします。
+              近日公開。
             </p>
           </div>
         </section>
