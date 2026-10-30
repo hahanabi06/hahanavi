@@ -475,9 +475,180 @@
       "verifyNeeded": false,
       "source": "https://www.city.minato.tokyo.jp/kateisoudan/adr-youikuhihoshou.html",
       "verifiedAt": "2026-10-29",
-      "note": "同種の養育費確保支援(公正証書作成費助成・ADR利用助成・養育費保証利用助成)は、確認できただけでも世田谷区(金額の算定方法が異なる・別途強制執行費用助成上限10万円あり)や杉並区(港区と近い上限額体系)にもあり、港区だけの制度ではない。新宿区・渋谷区など他区は今回の調査では確認できなかった(未実施か、単に見つけられなかったかは未確定)。区ごとに助成額・対象経費が異なるため、個別に調査して追加が必要",
+      "note": "同種の養育費確保支援(公正証書作成費助成・ADR利用助成・養育費保証利用助成)は、確認できただけでも世田谷区(金額の算定方法が異なる・別途強制執行費用助成上限10万円あり)や杉並区(港区と近い上限額体系)、渋谷区・葛飾区(いずれも別エントリとして追加済み)にもあり、港区だけの制度ではない。区ごとに助成額・対象経費が異なるため、個別に調査して追加が必要",
       "wardsAvailable": [
         "港区"
+      ]
+    },
+    {
+      "id": "shibuya-koseishousho-sakusei-josei",
+      "name": "養育費に関する公正証書作成手数料等補助金(渋谷区)",
+      "headline": "公正証書作成費等を助成",
+      "layer": "municipal",
+      "category": "cash",
+      "tiers": [
+        {
+          "label": "公正証書作成費用助成",
+          "value": "上限43,000円",
+          "note": "強制執行認諾約款付き公正証書の公証人手数料"
+        },
+        {
+          "label": "家事調停・審判・裁判費用助成",
+          "value": "上限20,000円"
+        },
+        {
+          "label": "ADR利用助成",
+          "value": "上限50,000円"
+        }
+      ],
+      "eligibility": "渋谷区民で、ひとり親家庭の養育費の取決めに係る費用を負担した人(同趣旨の補助金を過去に受給していないこと)",
+      "window": "渋谷区 子育て給付・ひとり親支援窓口",
+      "kumaNote": "養育費の取り決めで公正証書を作ったり、調停・ADRを使ったりしたときの費用を、渋谷区が一部助成してくれる制度だよ。港区の制度とよく似てるよ。",
+      "verifyNeeded": false,
+      "source": "https://www.city.shibuya.tokyo.jp/kodomo/kodomo-teate-josei/hitorioya/youikuhishien.html",
+      "verifiedAt": "2026-10-30",
+      "note": "港区の`minato-rikon-oyashien-joseikin`と同系統の制度。公正証書作成費用の上限43,000円は港区と同額",
+      "wardsAvailable": [
+        "渋谷区"
+      ]
+    },
+    {
+      "id": "katsushika-koseishousho-sakusei-josei",
+      "name": "養育費受け取り支援事業・公正証書作成費助成(葛飾区)",
+      "headline": "公正証書作成費を助成",
+      "layer": "municipal",
+      "category": "cash",
+      "amount": "公正証書作成費用等を上限43,000円まで助成(1回限り)",
+      "eligibility": "葛飾区内在住のひとり親家庭で、養育費の取決めに係る公正証書等を作成した人",
+      "window": "葛飾区 子育て支援課",
+      "kumaNote": "養育費の取り決めで公正証書を作ったときの費用を、葛飾区が上限43,000円まで助成してくれる制度だよ。港区と同じ金額だよ。",
+      "verifyNeeded": true,
+      "source": "https://www.city.katsushika.lg.jp/kosodate/1000056/1002341/index.html",
+      "verifiedAt": "2026-10-30",
+      "note": "港区・渋谷区と同系統の制度で上限額も同じ43,000円だが、ADR利用助成・養育費保証利用助成等の有無は未確認(区のindexページには公正証書作成費助成しか明記されていなかった)。要継続調査",
+      "wardsAvailable": [
+        "葛飾区"
+      ]
+    },
+    {
+      "id": "shinagawa-jisshitsu-hitorioya-kyuhukin",
+      "name": "実質ひとり親家庭への給付事業(品川区)",
+      "headline": "児童1人10万円",
+      "layer": "municipal",
+      "category": "cash",
+      "amount": "支給対象児童1人につき100,000円(一時金)",
+      "eligibility": "離婚調停中など、離婚成立前から実質的にひとり親家庭となっている父または母(品川区在住、所得制限は児童扶養手当と同じ)。児童扶養手当を受給している場合は対象外(申請できない「隙間の期間」を埋める制度のため)",
+      "window": "品川区 子ども未来部 子育て応援課",
+      "kumaNote": "離婚が成立してなくても、調停中で実質的に一人で子育てしてるなら、児童扶養手当の代わりに児童1人あたり10万円もらえる制度だよ。中野区にも同じ仕組みがあるよ。",
+      "verifyNeeded": false,
+      "source": "https://www.city.shinagawa.tokyo.jp/kodomo/kodomoteate/1001965/1001900.html",
+      "verifiedAt": "2026-10-30",
+      "note": "令和7年5月26日制定の実施要綱に基づく。中野区の`nakano-jisshitsu-hitorioya-kyuhukin`と全く同じ仕組み・同額(児童1人10万円)で、離婚調停中のブリッジ給付は複数区に存在するパターンと判明",
+      "wardsAvailable": [
+        "品川区"
+      ]
+    },
+    {
+      "id": "shinagawa-juutaku-nyuukyo-shien",
+      "name": "ひとり親家庭住宅入居支援事業(品川区)",
+      "headline": "保証料を上限10万円助成",
+      "layer": "municipal",
+      "category": "housing",
+      "amount": "賃貸住宅入居時、保証会社に支払う初回保証委託料の実費を上限100,000円まで助成",
+      "eligibility": "品川区内の賃貸住宅に入居するひとり親家庭で、連帯保証人を立てられない人",
+      "window": "品川区 子ども未来部 子育て応援課",
+      "kumaNote": "新しく賃貸住宅に引っ越すとき、連帯保証人の代わりに保証会社を使う場合の保証料を、品川区が上限10万円まで助成してくれる制度だよ。",
+      "verifyNeeded": true,
+      "source": "https://www.city.shinagawa.tokyo.jp/kodomo/kodomoteate/1001965/1001973.html",
+      "verifiedAt": "2026-10-30",
+      "note": "助成の回数制限(1回限りか等)や所得制限の詳細は要継続確認",
+      "wardsAvailable": [
+        "品川区"
+      ]
+    },
+    {
+      "id": "bunkyo-tenkyohi-josei",
+      "name": "移転費用等助成(文京区)",
+      "headline": "転居費用+家賃差額を助成",
+      "layer": "municipal",
+      "category": "housing",
+      "tiers": [
+        {
+          "label": "移転費用助成",
+          "value": "上限150,000円",
+          "note": "礎金・仲介手数料・引越経費など"
+        },
+        {
+          "label": "家賃差額助成",
+          "value": "月額上限20,000円(最長2年間)"
+        }
+      ],
+      "eligibility": "18歳未満の子がいる母子・父子家庭で、立退き要求や住環境改善のため区内転居する人(離婚未成立でも、書面で手続着手を証明できれば対象)。前年所得1,896,000円以下",
+      "window": "文京区 子育て支援課",
+      "kumaNote": "立ち退きを求められたり、住環境を改善するために区内で引っ越すひとり親家庭に、引越し費用(上限15万円)と、引っ越し後の家賃が上がった分の差額(月2万円まで、最長2年)を助成してくれる制度だよ。",
+      "verifyNeeded": false,
+      "source": "https://www.city.bunkyo.lg.jp/b016/p000768.html",
+      "verifiedAt": "2026-10-30",
+      "note": "2025年7月更新ページで現行の恒常事業と確認",
+      "wardsAvailable": [
+        "文京区"
+      ]
+    },
+    {
+      "id": "kita-tenkyohi-josei",
+      "name": "障害者世帯及びひとり親世帯転居費用助成(北区)",
+      "headline": "転居費用を上限15万円助成",
+      "layer": "municipal",
+      "category": "housing",
+      "hitorioyaOnly": false,
+      "amount": "自己の責任によらない立退きの場合、礎金・仲介手数料等を上限150,000円まで助成",
+      "eligibility": "北区内在住で、自己の責任によらない立退きにより転居するひとり親世帯または障害者世帯(ひとり親家庭に限らない)",
+      "window": "北区 子ども未来部 子育て支援課",
+      "kumaNote": "自分のせいじゃない立ち退きで引っ越すひとり親家庭(または障がいのある方がいる世帯)に、北区が引越し費用を上限15万円まで助成してくれる制度だよ。",
+      "verifyNeeded": true,
+      "source": "https://www.city.kita.lg.jp/children-edu/childcare/1002833/1002848/1016855.html",
+      "verifiedAt": "2026-10-30",
+      "note": "障害者世帯と共通の制度で、ひとり親専用ではない。申請条件の詳細は要継続確認",
+      "wardsAvailable": [
+        "北区"
+      ]
+    },
+    {
+      "id": "ota-tenkyo-ichijikin",
+      "name": "転居一時金助成(大田区)",
+      "headline": "転居費用を上限10万円助成",
+      "layer": "municipal",
+      "category": "housing",
+      "hitorioyaOnly": false,
+      "amount": "立退き等による転居の場合、礎金・仲介手数料・権利金等を上限100,000円まで助成",
+      "eligibility": "大田区内在住で、立退き等により転居するひとり親世帯、高齢者世帯または障がい者世帯(ひとり親家庭に限らない)",
+      "window": "大田区 こども家庭部 こども生活応援課",
+      "kumaNote": "立ち退き等で引っ越すひとり親家庭(または高齢の方・障がいのある方がいる世帯)に、大田区が引越し費用を上限10万円まで助成してくれる制度だよ。北区と似た制度だよ。",
+      "verifyNeeded": true,
+      "source": "https://www.city.ota.tokyo.jp/seikatsu/kodomo/shien/shien/hitorioyakateishienshisaku8.html",
+      "verifiedAt": "2026-10-30",
+      "note": "高齢者・障がい者世帯と共通の制度で、ひとり親専用ではない。別途「家賃等債務保証会社加入費助成」もある模様だが詳細未確認",
+      "wardsAvailable": [
+        "大田区"
+      ]
+    },
+    {
+      "id": "sumida-yachin-hoshou-josei",
+      "name": "高齢者等家賃等債務保証制度(墨田区)",
+      "headline": "保証料を半額助成(上限3万円)",
+      "layer": "municipal",
+      "category": "housing",
+      "hitorioyaOnly": false,
+      "amount": "賃貸住宅入居時の保証会社への保証料を半額助成(上限30,000円。契約更新時の保証料は対象外)",
+      "eligibility": "墨田区内の賃貸住宅に入居するひとり親世帯(高齢者世帯等も対象、ひとり親家庭に限らない)",
+      "window": "墨田区 住宅課",
+      "kumaNote": "墨田区で賃貸住宅に入居するとき、保証会社に払う保証料を半額(上限3万円)助成してくれる制度だよ。契約更新のときの保証料は対象外だから注意してね。",
+      "verifyNeeded": true,
+      "source": "https://www.city.sumida.lg.jp/",
+      "verifiedAt": "2026-10-30",
+      "note": "正式な制度名・出典URLは暫定(フォーク調査では区トップページ経由での確認、詳細ページの直接URLは未取得のため要継続確認)。別途「すみだセーフティネット住宅」で子育て世帯・ひとり親世帯の補助期間が最長6年間(他世帯より長い可能性)との情報もあるが、家賃補助額の詳細は未確認",
+      "wardsAvailable": [
+        "墨田区"
       ]
     },
     {
@@ -538,6 +709,12 @@
           "description": "全世帯・全年齢の保育料が0円",
           "note": "令和7年9月1日開始。延長保育料は自己負担。台東区・杉並区・板橋区・豊島区と同じ全年齢無償化パターン。ページURLが「第2子無償化」のままだが、内容は全児童対象に拡充されている",
           "source": "https://www.city.nerima.tokyo.jp/kosodatekyoiku/kodomo/hoiku/dainishimusyouka.html"
+        },
+        {
+          "area": "渋谷区",
+          "description": "全世帯・全年齢の保育料が0円(給食費も区負担)",
+          "note": "令和7年9月より第1子の保育料も所得にかかわらず無償化(第2子以降は令和5年10月から無償)。台東区・杉並区・板橋区・豊島区・練馬区と同じ全年齢無償化パターンの7例目",
+          "source": "https://www.city.shibuya.tokyo.jp/kodomo/hoiku/hoikuryo/hoikuryo.html"
         }
       ]
     },
