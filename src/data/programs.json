@@ -250,9 +250,13 @@
       "window": "お住まいの区役所",
       "kumaNote": "子どもがいる家庭なら、ひとり親じゃなくてももらえるお金だよ。所得制限が無くなったから、高校生までずっと誰でももらえるよ。",
       "verifyNeeded": false,
-      "source": "https://www.pref.osaka.lg.jp/o090135/kateishien/teate/jite_202410.html",
-      "verifiedAt": "2026-10-29",
-      "note": "制度自体はこども家庭庁(国)が所管(https://www.cfa.go.jp/policies/kokoseido/jidouteate)。具体的な金額・所得制限撤廃は令和6年10月改正の内容を大阪府公式ページで確認(全国共通の制度のため都道府県問わず同条件)"
+      "source": "https://www.cfa.go.jp/policies/kokoseido/jidouteate/annai",
+      "verifiedAt": "2026-10-30",
+      "exampleSource": {
+        "area": "大阪府",
+        "url": "https://www.pref.osaka.lg.jp/o090135/kateishien/teate/jite_202410.html"
+      },
+      "note": "制度自体はこども家庭庁(国)が所管。金額・第3子加算はこども家庭庁公式ページの案内と完全一致を確認(2026-10-30)。所得制限撤廃の経緯はhttps://www.cfa.go.jp/policies/kokoseido/jidouteate/mottoouenも参照。全国共通の制度のため都道府県問わず同条件"
     },
     {
       "id": "koukou-shougaku-kyuhukin",
@@ -634,9 +638,13 @@
       "window": "お住まいの区市町村役場の国民年金担当窓口、または年金事務所",
       "kumaNote": "年金の支払いがきついときに使える制度だよ。収入が低ければ、全額払わなくて良くなることもあるよ。自動ではならないから、窓口で申請してね。",
       "verifyNeeded": false,
-      "note": "制度自体は日本年金機構(国)が所管。135万円という寡婦・ひとり親・障害者向け特例基準は神戸市公式ページで一次情報として確認(全国共通の国の制度のため自治体問わず同条件)。一般の全額免除基準(35万円×(扶養人数+1)+32万円)とは別枠の基準であることに注意 令和8年度の国民年金保険料(月額17,920円)は日本年金機構公式ページ(https://www.nenkin.go.jp/service/kokunen/hokenryo/hokenryo.html)で確認(2026-10-29)。",
-      "source": "https://www.city.kobe.lg.jp/a52670/kurashi/support/pension/03.html",
-      "verifiedAt": "2026-10-29",
+      "note": "制度自体は日本年金機構(国)が所管。日本年金機構公式ページ(https://www.nenkin.go.jp/service/kokunen/menjo/20150428.html)では「地方税法に定める障害者・寡婦・ひとり親の場合、基準額が変わる」とあるが具体的な金額(135万円)までは載っていないため、神戸市など複数の自治体公式ページ(いずれも同一の地方税法上の基準を案内しており数字は一致)をexampleSourceとして金額の裏付けにしている。一般の全額免除基準(35万円×(扶養人数+1)+32万円)とは別枠の基準であることに注意。令和8年度の国民年金保険料(月額17,920円)は日本年金機構公式ページ(https://www.nenkin.go.jp/service/kokunen/hokenryo/hokenryo.html)で確認(2026-10-29)。",
+      "source": "https://www.nenkin.go.jp/service/kokunen/menjo/20150428.html",
+      "verifiedAt": "2026-10-30",
+      "exampleSource": {
+        "area": "神戸市",
+        "url": "https://www.city.kobe.lg.jp/a52670/kurashi/support/pension/03.html"
+      },
       "diagnosisRule": {
         "scope": "national",
         "kind": "pension_exemption",
