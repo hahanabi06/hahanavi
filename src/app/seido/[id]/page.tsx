@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { IconChevronRight, IconMessageCircle2 } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconMessageCircle2,
+  IconAlertTriangle,
+} from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ReportForm } from "@/components/ReportForm";
@@ -387,9 +391,16 @@ export default async function ProgramDetailPage({
           </div>
 
           {program.verifyNeeded && (
-            <div className="pt-3 text-xs leading-relaxed text-[#BA7517]">
-              <p>この制度の数字は現在確認中です。最新情報は窓口で確認してね。</p>
-              {program.note && <p className="mt-1">{program.note}</p>}
+            <div className="mt-3 rounded-xl bg-[#FCEAEA] px-3.5 py-3">
+              <p className="flex items-center gap-1.5 text-sm font-bold text-[#C0392B]">
+                <IconAlertTriangle size={16} className="shrink-0" />
+                この制度の数字は現在確認中です。最新情報は窓口で確認してね。
+              </p>
+              {program.note && (
+                <p className="mt-1.5 text-xs leading-relaxed text-[#8A4A4A]">
+                  {program.note}
+                </p>
+              )}
             </div>
           )}
           {program.source && (
