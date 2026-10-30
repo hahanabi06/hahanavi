@@ -37,7 +37,7 @@ export function RequestForm() {
   if (status === "sent") {
     return (
       <p className="text-sm leading-relaxed text-[#5F5E5A]">
-        送ってくれてありがとう!参考にさせてもらうね。
+        送ってくれてありがとう!とっても助かるよ♪
       </p>
     );
   }
