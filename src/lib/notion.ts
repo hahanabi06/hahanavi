@@ -91,7 +91,8 @@ export type ArticleBlock =
   | { type: "paragraph"; text: string; url?: string }
   | { type: "bear"; text: string; speaker: BearSpeaker }
   | { type: "heading"; text: string }
-  | { type: "bullet"; text: string };
+  | { type: "bullet"; text: string }
+  | { type: "banner"; text: string; url: string };
 
 export type RelatedProgram = {
   id: string;
@@ -239,6 +240,13 @@ export async function getArticle(id: string): Promise<Article | null> {
     } else if (b.type === "bulleted_list_item" || b.type === "numbered_list_item") {
       const text = plainText(b[b.type]?.rich_text);
       if (text) blocks.push({ type: "bullet", text });
+    } else if (b.type === "bookmark") {
+      // サービス紹介ページへのリンクを目立つバナーとして表示したいときは、
+      // Notion側で「ウェブページをブックマーク」(bookmarkブロック)を使う。
+      // キャプションをバナーの見出しにする(未設定ならURLをそのまま表示)
+      const url = b.bookmark?.url;
+      const caption = plainText(b.bookmark?.caption);
+      if (url) blocks.push({ type: "banner", text: caption || url, url });
     }
   }
 

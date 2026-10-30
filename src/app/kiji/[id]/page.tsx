@@ -100,6 +100,22 @@ export default async function ArticlePage({
                 </div>
               );
             }
+            if (block.type === "banner") {
+              return (
+                <div key={i} className="contents">
+                  {divider}
+                  <a
+                    href={block.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
+                  >
+                    <p className="text-sm leading-snug">{block.text}</p>
+                    <IconExternalLink size={16} className="shrink-0 text-[#888780]" />
+                  </a>
+                </div>
+              );
+            }
             if (block.type === "bullet") {
               return (
                 <div key={i} className="contents">
@@ -124,9 +140,8 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex items-center gap-1 text-[11px] text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
+                    className={`block text-[11px] text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
                   >
-                    <IconExternalLink size={11} className="shrink-0" />
                     {block.text}
                   </a>
                 ) : (
