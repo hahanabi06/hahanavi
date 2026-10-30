@@ -54,11 +54,11 @@ export default async function ArticlePage({
                   className={`flex w-full ${isKid ? "justify-start" : "justify-end"}`}
                 >
                   <div
-                    className={`flex max-w-[82%] items-end gap-2 ${isKid ? "flex-row" : "flex-row-reverse"}`}
+                    className={`flex max-w-[82%] items-start gap-2 ${isKid ? "flex-row" : "flex-row-reverse"}`}
                   >
-                    {isKid ? <BearCub size={32} /> : <BearMama size={36} />}
+                    {isKid ? <BearCub size={26} /> : <BearMama size={44} />}
                     <p
-                      className={`relative w-fit rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line after:absolute after:top-1/2 after:h-0 after:w-0 after:-translate-y-1/2 after:border-y-[6px] after:border-y-transparent ${
+                      className={`relative w-fit rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line after:absolute after:top-3 after:h-0 after:w-0 after:border-y-[6px] after:border-y-transparent ${
                         isKid
                           ? "bg-[#F1EFE8] after:-left-2 after:border-r-[8px] after:border-r-[#F1EFE8]"
                           : "bg-[#FAECE7] after:-right-2 after:border-l-[8px] after:border-l-[#FAECE7]"
