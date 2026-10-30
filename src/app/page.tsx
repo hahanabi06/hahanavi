@@ -5,6 +5,7 @@ import {
   IconBriefcase,
   IconChevronRight,
   IconMessageCircle2,
+  IconBrandX,
 } from "@tabler/icons-react";
 import Link from "next/link";
 import { BearGreeting } from "@/components/BearGreeting";
@@ -299,7 +300,19 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="mt-5 flex justify-center gap-3 text-xs text-[#888780]">
+        <div className="mt-5 flex justify-center">
+          <a
+            href="https://x.com/hahanavi_info"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="X(旧Twitter)"
+            className="text-[#888780]"
+          >
+            <IconBrandX size={16} />
+          </a>
+        </div>
+
+        <div className="mt-2 flex justify-center gap-3 text-xs text-[#888780]">
           <Link href="/about">運営者情報</Link>
           <Link href="/privacy">プライバシーポリシー</Link>
           <Link href="/terms">利用規約</Link>
