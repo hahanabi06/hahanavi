@@ -58,7 +58,7 @@ export default async function ArticlePage({
                   >
                     {isKid ? <BearCub size={26} /> : <BearMama size={44} />}
                     <p
-                      className={`relative w-[220px] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line after:absolute after:top-3 after:h-0 after:w-0 after:border-y-[6px] after:border-y-transparent ${
+                      className={`relative w-[260px] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line after:absolute after:top-3 after:h-0 after:w-0 after:border-y-[6px] after:border-y-transparent ${
                         isKid
                           ? "bg-[#F1EFE8] after:-left-2 after:border-r-[8px] after:border-r-[#F1EFE8]"
                           : "bg-[#FAECE7] after:-right-2 after:border-l-[8px] after:border-l-[#FAECE7]"
