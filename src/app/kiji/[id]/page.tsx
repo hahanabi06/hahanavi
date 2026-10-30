@@ -109,23 +109,21 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block overflow-hidden rounded-xl bg-[#F1EFE8]"
+                    className="flex items-center gap-3 overflow-hidden rounded-xl bg-[#F1EFE8] px-3.5 py-3"
                   >
                     {block.image && (
-                      <div className="flex items-center justify-center bg-white px-6 py-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white">
                         <Image
                           src={block.image}
                           alt=""
-                          width={160}
-                          height={60}
-                          className="h-auto w-auto max-h-[60px]"
+                          width={40}
+                          height={40}
+                          className="h-auto max-h-[36px] w-auto max-w-[36px]"
                         />
                       </div>
                     )}
-                    <div className="flex items-center justify-between gap-2.5 px-3.5 py-3">
-                      <p className="text-sm leading-snug">{block.text}</p>
-                      <IconExternalLink size={16} className="shrink-0 text-[#888780]" />
-                    </div>
+                    <p className="flex-1 text-sm leading-snug">{block.text}</p>
+                    <IconExternalLink size={16} className="shrink-0 text-[#888780]" />
                   </a>
                 </div>
               );
