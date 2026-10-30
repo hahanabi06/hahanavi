@@ -1,7 +1,6 @@
 import {
   IconCoin,
   IconNews,
-  IconCertificate,
   IconBriefcase,
   IconChevronRight,
   IconMessageCircle2,
@@ -16,7 +15,6 @@ import { listPublishedArticles } from "@/lib/notion";
 import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
 import { ArticleEyecatch } from "@/lib/article-category";
-import { QUALIFICATIONS } from "@/lib/qualifications";
 
 function LineButton({
   children,
@@ -133,7 +131,6 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
 const NAV_ITEMS = [
   { icon: IconCoin, label: "支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
-  { icon: IconCertificate, label: "おすすめ資格", href: "/shikaku" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
 ];
 
@@ -222,24 +219,6 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* おすすめ資格 */}
-        <section className="mb-6">
-          <SectionHeading title="おすすめ資格" href="/shikaku" linkLabel="資格制度一覧へ" />
-          <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {QUALIFICATIONS.map(({ icon: Icon, label, note }) => (
-              <Link
-                key={label}
-                href="/shikaku"
-                className="flex h-[96px] w-[120px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
-              >
-                <Icon size={18} className="text-[#5F5E5A]" />
-                <p className="mt-1.5 line-clamp-1 text-sm font-medium">{label}</p>
-                <p className="line-clamp-2 text-xs text-[#888780]">{note}</p>
-              </Link>
-            ))}
-          </div>
-        </section>
-
         {/* 求人 */}
         <section className="mb-6">
           <p className="mb-2.5 text-base font-medium">ママ向け求人</p>
@@ -271,18 +250,6 @@ export default async function Home() {
               <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
               <p className="text-xs text-[#993C1D]">
                 採用・PRでのご活用はこちら
-              </p>
-            </div>
-            <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
-          </Link>
-          <Link
-            href="/shigyo"
-            className="flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
-          >
-            <div>
-              <p className="text-sm font-medium text-[#712B13]">士業の方へ</p>
-              <p className="text-xs text-[#993C1D]">
-                お悩み相談でのご協力はこちら
               </p>
             </div>
             <IconChevronRight size={18} className="shrink-0 text-[#993C1D]" />
