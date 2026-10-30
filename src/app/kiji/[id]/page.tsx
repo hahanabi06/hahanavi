@@ -112,13 +112,13 @@ export default async function ArticlePage({
                     className="flex items-center gap-3 overflow-hidden rounded-xl bg-[#F1EFE8] px-3.5 py-3"
                   >
                     {block.image && (
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-white">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-white p-1">
                         <Image
                           src={block.image}
                           alt=""
-                          width={56}
-                          height={56}
-                          className="h-auto max-h-[52px] w-auto max-w-[52px]"
+                          width={60}
+                          height={60}
+                          className="h-auto max-h-full w-auto max-w-full"
                         />
                       </div>
                     )}
