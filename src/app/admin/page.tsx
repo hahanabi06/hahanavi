@@ -413,10 +413,12 @@ export default async function AdminDashboard() {
 
         <main className="min-w-0 flex-1 px-8 py-6">
           <section className="mb-8">
-            <div className="flex items-start justify-between gap-6">
-              <div className="min-w-0 flex-1">
-                <p className="mb-3 text-lg font-medium">
-                  今月のファネル({thisMonthKey})
+            <p className="mb-3 text-lg font-medium">アクセス解析</p>
+
+            <div className="mb-3 flex items-start justify-between gap-6">
+              <div className="min-w-0">
+                <p className="mb-2 text-xs font-medium text-[#888780]">
+                  今月実績
                 </p>
                 <div className="flex items-center gap-2">
                   {[
@@ -424,11 +426,6 @@ export default async function AdminDashboard() {
                     { label: "UU", value: thisMonthUU },
                     { label: "LINE登録", value: thisMonthLineFollows },
                   ].map((step, i, arr) => {
-                    const max = arr[0].value || 1;
-                    const widthPct = Math.max(
-                      18,
-                      Math.round((step.value / max) * 100),
-                    );
                     const prevValue = i > 0 ? arr[i - 1].value : null;
                     const rate =
                       prevValue && prevValue > 0
@@ -437,15 +434,12 @@ export default async function AdminDashboard() {
                     return (
                       <div key={step.label} className="flex items-center gap-2">
                         {i > 0 && (
-                          <div className="flex shrink-0 flex-col items-center text-[10px] text-[#888780]">
-                            <span>→</span>
+                          <div className="flex shrink-0 flex-col items-center gap-0.5 text-[10px] text-[#888780]">
+                            <div className="h-0 w-0 border-y-[5px] border-l-[7px] border-y-transparent border-l-[#C9B9A8]" />
                             {rate !== null && <span>{rate}%</span>}
                           </div>
                         )}
-                        <div
-                          className="shrink-0 rounded-xl bg-[#FAECE7] px-4 py-3"
-                          style={{ width: `${widthPct * 1.4}px`, minWidth: "90px" }}
-                        >
+                        <div className="w-24 shrink-0 rounded-xl bg-[#FAECE7] px-3 py-2.5">
                           <p className="text-xs text-[#993C1D]">{step.label}</p>
                           <p className="text-xl font-medium text-[#712B13]">
                             {step.value}
@@ -457,30 +451,28 @@ export default async function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="shrink-0">
                 <p className="mb-2 text-xs font-medium text-[#888780]">
                   累計(全期間)
                 </p>
-                <div className="flex gap-4 text-sm">
-                  <div>
-                    <p className="text-[10px] text-[#888780]">総PV</p>
-                    <p className="font-medium">{totalStats.pv}</p>
+                <div className="flex gap-2">
+                  <div className="w-24 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5">
+                    <p className="text-xs text-[#888780]">総PV</p>
+                    <p className="text-xl font-medium">{totalStats.pv}</p>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-[#888780]">総UU</p>
-                    <p className="font-medium">{totalStats.uu}</p>
+                  <div className="w-24 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5">
+                    <p className="text-xs text-[#888780]">総UU</p>
+                    <p className="text-xl font-medium">{totalStats.uu}</p>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-[#888780]">LINE友達数</p>
-                    <p className="font-medium">{totalStats.lineFriends}</p>
+                  <div className="w-24 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5">
+                    <p className="text-xs text-[#888780]">LINE友達数</p>
+                    <p className="text-xl font-medium">
+                      {totalStats.lineFriends}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
-
-          <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">アクセス解析</p>
 
             <div className="mb-3 flex gap-3">
               <div className="grid w-56 shrink-0 grid-cols-1 gap-1.5">
@@ -516,7 +508,7 @@ export default async function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="w-1/3 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-3 text-sm font-medium">
                   日別PV推移(過去14日間)
                 </p>
