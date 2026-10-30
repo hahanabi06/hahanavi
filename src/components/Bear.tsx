@@ -20,8 +20,8 @@ export function BearMama({ size = 48 }: { size?: number }) {
   );
 }
 
-// 相談者(名前の無い読者)の顔。シングマちゃん・熊太郎とは被らない
-// 落ち着いたグレーベージュ系で、「このキャラは誰か特定の家族じゃない」感を出す
+// 相談者(名前の無い読者)の顔。熊太郎・シングマちゃんは「くま」なので、
+// 色じゃなく種類そのものを変えて(ねこ)、色弱でも一目で区別できるようにする
 export function BearConsultant({ size = 44 }: { size?: number }) {
   const height = size * (40 / 44);
   return (
@@ -32,12 +32,12 @@ export function BearConsultant({ size = 44 }: { size?: number }) {
       aria-hidden="true"
       className="shrink-0"
     >
-      <circle cx="9" cy="7" r="4.6" fill="#B5A99A" />
-      <circle cx="23" cy="7" r="4.6" fill="#B5A99A" />
+      <polygon points="3,12 10,-2 16,10" fill="#9B8F82" />
+      <polygon points="29,12 22,-2 16,10" fill="#9B8F82" />
       <circle cx="16" cy="17" r="13" fill="#D9CFC1" />
       <circle cx="11.3" cy="15" r="1.9" fill="#4A1B0C" />
       <circle cx="20.7" cy="15" r="1.9" fill="#4A1B0C" />
-      <ellipse cx="16" cy="21" rx="3.6" ry="2.4" fill="#F1EFE8" />
+      <polygon points="16,19.5 14.2,22 17.8,22" fill="#4A1B0C" />
     </svg>
   );
 }
