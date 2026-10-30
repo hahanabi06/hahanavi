@@ -121,15 +121,14 @@ export async function createDraftArticle({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const p = page as any;
 
-  // Notion上の「プレビューURL」列(url型)に、下書きのまま見られるプレビューURLを入れる。
-  // 「プレビュー」列(ボタン型、Notion側で手動設定)がこの値を参照してリンクを開く。
+  // Notion上の「プレビュー」列(url型)に、下書きのまま見られるプレビューURLを入れる。
   // idはページ作成後でないと分からないので、作成直後にもう一度updateする
   const previewSecret = process.env.PREVIEW_SECRET;
   if (previewSecret) {
     await notion.pages.update({
       page_id: p.id,
       properties: {
-        プレビューURL: {
+        プレビュー: {
           url: `https://hahanavi.vercel.app/api/preview?id=${p.id.replace(/-/g, "")}&secret=${previewSecret}`,
         },
       },
