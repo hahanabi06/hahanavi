@@ -20,7 +20,7 @@ export function BearMama({ size = 48 }: { size?: number }) {
   );
 }
 
-// 相談者(名前の無い読者)の顔。熊太郎・シングマちゃんは「くま」なので、
+// 相談者キャラ「にゃんみ」の顔。熊太郎・シングマちゃんは「くま」なので、
 // 色じゃなく種類そのものを変えて(ねこ)、色弱でも一目で区別できるようにする
 export function BearConsultant({ size = 44 }: { size?: number }) {
   const height = size * (40 / 44);
@@ -32,12 +32,22 @@ export function BearConsultant({ size = 44 }: { size?: number }) {
       aria-hidden="true"
       className="shrink-0"
     >
-      <polygon points="3,12 10,-2 16,10" fill="#9B8F82" />
-      <polygon points="29,12 22,-2 16,10" fill="#9B8F82" />
+      <polygon points="3,14 9,0 15,13" fill="#9B8F82" />
+      <polygon points="5.5,13 9,3.5 12.5,12.5" fill="#D9CFC1" />
+      <polygon points="29,14 23,0 17,13" fill="#9B8F82" />
+      <polygon points="26.5,13 23,3.5 19.5,12.5" fill="#D9CFC1" />
       <circle cx="16" cy="17" r="13" fill="#D9CFC1" />
-      <circle cx="11.3" cy="15" r="1.9" fill="#4A1B0C" />
-      <circle cx="20.7" cy="15" r="1.9" fill="#4A1B0C" />
-      <polygon points="16,19.5 14.2,22 17.8,22" fill="#4A1B0C" />
+      <circle cx="9.5" cy="21" r="2.6" fill="#E8B8A8" opacity="0.6" />
+      <circle cx="22.5" cy="21" r="2.6" fill="#E8B8A8" opacity="0.6" />
+      <circle cx="11.3" cy="15" r="2.3" fill="#4A1B0C" />
+      <circle cx="20.7" cy="15" r="2.3" fill="#4A1B0C" />
+      <circle cx="12" cy="14.2" r="0.7" fill="white" />
+      <circle cx="21.4" cy="14.2" r="0.7" fill="white" />
+      <polygon points="16,19.5 14.5,21.5 17.5,21.5" fill="#4A1B0C" />
+      <line x1="1" y1="18" x2="9" y2="17.5" stroke="#9B8F82" strokeWidth="1" />
+      <line x1="1" y1="21.5" x2="9" y2="21.5" stroke="#9B8F82" strokeWidth="1" />
+      <line x1="31" y1="18" x2="23" y2="17.5" stroke="#9B8F82" strokeWidth="1" />
+      <line x1="31" y1="21.5" x2="23" y2="21.5" stroke="#9B8F82" strokeWidth="1" />
     </svg>
   );
 }

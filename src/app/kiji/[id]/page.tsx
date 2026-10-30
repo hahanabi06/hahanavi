@@ -64,7 +64,7 @@ export default async function ArticlePage({
                 block.speaker === "kid" ? (
                   <BearCub size={26} />
                 ) : block.speaker === "consultant" ? (
-                  <BearConsultant size={36} />
+                  <BearConsultant size={44} />
                 ) : (
                   <BearMama size={44} />
                 );

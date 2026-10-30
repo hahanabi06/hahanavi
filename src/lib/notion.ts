@@ -122,7 +122,7 @@ export async function createDraftArticle({
       };
     }
     if (block.type === "bear") {
-      // 読み取り側は🧸=kid、👤=consultant(相談者)、それ以外=mama扱い。
+      // 読み取り側は🧸=kid、👤=consultant(相談者「にゃんみ」)、それ以外=mama扱い。
       // アイコンを省略するとNotionが勝手に💡をあてるので、mama側も明示的に🐻を指定する
       const icon =
         block.speaker === "kid"
@@ -212,7 +212,7 @@ export async function getArticle(id: string): Promise<Article | null> {
       if (text) blocks.push({ type: "paragraph", text });
     } else if (b.type === "callout") {
       const text = plainText(b.callout?.rich_text);
-      // Notionでコールアウトのアイコンを🧸にすると熊太郎、👤にすると相談者が
+      // Notionでコールアウトのアイコンを🧸にすると熊太郎、👤にすると相談者(にゃんみ)が
       // 喋ってる扱いになる(それ以外は全部シングマちゃん)
       const speaker: BearSpeaker =
         b.callout?.icon?.emoji === "🧸"
