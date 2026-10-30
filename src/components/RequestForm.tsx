@@ -55,7 +55,7 @@ export function RequestForm() {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="例: 〇〇区の住宅支援についても知りたい"
-        className="mb-2.5 h-16 w-full resize-none rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm outline-none"
+        className="mb-2.5 h-28 w-full resize-none rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm outline-none"
       />
       <button
         type="submit"
