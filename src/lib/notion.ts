@@ -92,7 +92,7 @@ export type ArticleBlock =
   | { type: "bear"; text: string; speaker: BearSpeaker }
   | { type: "heading"; text: string }
   | { type: "bullet"; text: string }
-  | { type: "banner"; text: string; url: string };
+  | { type: "banner"; text: string; url: string; image?: string };
 
 export type RelatedProgram = {
   id: string;
@@ -243,10 +243,15 @@ export async function getArticle(id: string): Promise<Article | null> {
     } else if (b.type === "bookmark") {
       // サービス紹介ページへのリンクを目立つバナーとして表示したいときは、
       // Notion側で「ウェブページをブックマーク」(bookmarkブロック)を使う。
-      // キャプションをバナーの見出しにする(未設定ならURLをそのまま表示)
+      // キャプションをバナーの見出しにする(未設定ならURLをそのまま表示)。
+      // 2行目に「IMAGE:/public配下のパス」と書くと、バナーにアイキャッチ画像を出せる
+      // (公的機関のロゴなど。Notion側は画像を持たないため、この行で指定する)
       const url = b.bookmark?.url;
-      const caption = plainText(b.bookmark?.caption);
-      if (url) blocks.push({ type: "banner", text: caption || url, url });
+      const captionLines = plainText(b.bookmark?.caption).split("\n");
+      const text = captionLines[0] || url;
+      const imageLine = captionLines.find((l) => l.startsWith("IMAGE:"));
+      const image = imageLine?.slice("IMAGE:".length).trim();
+      if (url) blocks.push({ type: "banner", text, url, image });
     }
   }
 

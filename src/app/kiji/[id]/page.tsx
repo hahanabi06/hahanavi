@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { draftMode } from "next/headers";
 import Link from "next/link";
+import Image from "next/image";
 import { IconChevronRight, IconExternalLink } from "@tabler/icons-react";
 import { BearMama, BearCub, BearConsultant } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
@@ -108,10 +109,23 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
+                    className="block overflow-hidden rounded-xl bg-[#F1EFE8]"
                   >
-                    <p className="text-sm leading-snug">{block.text}</p>
-                    <IconExternalLink size={16} className="shrink-0 text-[#888780]" />
+                    {block.image && (
+                      <div className="flex items-center justify-center bg-white px-6 py-4">
+                        <Image
+                          src={block.image}
+                          alt=""
+                          width={160}
+                          height={60}
+                          className="h-auto w-auto max-h-[60px]"
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between gap-2.5 px-3.5 py-3">
+                      <p className="text-sm leading-snug">{block.text}</p>
+                      <IconExternalLink size={16} className="shrink-0 text-[#888780]" />
+                    </div>
                   </a>
                 </div>
               );
