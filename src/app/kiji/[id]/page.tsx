@@ -9,6 +9,11 @@ import { ReportForm } from "@/components/ReportForm";
 import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
 
+function formatArticleDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+}
+
 export async function generateStaticParams() {
   const articles = await listPublishedArticles().catch(() => []);
   return articles.map((a) => ({ id: a.id }));
@@ -38,7 +43,13 @@ export default async function ArticlePage({
           </div>
         )}
 
-        <h1 className="mb-5 text-lg leading-snug font-medium">{article.title}</h1>
+        <h1 className="mb-1 text-lg leading-snug font-medium">{article.title}</h1>
+        <p className="mb-5 text-xs text-[#888780]">
+          {formatArticleDate(article.createdTime)}公開
+          {formatArticleDate(article.lastEditedTime) !==
+            formatArticleDate(article.createdTime) &&
+            `(${formatArticleDate(article.lastEditedTime)}更新)`}
+        </p>
 
         <div className="mb-5 flex flex-col gap-3">
           {article.blocks.map((block, i) => {

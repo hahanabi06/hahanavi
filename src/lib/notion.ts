@@ -95,6 +95,8 @@ export type Article = {
   published: boolean;
   blocks: ArticleBlock[];
   relatedPrograms: RelatedProgram[];
+  createdTime: string;
+  lastEditedTime: string;
 };
 
 // 「記事アイデア」から下書きを作るときに使う。公開は必ず自分の手動操作(Notion側で
@@ -217,5 +219,13 @@ export async function getArticle(id: string): Promise<Article | null> {
     }
   }
 
-  return { id, title, published: status === "公開", blocks, relatedPrograms };
+  return {
+    id,
+    title,
+    published: status === "公開",
+    blocks,
+    relatedPrograms,
+    createdTime: p.created_time,
+    lastEditedTime: p.last_edited_time,
+  };
 }
