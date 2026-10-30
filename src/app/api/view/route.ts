@@ -9,7 +9,15 @@ export async function POST(req: Request) {
   if (!articleId) {
     return NextResponse.json({ error: "articleId is required" }, { status: 400 });
   }
-  if (hasNoTrackCookie(req) || (await isOwnerRequest(req))) {
+
+  // /api/pageviewと同じ基準(Claude内蔵ブラウザ・クローラー等は除外)
+  const userAgent = req.headers.get("user-agent") ?? "";
+  const isBot =
+    userAgent.includes("Claude/") ||
+    /bot|crawl|spider|slurp|facebookexternalhit|preview|headless|lighthouse|pingdom|uptimerobot/i.test(
+      userAgent
+    );
+  if (isBot || hasNoTrackCookie(req) || (await isOwnerRequest(req))) {
     return NextResponse.json({ ok: true, skipped: true });
   }
   await incrementArticleView(articleId).catch(() => {});
