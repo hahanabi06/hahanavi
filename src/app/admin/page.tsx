@@ -67,7 +67,7 @@ const PORTAL_LINKS = [
     href: "https://manager.line.biz/",
   },
   { label: "Gmail", sub: "メール", href: "https://mail.google.com/mail/" },
-  { label: "X", sub: "旧Twitter", href: "https://x.com/home" },
+  { label: "X", sub: "旧Twitter", href: "https://x.com/home?lang=ja" },
 ];
 
 type ViewRow = { path: string; visitor_id: string | null; created_at: string };
