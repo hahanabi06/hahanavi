@@ -253,7 +253,7 @@ export default async function Home() {
 
         {/* ご要望フォーム */}
         <section className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
-          <p className="mb-0.5 text-base font-medium">こんな情報、欲しいな?</p>
+          <p className="mb-0.5 text-base font-medium">こんな情報、欲しいな♪</p>
           <p className="mb-2.5 text-sm leading-relaxed text-[#5F5E5A]">
             載ってない制度や記事のリクエスト、募集中だよ
           </p>
