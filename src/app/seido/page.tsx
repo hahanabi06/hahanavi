@@ -39,7 +39,7 @@ export default function SeidoListPage() {
 
         <SeidoProgramList programs={programs} />
 
-        <LineDiagnosisBar className="mt-6" />
+        <LineDiagnosisBar className="mt-8" />
       </main>
       </div>
     </>

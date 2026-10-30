@@ -42,7 +42,7 @@ export default async function KijiListPage() {
           </div>
         )}
 
-        <LineDiagnosisBar className="mt-6" />
+        <LineDiagnosisBar className="mt-8" />
       </main>
       </div>
     </>

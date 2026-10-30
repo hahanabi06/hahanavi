@@ -453,7 +453,7 @@ export default async function ProgramDetailPage({
           ))}
         </div>
 
-        <LineDiagnosisBar className="mt-6" />
+        <LineDiagnosisBar className="mt-8" />
       </main>
       </div>
     </>
