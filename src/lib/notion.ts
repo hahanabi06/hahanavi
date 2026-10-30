@@ -85,14 +85,12 @@ export async function createDraftArticle({
       };
     }
     if (block.type === "bear") {
-      // mama発言はアイコン無し(読み取り側は🧸以外=mama扱い)。Notion APIはicon: nullを
-      // 受け付けないため、無しにしたい場合はキー自体を省略する
+      // 読み取り側は🧸=kid、それ以外=mama扱い。アイコンを省略するとNotionが
+      // 勝手に💡をあてるので、mama側も明示的に🐻を指定する
       const callout: Record<string, unknown> = {
         rich_text: [{ type: "text", text: { content: block.text } }],
+        icon: { type: "emoji", emoji: block.speaker === "kid" ? "🧸" : "🐻" },
       };
-      if (block.speaker === "kid") {
-        callout.icon = { type: "emoji", emoji: "🧸" };
-      }
       return { object: "block", type: "callout", callout };
     }
     if (block.type === "heading") {
