@@ -62,6 +62,69 @@ export type Article = {
   blocks: ArticleBlock[];
 };
 
+// 「記事アイデア」から下書きを作るときに使う。公開は必ず自分の手動操作(Notion側で
+// Statusを「公開」に変える)にしたいので、ここでは常に「下書き」で作成する
+export async function createDraftArticle({
+  title,
+  category,
+  blocks,
+}: {
+  title: string;
+  category: string;
+  blocks: ArticleBlock[];
+}): Promise<{ id: string; url: string }> {
+  const notion = getNotionClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const children: any[] = blocks.map((block) => {
+    if (block.type === "paragraph") {
+      return {
+        object: "block",
+        type: "paragraph",
+        paragraph: { rich_text: [{ type: "text", text: { content: block.text } }] },
+      };
+    }
+    if (block.type === "bear") {
+      // mama発言はアイコン無し(読み取り側は🧸以外=mama扱い)。Notion APIはicon: nullを
+      // 受け付けないため、無しにしたい場合はキー自体を省略する
+      const callout: Record<string, unknown> = {
+        rich_text: [{ type: "text", text: { content: block.text } }],
+      };
+      if (block.speaker === "kid") {
+        callout.icon = { type: "emoji", emoji: "🧸" };
+      }
+      return { object: "block", type: "callout", callout };
+    }
+    if (block.type === "heading") {
+      return {
+        object: "block",
+        type: "heading_2",
+        heading_2: { rich_text: [{ type: "text", text: { content: block.text } }] },
+      };
+    }
+    // bullet
+    return {
+      object: "block",
+      type: "bulleted_list_item",
+      bulleted_list_item: { rich_text: [{ type: "text", text: { content: block.text } }] },
+    };
+  });
+
+  const page = await notion.pages.create({
+    parent: { data_source_id: getDataSourceId() },
+    properties: {
+      Name: { title: [{ type: "text", text: { content: title } }] },
+      Status: { select: { name: "下書き" } },
+      カテゴリ: { select: { name: category } },
+    },
+    children,
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const p = page as any;
+  return { id: p.id, url: p.url ?? `https://www.notion.so/${p.id.replace(/-/g, "")}` };
+}
+
 export async function getArticle(id: string): Promise<Article | null> {
   "use cache";
   cacheLife("minutes");
