@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { draftMode } from "next/headers";
 import { IconMessageCircle2 } from "@tabler/icons-react";
 import { BearMama, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
@@ -18,8 +19,9 @@ export default async function ArticlePage({
 }) {
   const { id } = await params;
   const article = await getArticle(id).catch(() => null);
+  const { isEnabled: isPreview } = await draftMode();
 
-  if (!article || !article.published) return notFound();
+  if (!article || (!article.published && !isPreview)) return notFound();
 
   return (
     <>
@@ -27,6 +29,12 @@ export default async function ArticlePage({
       <main className="w-full max-w-md px-4 pt-6 pb-5">
         <ViewTracker articleId={id} />
         <SiteLogoLink />
+
+        {!article.published && (
+          <div className="mb-4 rounded-xl bg-[#FCEAEA] px-3.5 py-2 text-xs font-bold text-[#C0392B]">
+            プレビュー中(まだ下書き、公開はされていません)
+          </div>
+        )}
 
         <h1 className="mb-5 text-lg leading-snug font-medium">{article.title}</h1>
 
