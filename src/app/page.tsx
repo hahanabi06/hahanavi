@@ -42,7 +42,7 @@ function LineButton({
 function SectionHeading({
   title,
   showAll = true,
-  href = "#",
+  href,
   linkLabel = "全部見る",
 }: {
   title: string;
@@ -53,11 +53,14 @@ function SectionHeading({
   return (
     <div className="mb-2.5 flex items-baseline justify-between">
       <p className="text-base font-medium">{title}</p>
-      {showAll && (
-        <Link href={href} className="text-sm text-[#993C1D]">
-          {linkLabel} ›
-        </Link>
-      )}
+      {showAll &&
+        (href ? (
+          <Link href={href} className="text-sm text-[#993C1D]">
+            {linkLabel} ›
+          </Link>
+        ) : (
+          <span className="text-sm text-[#993C1D]">{linkLabel} ›</span>
+        ))}
     </div>
   );
 }
@@ -235,7 +238,7 @@ export default async function Home() {
 
         {/* おすすめ資格(準備中、リンクは無効) */}
         <section className="mb-6">
-          <SectionHeading title="おすすめ資格" showAll={false} />
+          <SectionHeading title="おすすめ資格" linkLabel="資格制度一覧へ" />
           <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {QUALIFICATIONS.map(({ icon: Icon, label, note }) => (
               <div
