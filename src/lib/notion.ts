@@ -74,7 +74,7 @@ export async function listPublishedArticles(): Promise<ArticleSummary[]> {
   }));
 }
 
-export type BearSpeaker = "mama" | "kid";
+export type BearSpeaker = "mama" | "kid" | "consultant";
 
 export type ArticleBlock =
   | { type: "paragraph"; text: string }
@@ -122,11 +122,17 @@ export async function createDraftArticle({
       };
     }
     if (block.type === "bear") {
-      // 読み取り側は🧸=kid、それ以外=mama扱い。アイコンを省略するとNotionが
-      // 勝手に💡をあてるので、mama側も明示的に🐻を指定する
+      // 読み取り側は🧸=kid、👤=consultant(相談者)、それ以外=mama扱い。
+      // アイコンを省略するとNotionが勝手に💡をあてるので、mama側も明示的に🐻を指定する
+      const icon =
+        block.speaker === "kid"
+          ? "🧸"
+          : block.speaker === "consultant"
+            ? "👤"
+            : "🐻";
       const callout: Record<string, unknown> = {
         rich_text: [{ type: "text", text: { content: block.text } }],
-        icon: { type: "emoji", emoji: block.speaker === "kid" ? "🧸" : "🐻" },
+        icon: { type: "emoji", emoji: icon },
       };
       return { object: "block", type: "callout", callout };
     }
@@ -206,9 +212,14 @@ export async function getArticle(id: string): Promise<Article | null> {
       if (text) blocks.push({ type: "paragraph", text });
     } else if (b.type === "callout") {
       const text = plainText(b.callout?.rich_text);
-      // Notionでコールアウトのアイコンを🧸にすると熊太郎が喋ってる扱いになる(それ以外は全部シングマちゃん)
+      // Notionでコールアウトのアイコンを🧸にすると熊太郎、👤にすると相談者が
+      // 喋ってる扱いになる(それ以外は全部シングマちゃん)
       const speaker: BearSpeaker =
-        b.callout?.icon?.emoji === "🧸" ? "kid" : "mama";
+        b.callout?.icon?.emoji === "🧸"
+          ? "kid"
+          : b.callout?.icon?.emoji === "👤"
+            ? "consultant"
+            : "mama";
       if (text) blocks.push({ type: "bear", text, speaker });
     } else if (b.type === "heading_1" || b.type === "heading_2" || b.type === "heading_3") {
       const text = plainText(b[b.type]?.rich_text);
