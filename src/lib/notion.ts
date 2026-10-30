@@ -46,6 +46,17 @@ function plainText(richText: any[] | undefined): string {
   return richText.map((t) => t.plain_text ?? "").join("");
 }
 
+// 段落内にNotionのハイパーリンクが貼ってあれば、そのURLを取り出す
+// (記事の参考リンク・出典をまとめず、本文中に直接リンクを書けるようにするため)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function firstLink(richText: any[] | undefined): string | undefined {
+  if (!richText) return undefined;
+  for (const t of richText) {
+    if (t.href) return t.href;
+  }
+  return undefined;
+}
+
 export type ArticleSummary = {
   id: string;
   title: string;
@@ -77,7 +88,7 @@ export async function listPublishedArticles(): Promise<ArticleSummary[]> {
 export type BearSpeaker = "mama" | "kid" | "consultant";
 
 export type ArticleBlock =
-  | { type: "paragraph"; text: string }
+  | { type: "paragraph"; text: string; url?: string }
   | { type: "bear"; text: string; speaker: BearSpeaker }
   | { type: "heading"; text: string }
   | { type: "bullet"; text: string };
@@ -209,7 +220,8 @@ export async function getArticle(id: string): Promise<Article | null> {
     const b = block as any;
     if (b.type === "paragraph") {
       const text = plainText(b.paragraph?.rich_text);
-      if (text) blocks.push({ type: "paragraph", text });
+      const url = firstLink(b.paragraph?.rich_text);
+      if (text) blocks.push({ type: "paragraph", text, url });
     } else if (b.type === "callout") {
       const text = plainText(b.callout?.rich_text);
       // Notionでコールアウトのアイコンを🧸にすると熊太郎、👤にすると相談者(にゃんみ)が

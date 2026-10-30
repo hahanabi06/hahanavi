@@ -112,9 +112,20 @@ export default async function ArticlePage({
             return (
               <div key={i} className="contents">
                 {divider}
-                <p className="text-sm leading-relaxed whitespace-pre-line">
-                  {block.text}
-                </p>
+                {block.url ? (
+                  <a
+                    href={block.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-[#888780] underline"
+                  >
+                    {block.text}
+                  </a>
+                ) : (
+                  <p className="text-sm leading-relaxed whitespace-pre-line">
+                    {block.text}
+                  </p>
+                )}
               </div>
             );
           })}
