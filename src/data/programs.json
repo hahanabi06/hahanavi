@@ -151,10 +151,14 @@
       "eligibility": "都内在住の0〜18歳の子ども(ひとり親家庭に限らず都内在住の全世帯が対象)。他の手当・支援制度と重複して受給可能",
       "window": "東京都018サポート公式サイトで申請、または018サポートコールセンター(0120-056-018)",
       "kumaNote": "これはひとり親限定じゃなくて、東京都に住んでる0〜18歳の子がいる家庭なら誰でももらえるお金だよ。所得制限もないから、他の制度と合わせてもらえるはず。月5,000円、年に3回に分けて振り込まれるよ。",
-      "verifyNeeded": true,
-      "source": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/018support.html",
-      "verifiedAt": "2026-10-29",
-      "note": "都の制度のため都内であれば区市町村を問わず同条件のはずだが、台東区の案内ページで確認(東京都公式サイトでの直接確認は未実施)。支給時期・申請期限は年度ごとに変わる可能性があるため、案内時は都度最新情報の確認を",
+      "verifyNeeded": false,
+      "source": "https://www.fukushi.metro.tokyo.lg.jp/kodomo/kosodate/018",
+      "verifiedAt": "2026-10-30",
+      "exampleSource": {
+        "area": "台東区",
+        "url": "https://www.city.taito.lg.jp/kosodatekyouiku/kosodate/mokutei/teate_josei/018support.html"
+      },
+      "note": "都の制度のため都内であれば区市町村を問わず同条件。東京都福祉局公式ページで金額・支給回数・所得制限無しを完全一致で確認(2026-10-30)。支給時期・申請期限は年度ごとに変わる可能性があるため、案内時は都度最新情報の確認を",
       "prefecture": "東京都"
     },
     {
@@ -170,10 +174,14 @@
       "requiredDocs": "戸籍謄本(1ヶ月以内発行)、世帯全員の住民票(1ヶ月以内発行)、健康保険証、申請者名義の通帳",
       "window": "お住まいの市区町村役場の子育て支援担当課",
       "kumaNote": "愛知県に住んでるひとり親なら、児童扶養手当とは別に県からもお金がもらえるよ。ただし5年間限定(最初の3年は月4,350円、4・5年目は半分くらい)。6年目以降はもらえなくなるから注意してね。",
-      "verifyNeeded": true,
-      "source": "https://www.town.kota.lg.jp/soshiki/8/876.html",
-      "verifiedAt": "2026-10-29",
-      "note": "愛知県公式ページでは直接確認できず、複数市町村(幸田町・半田市・名古屋市・知立市等)の公式ページで内容が一致することを確認した上で、代表例として幸田町のページを出典としている。令和8年度の最新所得基準表は見つからず、2024年11月改定後の数字を暫定的に採用している"
+      "verifyNeeded": false,
+      "source": "http://www.pref.aichi.jp/soshiki/jidoukatei/0000010964.html",
+      "verifiedAt": "2026-10-30",
+      "exampleSource": {
+        "area": "幸田町",
+        "url": "https://www.town.kota.lg.jp/soshiki/8/876.html"
+      },
+      "note": "愛知県公式ページ(福祉局児童家庭課)で金額・支給期間を完全一致で確認(2026-10-30)。令和8年度の最新所得基準表は見つからず、2024年11月改定後の数字を暫定的に採用している"
     },
     {
       "id": "kyoto-hitorioya-shougakukin",
@@ -577,9 +585,13 @@
       "window": "お住まいの市区町村(または都道府県の福祉事務所・健康福祉センター)の子育て支援担当課",
       "kumaNote": "高卒認定試験の対策講座を受ける費用が、最大9割戻ってくる制度だよ。ただし受講を始める前に申請しないといけないから、講座を探す前にまず窓口に相談してね。",
       "verifyNeeded": false,
-      "source": "https://www.pref.shizuoka.jp/kodomokyoiku/kodomokosodate/hitorioya/1022285.html",
-      "verifiedAt": "2026-10-29",
-      "note": "2015年度(平成27年度)に国が新設した事業(母子家庭等対策総合支援事業のメニュー、国庫補助3/4、2015年4月10日付厚生労働省雇用均等・児童家庭局長通知が根拠)で、全国の市区町村・都道府県が同一要綱ベースで実施。具体額は静岡県(伊豆地域等)のページで確認、他地域でも同水準と推定されるが窓口により運用に幅がある可能性あり"
+      "source": "https://www.cfa.go.jp/policies/hitori-oya/goukakushien/",
+      "verifiedAt": "2026-10-30",
+      "exampleSource": {
+        "area": "静岡県",
+        "url": "https://www.pref.shizuoka.jp/kodomokyoiku/kodomokosodate/hitorioya/1022285.html"
+      },
+      "note": "2015年度(平成27年度)に国が新設した事業で、全国の市区町村・都道府県が同一要綱ベースで実施。こども家庭庁公式ページで金額を完全一致で確認(2026-10-30)。なお現在の正式名称は「ひとり親家庭学び直し支援事業」(旧称が本制度名)。制度を設けていない都道府県等では対象外の場合がある旨の注記あり。関連して大学等の授業料助成(入学金・授業料の6割相当)という別制度もこども家庭庁ページに載っているため、別途追加を検討する価値あり"
     },
     {
       "id": "jiritsu-shien-kyouiku-kunren",
@@ -679,9 +691,13 @@
       "window": "お住まいの区市町村役場の国民健康保険担当窓口",
       "kumaNote": "国民健康保険料が、所得が低いと自動で安くなる制度だよ。多くの場合、自分で申請しなくても区の方で計算してくれるよ。",
       "verifyNeeded": false,
-      "source": "https://www.city.taito.lg.jp/kurashi/zeikin/kokuminkenkohoken/hokenryou/20130605110058881.html",
-      "verifiedAt": "2026-10-28",
-      "note": "軽減判定の基準額(43万円等)は地方税法で全国一律に定められている。ただし実際の保険料率は自治体ごとに異なるため、最終的な保険料額は窓口で確認を。また軽減対象は均等割・平等割のみで所得割は軽減されない。ごく一部の市町村では実施困難と認められる場合に例外的な軽減率を用いることがある(2026-10-29 Web調査で確認)",
+      "source": "https://www.mhlw.go.jp/hourei/doc/tsuchi/T260121S0020.pdf",
+      "verifiedAt": "2026-10-30",
+      "exampleSource": {
+        "area": "台東区",
+        "url": "https://www.city.taito.lg.jp/kurashi/zeikin/kokuminkenkohoken/hokenryou/20130605110058881.html"
+      },
+      "note": "軽減判定の基準額(43万円等)は地方税法で全国一律に定められている。厚労省通知(保発0115第10号、令和8年1月15日)で令和8年度の基準額改定(5割軽減43万円+31万円×加入者数、2割軽減43万円+57万円×加入者数)を確認、programs.jsonの数字と完全一致(2026-10-30)。未就学児の軽減上乗せ率(7→8.5割、5→7.5割、2→6割)も「残りの軽減されていない割合をさらに半分にする」ルールで計算が一致。ただし実際の保険料率は自治体ごとに異なるため、最終的な保険料額は窓口で確認を。また軽減対象は均等割・平等割のみで所得割は軽減されない。ごく一部の市町村では実施困難と認められる場合に例外的な軽減率を用いることがある(2026-10-29 Web調査で確認)。【要フォローアップ】2027年4月から未就学児向け上乗せの対象が高校生年代まで拡大予定(2026年5月成立の改正法)、来年度に向けて更新が必要",
       "diagnosisRule": {
         "scope": "national",
         "kind": "insurance_reduction",
