@@ -3,8 +3,6 @@ import { getSupabaseServerClient } from "@/lib/supabase";
 import { listPublishedArticles } from "@/lib/notion";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 import { LinePushForm } from "@/components/LinePushForm";
-import { ArticleIdeaForm } from "@/components/ArticleIdeaForm";
-import { ArticleIdeaList } from "@/components/ArticleIdeaList";
 import programsData from "@/data/programs.json";
 
 const STATIC_PATH_LABEL: Record<string, string> = {
@@ -163,7 +161,6 @@ export default async function AdminDashboard() {
     lineUsersRes,
     lineMessagesRes,
     articles,
-    articleIdeasRes,
   ] = await Promise.all([
     supabase
       .from("company_inquiries")
@@ -192,16 +189,10 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: false })
       .limit(300),
     listPublishedArticles().catch(() => []),
-    supabase
-      .from("article_ideas")
-      .select("id, idea, created_at")
-      .eq("status", "pending")
-      .order("created_at", { ascending: false }),
   ]);
 
   const inquiries = inquiriesRes.data ?? [];
   const reports = reportsRes.data ?? [];
-  const articleIdeas = articleIdeasRes.data ?? [];
   const views = aggregateViews(viewsRes.data ?? []);
   const follows = followsRes.data ?? [];
   const lineUsers = lineUsersRes.data ?? [];
@@ -363,16 +354,6 @@ export default async function AdminDashboard() {
                   </div>
                 </div>
               )}
-            </div>
-          </section>
-
-          <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">記事アイデア</p>
-            <div className="rounded-xl bg-[#F1EFE8] px-4 py-4">
-              <ArticleIdeaForm />
-              <div className="mt-3 border-t border-[#E3E0D6] pt-3">
-                <ArticleIdeaList ideas={articleIdeas} />
-              </div>
             </div>
           </section>
 
