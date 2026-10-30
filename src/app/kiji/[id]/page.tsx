@@ -7,7 +7,7 @@ import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ViewTracker } from "@/components/ViewTracker";
 import { ReportForm } from "@/components/ReportForm";
 import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
-import { getArticle, listPublishedArticles } from "@/lib/notion";
+import { getArticle, listPublishedArticles, type ArticleBlock } from "@/lib/notion";
 
 function formatArticleDate(iso: string): string {
   const d = new Date(iso);
@@ -112,7 +112,7 @@ export default async function ArticlePage({
               );
             }
             // 出典・参考が連続するときは、間のすき間を詰めて1つのリストのように見せる
-            const isCitation = (b?: typeof block) => b?.type === "paragraph" && !!b.url;
+            const isCitation = (b?: ArticleBlock) => b?.type === "paragraph" && !!b.url;
             const prevIsCitation = isCitation(prevBlock);
             const nextIsCitation = isCitation(article.blocks[i + 1]);
 
