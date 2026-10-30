@@ -260,7 +260,7 @@ export default async function Home() {
           <RequestForm />
         </section>
 
-        <LineDiagnosisBar label="追加" />
+        <LineDiagnosisBar />
 
         <div className="mt-8 mb-5 flex flex-col gap-2.5 border-t border-[#E3E0D6] pt-5">
           <Link
