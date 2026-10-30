@@ -255,7 +255,7 @@ export default async function Home() {
         <section className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
           <p className="mb-0.5 text-base font-medium">こんな情報、欲しいな♪</p>
           <p className="mb-2.5 text-sm leading-relaxed text-[#5F5E5A]">
-            載っていない制度、記事のリクエスト、応援などなんでも募集中だよ！
+            記事のリクエスト、役立つ支援制度の情報、ハハナビへの応援などなんでも待ってるよ
           </p>
           <RequestForm />
         </section>
