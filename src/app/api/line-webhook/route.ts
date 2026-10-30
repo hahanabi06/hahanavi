@@ -305,7 +305,7 @@ function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
         ? `: 年${item.yearlyYen.toLocaleString()}円くらい`
         : "";
   const linkLine = item.programId
-    ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}?from=line`
+    ? `\n  詳細: https://hahanavi.com/seido/${item.programId}?from=line`
     : "";
   return `・${item.name}${amount}\n  ${item.note}${linkLine}`;
 }
@@ -313,7 +313,7 @@ function itemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
 // 「こんな制度もあるよ」(要確認)は説明文なしで名前+リンクだけにして情報量を抑える
 function infoItemLine(item: ReturnType<typeof diagnose>["items"][number]): string {
   const linkLine = item.programId
-    ? `\n  詳細: https://hahanavi.vercel.app/seido/${item.programId}?from=line`
+    ? `\n  詳細: https://hahanavi.com/seido/${item.programId}?from=line`
     : "";
   return `・${item.name}${linkLine}`;
 }
