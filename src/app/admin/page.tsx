@@ -75,10 +75,41 @@ type ViewRow = {
   visitor_id: string | null;
   created_at: string;
   referrer?: string | null;
+  user_agent?: string | null;
 };
 
+function deviceLabel(ua: string | null | undefined): { label: string; suspicious: boolean } {
+  if (!ua) return { label: "不明", suspicious: false };
+  const isClaude = ua.includes("Claude/");
+  const isAndroid = /Android/i.test(ua);
+  const isIPhone = /iPhone/i.test(ua);
+  const isIPad = /iPad/i.test(ua);
+  const isMac = /Macintosh/i.test(ua);
+  const isWindows = /Windows/i.test(ua);
+  const isBotLike =
+    /bot|crawl|spider|slurp|headless|lighthouse|pingdom|uptimerobot/i.test(ua);
+
+  let device = "その他";
+  if (isIPhone) device = "iPhone";
+  else if (isIPad) device = "iPad";
+  else if (isAndroid) device = "Android";
+  else if (isMac) device = "Mac";
+  else if (isWindows) device = "Windows";
+
+  let browser = "";
+  if (/Edg\//.test(ua)) browser = "Edge";
+  else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) browser = "Chrome";
+  else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = "Safari";
+  else if (/Firefox\//.test(ua)) browser = "Firefox";
+
+  const label = [device, browser].filter(Boolean).join(" / ") || "その他";
+  const suspicious = isClaude || isBotLike || (isAndroid && /Pixel/i.test(ua));
+  return { label: isClaude ? `${label}(Claude内蔵ブラウザ)` : label, suspicious };
+}
+
 function referrerLabel(referrer: string | null | undefined): string {
-  if (!referrer) return "直接アクセス・LINEなど";
+  if (referrer === "line-app-link") return "LINE";
+  if (!referrer) return "直接アクセス";
   try {
     const host = new URL(referrer).hostname.replace(/^www\./, "");
     if (host.includes("x.com") || host.includes("twitter.com")) return "X(旧Twitter)";
@@ -86,7 +117,7 @@ function referrerLabel(referrer: string | null | undefined): string {
     if (host.includes("line.me") || host.includes("line-apps.com")) return "LINE";
     return host;
   } catch {
-    return "直接アクセス・LINEなど";
+    return "直接アクセス";
   }
 }
 
@@ -201,8 +232,9 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: false }),
     supabase
       .from("page_views")
-      .select("path, visitor_id, created_at, referrer")
-      .gte("created_at", thirtyDaysAgo),
+      .select("path, visitor_id, created_at, referrer, user_agent")
+      .gte("created_at", thirtyDaysAgo)
+      .order("created_at", { ascending: false }),
     supabase
       .from("line_follows")
       .select("created_at")
@@ -223,6 +255,7 @@ export default async function AdminDashboard() {
   const inquiries = inquiriesRes.data ?? [];
   const reports = reportsRes.data ?? [];
   const views = aggregateViews(viewsRes.data ?? []);
+  const recentViews = (viewsRes.data ?? []).slice(0, 30) as ViewRow[];
   const follows = followsRes.data ?? [];
   const lineUsers = lineUsersRes.data ?? [];
   const lineUserById = new Map(lineUsers.map((u) => [u.line_user_id, u]));
@@ -412,6 +445,42 @@ export default async function AdminDashboard() {
                   </p>
                 )}
               </div>
+            </div>
+
+            <div className="mt-4 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <p className="mb-2 text-sm font-medium">
+                直近のアクセス(デバイス・ブラウザ)
+              </p>
+              {recentViews.length > 0 ? (
+                <div className="flex flex-col gap-1">
+                  {recentViews.map((row, i) => {
+                    const device = deviceLabel(row.user_agent);
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 text-xs"
+                      >
+                        <span className="w-28 shrink-0 text-[#888780]">
+                          {formatDate(row.created_at)}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-[#5F5E5A]">
+                          {labelForPath(row.path)}
+                        </span>
+                        <span
+                          className={`shrink-0 ${device.suspicious ? "font-medium text-[#D85A30]" : "text-[#888780]"}`}
+                        >
+                          {device.suspicious ? "⚠ " : ""}
+                          {device.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-xs text-[#888780]">
+                  まだデータがありません。
+                </p>
+              )}
             </div>
           </section>
 
