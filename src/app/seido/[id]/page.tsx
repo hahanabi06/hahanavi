@@ -4,10 +4,7 @@ import { IconChevronRight, IconAlertTriangle } from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ReportForm } from "@/components/ReportForm";
-import {
-  LineDiagnosisCard,
-  LineDiagnosisBar,
-} from "@/components/LineDiagnosisCTA";
+import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import programsData from "@/data/programs.json";
 
 // 長い金額の説明文を、意味の切れ目(句点・スラッシュ)で改行して読みやすくする
@@ -441,12 +438,6 @@ export default async function ProgramDetailPage({
         <div className="mb-4 border-b border-[#D3D1C7]">
           <ReportForm programId={program.id} programName={program.name} />
         </div>
-
-        <LineDiagnosisCard
-          lead="この制度、自分は対象になる?"
-          sub="他の制度と合わせていくらもらえるか診断するよ"
-          className="mb-5"
-        />
 
         <p className="mb-2.5 text-sm font-medium">関連する制度</p>
         <div className="mb-5 flex flex-col gap-1.5">

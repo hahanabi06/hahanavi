@@ -4,6 +4,7 @@ import { BearParentChild } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { listPublishedArticles } from "@/lib/notion";
 import { ArticleEyecatch } from "@/lib/article-category";
+import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 
 export default async function KijiListPage() {
   const articles = await listPublishedArticles().catch(() => []);
@@ -40,6 +41,8 @@ export default async function KijiListPage() {
             まだ記事がありません。準備中です。
           </div>
         )}
+
+        <LineDiagnosisBar className="mt-5" />
       </main>
       </div>
     </>

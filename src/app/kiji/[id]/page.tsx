@@ -5,7 +5,7 @@ import { IconChevronRight } from "@tabler/icons-react";
 import { BearMama, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ViewTracker } from "@/components/ViewTracker";
-import { LineDiagnosisCard } from "@/components/LineDiagnosisCTA";
+import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
 
 export async function generateStaticParams() {
@@ -146,11 +146,7 @@ export default async function ArticlePage({
           </div>
         )}
 
-        <LineDiagnosisCard
-          lead="この記事の制度、自分は対象になる?"
-          sub="他の制度と合わせていくらもらえるか診断するよ"
-          className="mt-2 mb-5"
-        />
+        <LineDiagnosisBar className="mt-2" />
       </main>
       </div>
     </>

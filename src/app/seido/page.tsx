@@ -1,10 +1,7 @@
 import { BearParentChild } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { SeidoProgramList, type Program } from "@/components/SeidoProgramList";
-import {
-  LineDiagnosisCard,
-  LineDiagnosisBar,
-} from "@/components/LineDiagnosisCTA";
+import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import programsData from "@/data/programs.json";
 
 // クライアント側(SeidoProgramList)には一覧表示に使うフィールドだけを渡す。
@@ -41,12 +38,6 @@ export default function SeidoListPage() {
         </div>
 
         <SeidoProgramList programs={programs} />
-
-        <LineDiagnosisCard
-          lead="どの制度が使えるか分からない?"
-          sub="LINEで聞くだけで、合わせていくらもらえるか診断するよ"
-          className="mb-5"
-        />
 
         <LineDiagnosisBar />
       </main>
