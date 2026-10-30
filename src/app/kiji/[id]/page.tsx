@@ -111,6 +111,11 @@ export default async function ArticlePage({
                 </div>
               );
             }
+            // 出典・参考が連続するときは、間のすき間を詰めて1つのリストのように見せる
+            const isCitation = (b?: typeof block) => b?.type === "paragraph" && !!b.url;
+            const prevIsCitation = isCitation(prevBlock);
+            const nextIsCitation = isCitation(article.blocks[i + 1]);
+
             return (
               <div key={i} className="contents">
                 {divider}
@@ -119,7 +124,7 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 mb-3 block text-[11px] text-[#888780] underline"
+                    className={`block text-[11px] text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
                   >
                     {block.text}
                   </a>
