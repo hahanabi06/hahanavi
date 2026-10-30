@@ -41,7 +41,7 @@ export async function listPublishedArticles(): Promise<ArticleSummary[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return res.results.map((page: any) => ({
     id: page.id,
-    title: plainText(page.properties?.Name?.title) || "無題",
+    title: plainText(page.properties?.記事タイトル?.title) || "無題",
     createdTime: page.created_time,
     category: page.properties?.カテゴリ?.select?.name,
   }));
@@ -113,7 +113,7 @@ export async function createDraftArticle({
   const page = await notion.pages.create({
     parent: { data_source_id: getDataSourceId() },
     properties: {
-      Name: { title: [{ type: "text", text: { content: title } }] },
+      記事タイトル: { title: [{ type: "text", text: { content: title } }] },
       Status: { select: { name: "下書き" } },
       カテゴリ: { select: { name: category } },
     },
@@ -137,7 +137,7 @@ export async function getArticle(id: string): Promise<Article | null> {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const p = page as any;
-  const title = plainText(p.properties?.Name?.title) || "無題";
+  const title = plainText(p.properties?.記事タイトル?.title) || "無題";
   const status = p.properties?.Status?.select?.name ?? "";
 
   const children = await notion.blocks.children.list({

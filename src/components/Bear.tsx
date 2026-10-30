@@ -1,4 +1,6 @@
-export function BearFace({ size = 48 }: { size?: number }) {
+// シングマちゃん単体の顔。記事の掛け合い(シングマちゃん⇔熊太郎)で、
+// 熊太郎の吹き出しと並べてもシングマちゃんだけが写るように使う
+export function BearMama({ size = 48 }: { size?: number }) {
   const height = size * (40 / 44);
   return (
     <svg

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { IconMessageCircle2 } from "@tabler/icons-react";
-import { BearParentChild, BearCub } from "@/components/Bear";
+import { BearMama, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ViewTracker } from "@/components/ViewTracker";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
@@ -33,17 +33,20 @@ export default async function ArticlePage({
         <div className="mb-5 flex flex-col gap-3">
           {article.blocks.map((block, i) => {
             if (block.type === "bear") {
+              const isKid = block.speaker === "kid";
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3"
+                  className={`flex items-center gap-2.5 ${isKid ? "flex-row" : "flex-row-reverse"}`}
                 >
-                  {block.speaker === "kid" ? (
-                    <BearCub size={32} />
-                  ) : (
-                    <BearParentChild size={40} />
-                  )}
-                  <p className="text-sm leading-relaxed">{block.text}</p>
+                  {isKid ? <BearCub size={32} /> : <BearMama size={36} />}
+                  <p
+                    className={`flex-1 rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      isKid ? "bg-[#F1EFE8]" : "bg-[#FAECE7]"
+                    }`}
+                  >
+                    {block.text}
+                  </p>
                 </div>
               );
             }
