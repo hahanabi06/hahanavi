@@ -102,7 +102,9 @@ export default async function ArticlePage({
 
         {article.relatedPrograms.length > 0 && (
           <div className="mb-5">
-            <p className="mb-2 text-sm font-medium">関連する制度</p>
+            <p className="mb-2 text-sm font-medium">
+              申請条件・窓口など、詳しくはこちら
+            </p>
             <div className="flex flex-col gap-1.5">
               {article.relatedPrograms.map((program) => (
                 <Link
