@@ -334,11 +334,11 @@ export default async function AdminDashboard() {
                 </div>
               </div>
 
-              {views.topPaths.length > 0 && (
-                <div className="w-96 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
-                  <p className="mb-2 text-sm font-medium">
-                    人気ページ(過去30日間)
-                  </p>
+              <div className="w-96 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                <p className="mb-2 text-sm font-medium">
+                  人気ページ(過去30日間)
+                </p>
+                {views.topPaths.length > 0 ? (
                   <div className="flex flex-col gap-1">
                     {views.topPaths.map(([path, count]) => (
                       <div
@@ -352,8 +352,12 @@ export default async function AdminDashboard() {
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <p className="text-xs text-[#888780]">
+                    まだデータがありません。
+                  </p>
+                )}
+              </div>
             </div>
           </section>
 
