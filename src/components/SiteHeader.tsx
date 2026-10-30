@@ -27,10 +27,10 @@ const zenMaruGothic = Zen_Maru_Gothic({
 const MENU_LINKS = [
   { icon: IconCoin, label: "支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
-  { icon: IconCertificate, label: "おすすめ資格", href: "/shikaku" },
+  { icon: IconCertificate, label: "おすすめ資格", href: null },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
   { icon: IconBuildingStore, label: "企業の方へ", href: "/company" },
-  { icon: IconScale, label: "士業の方へ", href: "/shigyo" },
+  { icon: IconScale, label: "士業の方へ", href: null },
 ];
 
 const MENU_SUB_LINKS = [
@@ -94,18 +94,28 @@ export function SiteHeader() {
             </div>
 
             <div className="flex flex-col gap-1">
-              {MENU_LINKS.map(({ icon: Icon, label, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-xl bg-[#F1EFE8] px-3 py-2.5"
-                >
-                  <Icon size={16} className="shrink-0 text-[#5F5E5A]" />
-                  <p className="flex-1 text-sm font-medium">{label}</p>
-                  <IconChevronRight size={14} className="shrink-0 text-[#888780]" />
-                </Link>
-              ))}
+              {MENU_LINKS.map(({ icon: Icon, label, href }) =>
+                href ? (
+                  <Link
+                    key={label}
+                    href={href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-xl bg-[#F1EFE8] px-3 py-2.5"
+                  >
+                    <Icon size={16} className="shrink-0 text-[#5F5E5A]" />
+                    <p className="flex-1 text-sm font-medium">{label}</p>
+                    <IconChevronRight size={14} className="shrink-0 text-[#888780]" />
+                  </Link>
+                ) : (
+                  <div
+                    key={label}
+                    className="flex items-center gap-2 rounded-xl bg-[#F1EFE8] px-3 py-2.5"
+                  >
+                    <Icon size={16} className="shrink-0 text-[#5F5E5A]" />
+                    <p className="flex-1 text-sm font-medium">{label}</p>
+                  </div>
+                ),
+              )}
 
               <div className="mt-2 mb-1 h-px bg-[#E3E0D6]" />
 
