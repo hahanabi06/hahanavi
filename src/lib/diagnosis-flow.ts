@@ -13,10 +13,14 @@ export const REGIONS: { name: string; prefectures: string[] }[] = [
   { name: "九州・沖縄", prefectures: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] },
 ];
 
-// LINEのクイックリプライは1メッセージ最大13個までなので、23区を2ページに分けて出す。
+// LINEのクイックリプライは1メッセージ最大13個までなので、23区を3ページに分けて出す。
 // 「都心/城東」のようなエリア名は馴染みがない人も多いので使わず、単純にページ送りする。
-// 各ページに「次の区を見る」「戻る」ボタンが乗る分を引いて11+12に分割
-export const WARD_PAGES: string[][] = [TOKYO_WARDS.slice(0, 11), TOKYO_WARDS.slice(11)];
+// 各ページに「次の区を見る」「戻る」「やめる」ボタンが乗る分を引いて10+10+3に分割
+export const WARD_PAGES: string[][] = [
+  TOKYO_WARDS.slice(0, 10),
+  TOKYO_WARDS.slice(10, 20),
+  TOKYO_WARDS.slice(20),
+];
 
 export const CHILD_COUNT_OPTIONS = [
   { label: "1人", value: 1 },

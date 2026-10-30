@@ -29,6 +29,9 @@ const FEEDBACK_THANKS = "送ってくれてありがとう!参考にさせても
 // ボタンでの診断フロー(state=line_usersのmode列、DiagFlowStateをJSON化したもの)の質問文とボタン生成。
 // 「戻る」を正しい行き先に出せるよう、現在のstate(region/prefecture/wardの引き継ぎ内容)を見て組み立てる
 const BACK_BUTTON_LABEL = "戻る";
+const CANCEL_BUTTON_LABEL = "やめる";
+const CANCEL_MESSAGE =
+  "診断をやめたよ。また気になったら、下のメニューの「支援制度診断」からいつでも試してね。";
 
 function regionQuickReply(): QuickReplyItem[] {
   return REGIONS.map((r) => ({ label: r.name, data: `diag_region=${r.name}` }));
@@ -58,11 +61,12 @@ function incomeQuickReply(): QuickReplyItem[] {
 // state.stepだけを見て、その質問文とボタン一覧を組み立てる。
 // 「戻る」から呼ばれたときも、このまま同じUIを再現できるようにする
 function promptForStep(state: DiagFlowState): { text: string; items: QuickReplyItem[] } {
+  const CANCEL_ITEM = { label: CANCEL_BUTTON_LABEL, data: "diag_cancel" };
   switch (state.step) {
     case "region":
       return {
         text: "お住まいの地方を選んでね",
-        items: regionQuickReply(),
+        items: [...regionQuickReply(), CANCEL_ITEM],
       };
     case "prefecture":
       return {
@@ -70,12 +74,17 @@ function promptForStep(state: DiagFlowState): { text: string; items: QuickReplyI
         items: [
           ...prefectureQuickReply(state.region!),
           { label: BACK_BUTTON_LABEL, data: "diag_back=region" },
+          CANCEL_ITEM,
         ],
       };
     case "ward":
       return {
         text: "どの区?",
-        items: [...wardQuickReply(0), { label: BACK_BUTTON_LABEL, data: "diag_back=prefecture" }],
+        items: [
+          ...wardQuickReply(0),
+          { label: BACK_BUTTON_LABEL, data: "diag_back=prefecture" },
+          CANCEL_ITEM,
+        ],
       };
     case "children":
       return {
@@ -83,6 +92,7 @@ function promptForStep(state: DiagFlowState): { text: string; items: QuickReplyI
         items: [
           ...childrenQuickReply(),
           { label: BACK_BUTTON_LABEL, data: state.ward ? "diag_back=ward" : "diag_back=prefecture" },
+          CANCEL_ITEM,
         ],
       };
     case "childAge": {
@@ -91,13 +101,21 @@ function promptForStep(state: DiagFlowState): { text: string; items: QuickReplyI
       const childNumber = askedSoFar + 1;
       return {
         text: total > 1 ? `${childNumber}人目のお子さんの年齢は?` : "お子さんの年齢は?",
-        items: [...ageQuickReply(), { label: BACK_BUTTON_LABEL, data: "diag_back=childAge" }],
+        items: [
+          ...ageQuickReply(),
+          { label: BACK_BUTTON_LABEL, data: "diag_back=childAge" },
+          CANCEL_ITEM,
+        ],
       };
     }
     case "income":
       return {
         text: "年収(世帯の合計)はどれくらい?",
-        items: [...incomeQuickReply(), { label: BACK_BUTTON_LABEL, data: "diag_back=childAge" }],
+        items: [
+          ...incomeQuickReply(),
+          { label: BACK_BUTTON_LABEL, data: "diag_back=childAge" },
+          CANCEL_ITEM,
+        ],
       };
   }
 }
@@ -495,6 +513,17 @@ export async function POST(req: NextRequest) {
         return;
       }
 
+      if (event.type === "postback" && event.postback?.data === "diag_cancel") {
+        const userId = event.source?.userId;
+        const tasks = [replyToLine(event.replyToken, CANCEL_MESSAGE, channelAccessToken)];
+        if (userId) {
+          const supabase = getSupabaseServerClient();
+          tasks.push(setLineUserMode(supabase, userId, null));
+        }
+        await Promise.all(tasks);
+        return;
+      }
+
       if (event.type === "postback" && event.postback?.data?.startsWith("diag_back=")) {
         const targetStep = event.postback.data.slice("diag_back=".length) as DiagFlowState["step"];
         const userId = event.source?.userId;
@@ -564,6 +593,7 @@ export async function POST(req: NextRequest) {
         const items = [
           ...wardQuickReply(page),
           { label: BACK_BUTTON_LABEL, data: "diag_back=prefecture" },
+          { label: CANCEL_BUTTON_LABEL, data: "diag_cancel" },
         ];
         await replyToLine(event.replyToken, "どの区?", channelAccessToken, items);
         return;
