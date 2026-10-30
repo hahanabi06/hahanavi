@@ -24,10 +24,11 @@ export function PageViewTracker() {
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
     const visitorId = getVisitorId();
+    const referrer = document.referrer || null;
     fetch("/api/pageview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: pathname, visitorId }),
+      body: JSON.stringify({ path: pathname, visitorId, referrer }),
     }).catch(() => {});
   }, [pathname]);
 

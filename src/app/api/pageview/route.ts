@@ -8,6 +8,8 @@ export async function POST(req: Request) {
   const path = typeof body?.path === "string" ? body.path.slice(0, 500) : "";
   const visitorId =
     typeof body?.visitorId === "string" ? body.visitorId.slice(0, 100) : null;
+  const referrer =
+    typeof body?.referrer === "string" ? body.referrer.slice(0, 500) : null;
 
   if (!path) {
     return NextResponse.json({ error: "path is required" }, { status: 400 });
@@ -28,7 +30,12 @@ export async function POST(req: Request) {
   const supabase = getSupabaseServerClient();
   const { error } = await supabase
     .from("page_views")
-    .insert({ path, visitor_id: visitorId, user_agent: userAgent.slice(0, 300) });
+    .insert({
+      path,
+      visitor_id: visitorId,
+      user_agent: userAgent.slice(0, 300),
+      referrer,
+    });
   if (error) console.error("[page_views] insert failed", error);
 
   return NextResponse.json({ ok: true });

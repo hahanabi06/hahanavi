@@ -70,7 +70,25 @@ const PORTAL_LINKS = [
   { label: "X", sub: "旧Twitter", href: "https://x.com/home?lang=ja" },
 ];
 
-type ViewRow = { path: string; visitor_id: string | null; created_at: string };
+type ViewRow = {
+  path: string;
+  visitor_id: string | null;
+  created_at: string;
+  referrer?: string | null;
+};
+
+function referrerLabel(referrer: string | null | undefined): string {
+  if (!referrer) return "直接アクセス・LINEなど";
+  try {
+    const host = new URL(referrer).hostname.replace(/^www\./, "");
+    if (host.includes("x.com") || host.includes("twitter.com")) return "X(旧Twitter)";
+    if (host.includes("google.")) return "Google検索";
+    if (host.includes("line.me") || host.includes("line-apps.com")) return "LINE";
+    return host;
+  } catch {
+    return "直接アクセス・LINEなど";
+  }
+}
 
 function aggregateViews(rows: ViewRow[]) {
   const now = Date.now();
@@ -95,6 +113,15 @@ function aggregateViews(rows: ViewRow[]) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
+  const referrerCounts = new Map<string, number>();
+  for (const row of rows) {
+    const label = referrerLabel(row.referrer);
+    referrerCounts.set(label, (referrerCounts.get(label) ?? 0) + 1);
+  }
+  const topReferrers = Array.from(referrerCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
   // daily PV for the last 14 days, oldest first
   const daily: { label: string; pv: number }[] = [];
   for (let i = 13; i >= 0; i--) {
@@ -114,6 +141,7 @@ function aggregateViews(rows: ViewRow[]) {
     last7d: countsFor(7 * day),
     last30d: countsFor(30 * day),
     topPaths,
+    topReferrers,
     daily,
   };
 }
@@ -173,7 +201,7 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: false }),
     supabase
       .from("page_views")
-      .select("path, visitor_id, created_at")
+      .select("path, visitor_id, created_at, referrer")
       .gte("created_at", thirtyDaysAgo),
     supabase
       .from("line_follows")
@@ -348,6 +376,31 @@ export default async function AdminDashboard() {
                       >
                         <span className="min-w-0 flex-1 truncate text-[#5F5E5A]">
                           {labelForPath(path)}
+                        </span>
+                        <span className="shrink-0 font-medium">{count}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#888780]">
+                    まだデータがありません。
+                  </p>
+                )}
+              </div>
+
+              <div className="w-96 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                <p className="mb-2 text-sm font-medium">
+                  流入元(過去30日間)
+                </p>
+                {views.topReferrers.length > 0 ? (
+                  <div className="flex flex-col gap-1">
+                    {views.topReferrers.map(([label, count]) => (
+                      <div
+                        key={label}
+                        className="flex items-center gap-3 text-sm"
+                      >
+                        <span className="min-w-0 flex-1 truncate text-[#5F5E5A]">
+                          {label}
                         </span>
                         <span className="shrink-0 font-medium">{count}</span>
                       </div>
