@@ -396,64 +396,56 @@ export default async function AdminDashboard() {
         <main className="min-w-0 flex-1 px-8 py-6">
           <section className="mb-8">
             <p className="mb-3 text-lg font-medium">アクセス解析</p>
-            <div className="flex flex-wrap gap-3">
-              <div className="w-72 shrink-0">
-                <div className="grid grid-cols-3 gap-1.5">
-                  <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
-                    <p className="text-[10px] text-[#888780]">24時間</p>
-                    <p className="text-lg font-medium">
-                      {views.last24h.pv}
-                      <span className="text-xs font-normal text-[#888780]">
-                        {" "}
-                        PV
-                      </span>
-                    </p>
-                    <p className="text-xs text-[#5F5E5A]">
-                      {views.last24h.uu} UU
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
-                    <p className="text-[10px] text-[#888780]">7日間</p>
-                    <p className="text-lg font-medium">
-                      {views.last7d.pv}
-                      <span className="text-xs font-normal text-[#888780]">
-                        {" "}
-                        PV
-                      </span>
-                    </p>
-                    <p className="text-xs text-[#5F5E5A]">
-                      {views.last7d.uu} UU
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
-                    <p className="text-[10px] text-[#888780]">30日間</p>
-                    <p className="text-lg font-medium">
-                      {views.last30d.pv}
-                      <span className="text-xs font-normal text-[#888780]">
-                        {" "}
-                        PV
-                      </span>
-                    </p>
-                    <p className="text-xs text-[#5F5E5A]">
-                      {views.last30d.uu} UU
-                    </p>
-                  </div>
-                </div>
 
-                <div className="mt-3 rounded-xl bg-[#F1EFE8] px-4 py-3">
-                  <p className="mb-3 text-sm font-medium">
-                    日別PV推移(過去14日間)
+            <div className="mb-3 flex gap-3">
+              <div className="grid w-56 shrink-0 grid-cols-1 gap-1.5">
+                <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
+                  <p className="text-[10px] text-[#888780]">過去24時間</p>
+                  <p className="text-lg font-medium">
+                    {views.last24h.pv}
+                    <span className="text-xs font-normal text-[#888780]">
+                      {" "}
+                      PV / {views.last24h.uu} UU
+                    </span>
                   </p>
-                  <BarChart data={views.daily} />
+                </div>
+                <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
+                  <p className="text-[10px] text-[#888780]">過去7日間</p>
+                  <p className="text-lg font-medium">
+                    {views.last7d.pv}
+                    <span className="text-xs font-normal text-[#888780]">
+                      {" "}
+                      PV / {views.last7d.uu} UU
+                    </span>
+                  </p>
+                </div>
+                <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
+                  <p className="text-[10px] text-[#888780]">過去30日間</p>
+                  <p className="text-lg font-medium">
+                    {views.last30d.pv}
+                    <span className="text-xs font-normal text-[#888780]">
+                      {" "}
+                      PV / {views.last30d.uu} UU
+                    </span>
+                  </p>
                 </div>
               </div>
 
-              <div className="w-72 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                <p className="mb-3 text-sm font-medium">
+                  日別PV推移(過去14日間)
+                </p>
+                <BarChart data={views.daily} />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-2 text-sm font-medium">
                   人気ページ(過去30日間)
                 </p>
                 {views.topPaths.length > 0 ? (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex max-h-32 flex-col gap-1 overflow-y-auto">
                     {views.topPaths.map(([path, count]) => (
                       <div
                         key={path}
@@ -473,12 +465,12 @@ export default async function AdminDashboard() {
                 )}
               </div>
 
-              <div className="w-72 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-2 text-sm font-medium">
                   流入元(過去30日間)
                 </p>
                 {views.topReferrers.length > 0 ? (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex max-h-32 flex-col gap-1 overflow-y-auto">
                     {views.topReferrers.map(([label, count]) => (
                       <div
                         key={label}
@@ -498,12 +490,12 @@ export default async function AdminDashboard() {
                 )}
               </div>
 
-              <div className="w-80 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-2 text-sm font-medium">
                   直近のアクセス(ユーザー別)
                 </p>
                 {recentVisitors.length > 0 ? (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex max-h-32 flex-col gap-2 overflow-y-auto">
                     {recentVisitors.map((v) => (
                       <div
                         key={v.key}
@@ -563,124 +555,135 @@ export default async function AdminDashboard() {
           </section>
 
           <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">
-              ページの修正依頼({pageReports.length}件)
-            </p>
-            {pageReports.length === 0 ? (
-              <p className="text-sm text-[#888780]">まだありません。</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {pageReports.map((row) => (
-                  <div
-                    key={row.id}
-                    className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
-                  >
-                    <p className="mb-1 text-xs text-[#888780]">
-                      {formatDate(row.created_at)} ・{" "}
-                      {SOURCE_LABEL[row.source] ?? row.source}
-                    </p>
-                    {row.program_name && (
-                      <p className="font-medium">{row.program_name}</p>
-                    )}
-                    <p className="mt-1 whitespace-pre-wrap">{row.message}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">
-              ご報告・ご要望({requestReports.length}件)
-            </p>
-            {requestReports.length === 0 ? (
-              <p className="text-sm text-[#888780]">まだありません。</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {requestReports.map((row) => (
-                  <div
-                    key={row.id}
-                    className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
-                  >
-                    <p className="mb-1 text-xs text-[#888780]">
-                      {formatDate(row.created_at)}
-                    </p>
-                    <p className="mt-1 whitespace-pre-wrap">{row.message}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">
-              企業からの問い合わせ({inquiries.length}件)
-            </p>
-            {inquiries.length === 0 ? (
-              <p className="text-sm text-[#888780]">まだありません。</p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {inquiries.map((row) => (
-                  <div
-                    key={row.id}
-                    className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
-                  >
-                    <p className="mb-1 text-xs text-[#888780]">
-                      {formatDate(row.created_at)}
-                    </p>
-                    <p className="font-medium">
-                      {row.company_name}(担当: {row.contact_name})
-                    </p>
-                    <p>{row.email}</p>
-                    {row.phone && <p>{row.phone}</p>}
-                    <p className="mt-1">相談内容: {row.interest}</p>
-                    {row.message && (
-                      <p className="mt-1 whitespace-pre-wrap">
-                        {row.message}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">
-              LINEのやりとり({lineConversations.length}人)
-            </p>
-            {lineConversations.length === 0 ? (
-              <p className="text-sm text-[#888780]">まだありません。</p>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {lineConversations.map(({ userId, profile, messages }) => (
-                  <div
-                    key={userId}
-                    className="rounded-xl bg-[#F1EFE8] px-4 py-3"
-                  >
-                    <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#888780]">
-                      <span>区: {profile?.ward ?? "不明"}</span>
-                      <span>子供: {profile?.num_children ?? "不明"}</span>
-                      <span>年収: {profile?.income_man_yen ?? "不明"}万円</span>
-                      <span className="ml-auto">
-                        最終: {formatDate(messages[messages.length - 1].created_at)}
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      {messages.map((m, i) => (
-                        <p key={i} className="text-sm leading-relaxed">
-                          <span className="mr-2 text-xs text-[#888780]">
-                            {formatDate(m.created_at)}
-                          </span>
-                          {m.text}
+            <div className="grid grid-cols-4 gap-3">
+              <div>
+                <p className="mb-3 text-lg font-medium">
+                  ページの修正依頼({pageReports.length}件)
+                </p>
+                {pageReports.length === 0 ? (
+                  <p className="text-sm text-[#888780]">まだありません。</p>
+                ) : (
+                  <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
+                    {pageReports.map((row) => (
+                      <div
+                        key={row.id}
+                        className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
+                      >
+                        <p className="mb-1 text-xs text-[#888780]">
+                          {formatDate(row.created_at)} ・{" "}
+                          {SOURCE_LABEL[row.source] ?? row.source}
                         </p>
-                      ))}
-                    </div>
-                    <LinePushForm lineUserId={userId} />
+                        {row.program_name && (
+                          <p className="font-medium">{row.program_name}</p>
+                        )}
+                        <p className="mt-1 whitespace-pre-wrap">
+                          {row.message}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            )}
+
+              <div>
+                <p className="mb-3 text-lg font-medium">
+                  ご報告・ご要望({requestReports.length}件)
+                </p>
+                {requestReports.length === 0 ? (
+                  <p className="text-sm text-[#888780]">まだありません。</p>
+                ) : (
+                  <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
+                    {requestReports.map((row) => (
+                      <div
+                        key={row.id}
+                        className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
+                      >
+                        <p className="mb-1 text-xs text-[#888780]">
+                          {formatDate(row.created_at)}
+                        </p>
+                        <p className="mt-1 whitespace-pre-wrap">
+                          {row.message}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="mb-3 text-lg font-medium">
+                  企業からの問い合わせ({inquiries.length}件)
+                </p>
+                {inquiries.length === 0 ? (
+                  <p className="text-sm text-[#888780]">まだありません。</p>
+                ) : (
+                  <div className="flex max-h-96 flex-col gap-2 overflow-y-auto">
+                    {inquiries.map((row) => (
+                      <div
+                        key={row.id}
+                        className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
+                      >
+                        <p className="mb-1 text-xs text-[#888780]">
+                          {formatDate(row.created_at)}
+                        </p>
+                        <p className="font-medium">
+                          {row.company_name}(担当: {row.contact_name})
+                        </p>
+                        <p>{row.email}</p>
+                        {row.phone && <p>{row.phone}</p>}
+                        <p className="mt-1">相談内容: {row.interest}</p>
+                        {row.message && (
+                          <p className="mt-1 whitespace-pre-wrap">
+                            {row.message}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="mb-3 text-lg font-medium">
+                  LINEのやりとり({lineConversations.length}人)
+                </p>
+                {lineConversations.length === 0 ? (
+                  <p className="text-sm text-[#888780]">まだありません。</p>
+                ) : (
+                  <div className="flex max-h-96 flex-col gap-3 overflow-y-auto">
+                    {lineConversations.map(({ userId, profile, messages }) => (
+                      <div
+                        key={userId}
+                        className="rounded-xl bg-[#F1EFE8] px-4 py-3"
+                      >
+                        <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#888780]">
+                          <span>区: {profile?.ward ?? "不明"}</span>
+                          <span>子供: {profile?.num_children ?? "不明"}</span>
+                          <span>
+                            年収: {profile?.income_man_yen ?? "不明"}万円
+                          </span>
+                          <span className="ml-auto">
+                            最終:{" "}
+                            {formatDate(messages[messages.length - 1].created_at)}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          {messages.map((m, i) => (
+                            <p key={i} className="text-sm leading-relaxed">
+                              <span className="mr-2 text-xs text-[#888780]">
+                                {formatDate(m.created_at)}
+                              </span>
+                              {m.text}
+                            </p>
+                          ))}
+                        </div>
+                        <LinePushForm lineUserId={userId} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </section>
         </main>
       </div>
