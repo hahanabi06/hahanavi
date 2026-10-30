@@ -54,7 +54,9 @@ export default async function ArticlePage({
         <div className="mb-5 flex flex-col gap-3">
           {article.blocks.map((block, i) => {
             const prevBlock = article.blocks[i - 1];
-            const divider = prevBlock?.type === "bear" && block.type !== "bear" && (
+            // 区切り線は「本当に新しいセクションが始まる場所」(見出しの前)だけに出す。
+            // 出典・参考の段落は会話や直前の文章の一部として扱うので線は入れない
+            const divider = block.type === "heading" && prevBlock && (
               <hr key={`divider-${i}`} className="my-2 border-t border-[#D3D1C7]" />
             );
 
