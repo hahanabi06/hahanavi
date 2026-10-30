@@ -184,7 +184,7 @@ export async function createDraftArticle({
       page_id: p.id,
       properties: {
         プレビュー: {
-          url: `https://hahanavi.vercel.app/api/preview?id=${p.id.replace(/-/g, "")}&secret=${previewSecret}`,
+          url: `https://hahanavi.com/api/preview?id=${p.id.replace(/-/g, "")}&secret=${previewSecret}`,
         },
       },
     });
