@@ -30,6 +30,12 @@ export default async function ArticlePage({
 
   if (!article || (!article.published && !isPreview)) return notFound();
 
+  // 本文中にリンク付きの段落があれば「参考」として、制度の出典と同じ場所にまとめる
+  const linkParagraphs = article.blocks.filter(
+    (b): b is Extract<typeof b, { type: "paragraph" }> =>
+      b.type === "paragraph" && Boolean(b.url),
+  );
+
   return (
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
@@ -53,6 +59,9 @@ export default async function ArticlePage({
 
         <div className="mb-5 flex flex-col gap-3">
           {article.blocks.map((block, i) => {
+            // 本文中にリンク付きの段落(参考・出典)があれば、会話の流れに混ぜず
+            // 下の「参考」セクションにまとめて表示するので、ここではスキップする
+            if (block.type === "paragraph" && block.url) return null;
             const prevBlock = article.blocks[i - 1];
             const divider = prevBlock?.type === "bear" && block.type !== "bear" && (
               <hr key={`divider-${i}`} className="my-2 border-t border-[#D3D1C7]" />
@@ -112,26 +121,16 @@ export default async function ArticlePage({
             return (
               <div key={i} className="contents">
                 {divider}
-                {block.url ? (
-                  <a
-                    href={block.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-[#888780] underline"
-                  >
-                    {block.text}
-                  </a>
-                ) : (
-                  <p className="text-sm leading-relaxed whitespace-pre-line">
-                    {block.text}
-                  </p>
-                )}
+                <p className="text-sm leading-relaxed whitespace-pre-line">
+                  {block.text}
+                </p>
               </div>
             );
           })}
         </div>
 
-        {article.relatedPrograms.some((p) => p.source) && (
+        {(article.relatedPrograms.some((p) => p.source) ||
+          linkParagraphs.length > 0) && (
           <div className="mb-5 flex flex-col gap-1">
             {article.relatedPrograms
               .filter((p) => p.source)
@@ -146,6 +145,17 @@ export default async function ArticlePage({
                   出典: {p.name}(公式ページ)
                 </a>
               ))}
+            {linkParagraphs.map((block, i) => (
+              <a
+                key={`link-${i}`}
+                href={block.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-[#888780] underline"
+              >
+                {block.text}
+              </a>
+            ))}
           </div>
         )}
 
