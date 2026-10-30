@@ -100,6 +100,24 @@ export default async function ArticlePage({
           })}
         </div>
 
+        {article.relatedPrograms.some((p) => p.source) && (
+          <div className="flex flex-col gap-1">
+            {article.relatedPrograms
+              .filter((p) => p.source)
+              .map((p) => (
+                <a
+                  key={p.id}
+                  href={p.source}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-[#888780] underline"
+                >
+                  出典: {p.name}(公式ページ)
+                </a>
+              ))}
+          </div>
+        )}
+
         {article.relatedPrograms.length > 0 && (
           <div className="mb-5">
             <hr className="mt-1 mb-5 border-t border-[#D3D1C7]" />

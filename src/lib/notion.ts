@@ -2,18 +2,30 @@ import { Client } from "@notionhq/client";
 import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
 
-const ALL_PROGRAMS = programsData.programs as { id: string; name: string; headline?: string }[];
+const ALL_PROGRAMS = programsData.programs as {
+  id: string;
+  name: string;
+  headline?: string;
+  source?: string;
+  verifiedAt?: string;
+}[];
 
 // Notionの「関連制度」欄(改行区切りの制度名)を、programs.jsonの制度名と突き合わせて
-// IDを解決する。一致しない行は黙ってスキップする(タイポ等で存在しない制度を表示しないため)
+// IDを解決する。一致しない行は黙ってスキップする(タイポ等で存在しない制度を表示しないため)。
+// sourceはprograms.json側で裏取り済みの公式ページURL(記事側で出典として表示する)
 function resolveRelatedPrograms(rawText: string): RelatedProgram[] {
   return rawText
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
     .map((name) => ALL_PROGRAMS.find((p) => p.name === name))
-    .filter((p): p is RelatedProgram => Boolean(p))
-    .map((p) => ({ id: p.id, name: p.name, headline: p.headline }));
+    .filter((p): p is NonNullable<typeof p> => Boolean(p))
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      headline: p.headline,
+      source: p.source,
+    }));
 }
 
 function getNotionClient() {
@@ -70,7 +82,12 @@ export type ArticleBlock =
   | { type: "heading"; text: string }
   | { type: "bullet"; text: string };
 
-export type RelatedProgram = { id: string; name: string; headline?: string };
+export type RelatedProgram = {
+  id: string;
+  name: string;
+  headline?: string;
+  source?: string;
+};
 
 export type Article = {
   id: string;
