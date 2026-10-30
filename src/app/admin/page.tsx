@@ -19,9 +19,12 @@ const STATIC_PATH_LABEL: Record<string, string> = {
 export const instant = false;
 export const metadata = { title: "管理画面 | ハハナビ" };
 
+const JST = "Asia/Tokyo";
+
 function formatDate(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleString("ja-JP", {
+    timeZone: JST,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -31,7 +34,13 @@ function formatDate(iso: string): string {
 }
 
 function formatDay(d: Date): string {
-  return d.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" });
+  return d.toLocaleDateString("ja-JP", { timeZone: JST, month: "numeric", day: "numeric" });
+}
+
+// 日付の比較・加減算はUTCのまま行い、表示(年月日の切り出し)だけJSTにする。
+// サーバーの実行環境がUTCでも、JSTの「今日」の境界で正しく集計されるようにする
+function jstDateKey(d: Date): string {
+  return d.toLocaleDateString("sv-SE", { timeZone: JST }); // "YYYY-MM-DD"形式
 }
 
 const SOURCE_LABEL: Record<string, string> = {
@@ -107,6 +116,44 @@ function deviceLabel(ua: string | null | undefined): { label: string; suspicious
   return { label: isClaude ? `${label}(Claude内蔵ブラウザ)` : label, suspicious };
 }
 
+type VisitorSummary = {
+  key: string;
+  device: ReturnType<typeof deviceLabel>;
+  lastSeen: string;
+  count: number;
+  paths: string[];
+};
+
+// 同じ人が何ページも見ると「直近のアクセス」が同じ人で埋まってしまうので、
+// visitor_id(無ければUA)でまとめて、ユーザー単位で最新順に表示する
+function summarizeVisitors(rows: ViewRow[], limit: number): VisitorSummary[] {
+  const groups = new Map<string, ViewRow[]>();
+  for (const row of rows) {
+    const key = row.visitor_id ?? `ua:${row.user_agent ?? "不明"}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(row);
+  }
+  const summaries: VisitorSummary[] = Array.from(groups.entries()).map(([key, rowsForKey]) => {
+    const sorted = [...rowsForKey].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+    const paths: string[] = [];
+    for (const r of sorted) {
+      if (!paths.includes(r.path)) paths.push(r.path);
+      if (paths.length >= 5) break;
+    }
+    return {
+      key,
+      device: deviceLabel(sorted[0].user_agent),
+      lastSeen: sorted[0].created_at,
+      count: rowsForKey.length,
+      paths,
+    };
+  });
+  summaries.sort((a, b) => new Date(b.lastSeen).getTime() - new Date(a.lastSeen).getTime());
+  return summaries.slice(0, limit);
+}
+
 function referrerLabel(referrer: string | null | undefined): string {
   if (referrer === "line-app-link") return "LINE";
   if (!referrer) return "直接アクセス";
@@ -153,18 +200,17 @@ function aggregateViews(rows: ViewRow[]) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
 
-  // daily PV for the last 14 days, oldest first
+  // daily PV for the last 14 days(JST基準), oldest first
+  const countByDayKey = new Map<string, number>();
+  for (const row of rows) {
+    const key = jstDateKey(new Date(row.created_at));
+    countByDayKey.set(key, (countByDayKey.get(key) ?? 0) + 1);
+  }
   const daily: { label: string; pv: number }[] = [];
   for (let i = 13; i >= 0; i--) {
-    const dayStart = new Date();
-    dayStart.setHours(0, 0, 0, 0);
-    dayStart.setDate(dayStart.getDate() - i);
-    const dayEnd = new Date(dayStart.getTime() + day);
-    const pv = rows.filter((r) => {
-      const t = new Date(r.created_at).getTime();
-      return t >= dayStart.getTime() && t < dayEnd.getTime();
-    }).length;
-    daily.push({ label: formatDay(dayStart), pv });
+    const d = new Date(now - i * day);
+    const key = jstDateKey(d);
+    daily.push({ label: formatDay(d), pv: countByDayKey.get(key) ?? 0 });
   }
 
   return {
@@ -254,8 +300,14 @@ export default async function AdminDashboard() {
 
   const inquiries = inquiriesRes.data ?? [];
   const reports = reportsRes.data ?? [];
+  // 「この情報間違ってるかも?」系(ページの修正依頼)と、ホームの要望フォームとで
+  // 性質が違うので画面上は別セクションに分ける
+  const pageReports = reports.filter(
+    (r) => r.source === "program_detail" || r.source === "article",
+  );
+  const requestReports = reports.filter((r) => r.source === "homepage_request");
   const views = aggregateViews(viewsRes.data ?? []);
-  const recentViews = (viewsRes.data ?? []).slice(0, 30) as ViewRow[];
+  const recentVisitors = summarizeVisitors((viewsRes.data ?? []) as ViewRow[], 20);
   const follows = followsRes.data ?? [];
   const lineUsers = lineUsersRes.data ?? [];
   const lineUserById = new Map(lineUsers.map((u) => [u.line_user_id, u]));
@@ -344,45 +396,45 @@ export default async function AdminDashboard() {
         <main className="min-w-0 flex-1 px-8 py-6">
           <section className="mb-8">
             <p className="mb-3 text-lg font-medium">アクセス解析</p>
-            <div className="flex gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
-                    <p className="text-xs text-[#888780]">過去24時間</p>
-                    <p className="text-2xl font-medium">
+            <div className="flex flex-wrap gap-3">
+              <div className="w-72 shrink-0">
+                <div className="grid grid-cols-3 gap-1.5">
+                  <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
+                    <p className="text-[10px] text-[#888780]">24時間</p>
+                    <p className="text-lg font-medium">
                       {views.last24h.pv}
-                      <span className="text-sm font-normal text-[#888780]">
+                      <span className="text-xs font-normal text-[#888780]">
                         {" "}
                         PV
                       </span>
                     </p>
-                    <p className="text-sm text-[#5F5E5A]">
+                    <p className="text-xs text-[#5F5E5A]">
                       {views.last24h.uu} UU
                     </p>
                   </div>
-                  <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
-                    <p className="text-xs text-[#888780]">過去7日間</p>
-                    <p className="text-2xl font-medium">
+                  <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
+                    <p className="text-[10px] text-[#888780]">7日間</p>
+                    <p className="text-lg font-medium">
                       {views.last7d.pv}
-                      <span className="text-sm font-normal text-[#888780]">
+                      <span className="text-xs font-normal text-[#888780]">
                         {" "}
                         PV
                       </span>
                     </p>
-                    <p className="text-sm text-[#5F5E5A]">
+                    <p className="text-xs text-[#5F5E5A]">
                       {views.last7d.uu} UU
                     </p>
                   </div>
-                  <div className="rounded-xl bg-[#F1EFE8] px-4 py-3">
-                    <p className="text-xs text-[#888780]">過去30日間</p>
-                    <p className="text-2xl font-medium">
+                  <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
+                    <p className="text-[10px] text-[#888780]">30日間</p>
+                    <p className="text-lg font-medium">
                       {views.last30d.pv}
-                      <span className="text-sm font-normal text-[#888780]">
+                      <span className="text-xs font-normal text-[#888780]">
                         {" "}
                         PV
                       </span>
                     </p>
-                    <p className="text-sm text-[#5F5E5A]">
+                    <p className="text-xs text-[#5F5E5A]">
                       {views.last30d.uu} UU
                     </p>
                   </div>
@@ -396,7 +448,7 @@ export default async function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="w-96 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="w-72 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-2 text-sm font-medium">
                   人気ページ(過去30日間)
                 </p>
@@ -421,7 +473,7 @@ export default async function AdminDashboard() {
                 )}
               </div>
 
-              <div className="w-96 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="w-72 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
                 <p className="mb-2 text-sm font-medium">
                   流入元(過去30日間)
                 </p>
@@ -445,42 +497,42 @@ export default async function AdminDashboard() {
                   </p>
                 )}
               </div>
-            </div>
 
-            <div className="mt-4 rounded-xl bg-[#F1EFE8] px-4 py-3">
-              <p className="mb-2 text-sm font-medium">
-                直近のアクセス(デバイス・ブラウザ)
-              </p>
-              {recentViews.length > 0 ? (
-                <div className="flex flex-col gap-1">
-                  {recentViews.map((row, i) => {
-                    const device = deviceLabel(row.user_agent);
-                    return (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 text-xs"
-                      >
-                        <span className="w-28 shrink-0 text-[#888780]">
-                          {formatDate(row.created_at)}
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-[#5F5E5A]">
-                          {labelForPath(row.path)}
-                        </span>
-                        <span
-                          className={`shrink-0 ${device.suspicious ? "font-medium text-[#D85A30]" : "text-[#888780]"}`}
-                        >
-                          {device.suspicious ? "⚠ " : ""}
-                          {device.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-xs text-[#888780]">
-                  まだデータがありません。
+              <div className="w-80 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                <p className="mb-2 text-sm font-medium">
+                  直近のアクセス(ユーザー別)
                 </p>
-              )}
+                {recentVisitors.length > 0 ? (
+                  <div className="flex flex-col gap-2">
+                    {recentVisitors.map((v) => (
+                      <div
+                        key={v.key}
+                        className="rounded-lg bg-white/60 px-2.5 py-2 text-xs"
+                      >
+                        <div className="mb-0.5 flex items-center gap-2">
+                          <span className="text-[#888780]">
+                            {formatDate(v.lastSeen)}
+                          </span>
+                          <span
+                            className={`ml-auto shrink-0 ${v.device.suspicious ? "font-medium text-[#D85A30]" : "text-[#5F5E5A]"}`}
+                          >
+                            {v.device.suspicious ? "⚠ " : ""}
+                            {v.device.label}
+                          </span>
+                        </div>
+                        <p className="truncate text-[#5F5E5A]">
+                          {v.paths.map(labelForPath).join(" / ")}
+                          {v.count > v.paths.length && ` (他${v.count - v.paths.length}件)`}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#888780]">
+                    まだデータがありません。
+                  </p>
+                )}
+              </div>
             </div>
           </section>
 
@@ -508,6 +560,89 @@ export default async function AdminDashboard() {
                 </p>
               </div>
             </div>
+          </section>
+
+          <section className="mb-8">
+            <p className="mb-3 text-lg font-medium">
+              ページの修正依頼({pageReports.length}件)
+            </p>
+            {pageReports.length === 0 ? (
+              <p className="text-sm text-[#888780]">まだありません。</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {pageReports.map((row) => (
+                  <div
+                    key={row.id}
+                    className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
+                  >
+                    <p className="mb-1 text-xs text-[#888780]">
+                      {formatDate(row.created_at)} ・{" "}
+                      {SOURCE_LABEL[row.source] ?? row.source}
+                    </p>
+                    {row.program_name && (
+                      <p className="font-medium">{row.program_name}</p>
+                    )}
+                    <p className="mt-1 whitespace-pre-wrap">{row.message}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="mb-8">
+            <p className="mb-3 text-lg font-medium">
+              ご報告・ご要望({requestReports.length}件)
+            </p>
+            {requestReports.length === 0 ? (
+              <p className="text-sm text-[#888780]">まだありません。</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {requestReports.map((row) => (
+                  <div
+                    key={row.id}
+                    className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
+                  >
+                    <p className="mb-1 text-xs text-[#888780]">
+                      {formatDate(row.created_at)}
+                    </p>
+                    <p className="mt-1 whitespace-pre-wrap">{row.message}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="mb-8">
+            <p className="mb-3 text-lg font-medium">
+              企業からの問い合わせ({inquiries.length}件)
+            </p>
+            {inquiries.length === 0 ? (
+              <p className="text-sm text-[#888780]">まだありません。</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {inquiries.map((row) => (
+                  <div
+                    key={row.id}
+                    className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
+                  >
+                    <p className="mb-1 text-xs text-[#888780]">
+                      {formatDate(row.created_at)}
+                    </p>
+                    <p className="font-medium">
+                      {row.company_name}(担当: {row.contact_name})
+                    </p>
+                    <p>{row.email}</p>
+                    {row.phone && <p>{row.phone}</p>}
+                    <p className="mt-1">相談内容: {row.interest}</p>
+                    {row.message && (
+                      <p className="mt-1 whitespace-pre-wrap">
+                        {row.message}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           <section className="mb-8">
@@ -547,70 +682,6 @@ export default async function AdminDashboard() {
               </div>
             )}
           </section>
-
-          <div className="grid grid-cols-2 gap-6">
-            <section>
-              <p className="mb-3 text-lg font-medium">
-                企業からの問い合わせ({inquiries.length}件)
-              </p>
-              {inquiries.length === 0 ? (
-                <p className="text-sm text-[#888780]">まだありません。</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {inquiries.map((row) => (
-                    <div
-                      key={row.id}
-                      className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
-                    >
-                      <p className="mb-1 text-xs text-[#888780]">
-                        {formatDate(row.created_at)}
-                      </p>
-                      <p className="font-medium">
-                        {row.company_name}(担当: {row.contact_name})
-                      </p>
-                      <p>{row.email}</p>
-                      {row.phone && <p>{row.phone}</p>}
-                      <p className="mt-1">相談内容: {row.interest}</p>
-                      {row.message && (
-                        <p className="mt-1 whitespace-pre-wrap">
-                          {row.message}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section>
-              <p className="mb-3 text-lg font-medium">
-                ご報告・ご要望({reports.length}件)
-              </p>
-              {reports.length === 0 ? (
-                <p className="text-sm text-[#888780]">まだありません。</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {reports.map((row) => (
-                    <div
-                      key={row.id}
-                      className="rounded-xl bg-[#F1EFE8] px-3.5 py-3 text-sm leading-relaxed"
-                    >
-                      <p className="mb-1 text-xs text-[#888780]">
-                        {formatDate(row.created_at)} ・{" "}
-                        {SOURCE_LABEL[row.source] ?? row.source}
-                      </p>
-                      {row.program_name && (
-                        <p className="font-medium">{row.program_name}</p>
-                      )}
-                      <p className="mt-1 whitespace-pre-wrap">
-                        {row.message}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </div>
         </main>
       </div>
     </div>
