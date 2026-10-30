@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { draftMode } from "next/headers";
 import Link from "next/link";
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight, IconExternalLink } from "@tabler/icons-react";
 import { BearMama, BearCub, BearConsultant } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ViewTracker } from "@/components/ViewTracker";
@@ -124,8 +124,9 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`block text-[11px] text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
+                    className={`flex items-center gap-1 text-[11px] text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
                   >
+                    <IconExternalLink size={11} className="shrink-0" />
                     {block.text}
                   </a>
                 ) : (
