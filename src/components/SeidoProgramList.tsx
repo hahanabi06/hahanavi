@@ -77,7 +77,7 @@ function ProgramCard({ p }: { p: Program }) {
           </span>
           {p.hitorioyaOnly === false && (
             <span className="w-fit rounded-full bg-[#E9F3EA] px-2 py-0.5 text-[10px] font-medium text-[#1F7A3D]">
-              限定なし
+              子持ち全員
             </span>
           )}
         </div>

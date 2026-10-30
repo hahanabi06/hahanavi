@@ -160,7 +160,7 @@ export default async function ProgramDetailPage({
           </span>
           {program.hitorioyaOnly === false && (
             <span className="inline-block w-fit rounded-full bg-[#E9F3EA] px-3 py-1 text-xs font-medium text-[#1F7A3D]">
-              ひとり親限定じゃない
+              子持ち全員が対象
             </span>
           )}
         </div>
