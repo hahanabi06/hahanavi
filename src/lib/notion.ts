@@ -1,5 +1,20 @@
 import { Client } from "@notionhq/client";
 import { cacheLife } from "next/cache";
+import programsData from "@/data/programs.json";
+
+const ALL_PROGRAMS = programsData.programs as { id: string; name: string; headline?: string }[];
+
+// Notionの「関連制度」欄(改行区切りの制度名)を、programs.jsonの制度名と突き合わせて
+// IDを解決する。一致しない行は黙ってスキップする(タイポ等で存在しない制度を表示しないため)
+function resolveRelatedPrograms(rawText: string): RelatedProgram[] {
+  return rawText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((name) => ALL_PROGRAMS.find((p) => p.name === name))
+    .filter((p): p is RelatedProgram => Boolean(p))
+    .map((p) => ({ id: p.id, name: p.name, headline: p.headline }));
+}
 
 function getNotionClient() {
   const token = process.env.NOTION_TOKEN;
@@ -55,11 +70,14 @@ export type ArticleBlock =
   | { type: "heading"; text: string }
   | { type: "bullet"; text: string };
 
+export type RelatedProgram = { id: string; name: string; headline?: string };
+
 export type Article = {
   id: string;
   title: string;
   published: boolean;
   blocks: ArticleBlock[];
+  relatedPrograms: RelatedProgram[];
 };
 
 // 「記事アイデア」から下書きを作るときに使う。公開は必ず自分の手動操作(Notion側で
@@ -152,6 +170,8 @@ export async function getArticle(id: string): Promise<Article | null> {
   const p = page as any;
   const title = plainText(p.properties?.記事タイトル?.title) || "無題";
   const status = p.properties?.Status?.select?.name ?? "";
+  const relatedRaw = plainText(p.properties?.関連制度?.rich_text);
+  const relatedPrograms = resolveRelatedPrograms(relatedRaw);
 
   const children = await notion.blocks.children.list({
     block_id: id,
@@ -180,5 +200,5 @@ export async function getArticle(id: string): Promise<Article | null> {
     }
   }
 
-  return { id, title, published: status === "公開", blocks };
+  return { id, title, published: status === "公開", blocks, relatedPrograms };
 }
