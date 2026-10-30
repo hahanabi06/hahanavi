@@ -7,10 +7,10 @@ import {
   IconMessageCircle2,
 } from "@tabler/icons-react";
 import Link from "next/link";
-import { BearParentChild } from "@/components/Bear";
 import { BearGreeting } from "@/components/BearGreeting";
 import { SiteHeader } from "@/components/SiteHeader";
 import { RequestForm } from "@/components/RequestForm";
+import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 import { listPublishedArticles } from "@/lib/notion";
 import { cacheLife } from "next/cache";
@@ -260,20 +260,7 @@ export default async function Home() {
           <RequestForm />
         </section>
 
-        {/* bottom LINE bar */}
-        <div className="flex items-center gap-2.5 rounded-2xl bg-[#F1EFE8] px-4 py-3">
-          <BearParentChild size={32} />
-          <p className="flex-1 text-sm">LINEで簡単手当診断をしてみる</p>
-          <a
-            href={LINE_ADD_FRIEND_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium whitespace-nowrap text-white"
-            style={{ backgroundColor: LINE_GREEN }}
-          >
-            追加
-          </a>
-        </div>
+        <LineDiagnosisBar label="追加" />
 
         <div className="mt-8 mb-5 flex flex-col gap-2.5 border-t border-[#E3E0D6] pt-5">
           <Link

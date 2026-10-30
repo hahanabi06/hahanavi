@@ -1,9 +1,11 @@
-import { IconMessageCircle2 } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { SeidoProgramList, type Program } from "@/components/SeidoProgramList";
+import {
+  LineDiagnosisCard,
+  LineDiagnosisBar,
+} from "@/components/LineDiagnosisCTA";
 import programsData from "@/data/programs.json";
-import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
 // クライアント側(SeidoProgramList)には一覧表示に使うフィールドだけを渡す。
 // programs.jsonは都道府県リサーチが進むほど肥大化していく(各制度にamount/
@@ -40,37 +42,13 @@ export default function SeidoListPage() {
 
         <SeidoProgramList programs={programs} />
 
-        <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
-          <p className="mb-2.5 text-sm leading-relaxed">
-            どの制度が使えるか分からない?
-            <br />
-            LINEで聞くだけで、合わせていくらもらえるか診断するよ
-          </p>
-          <a
-            href={LINE_ADD_FRIEND_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium text-white"
-            style={{ backgroundColor: LINE_GREEN }}
-          >
-            <IconMessageCircle2 size={16} />
-            LINEで簡単手当診断をしてみる
-          </a>
-        </div>
+        <LineDiagnosisCard
+          lead="どの制度が使えるか分からない?"
+          sub="LINEで聞くだけで、合わせていくらもらえるか診断するよ"
+          className="mb-5"
+        />
 
-        <div className="flex items-center gap-2.5 rounded-2xl bg-[#F1EFE8] px-4 py-3">
-          <BearParentChild size={32} />
-          <p className="flex-1 text-[13px]">LINEで簡単手当診断をしてみる</p>
-          <a
-            href={LINE_ADD_FRIEND_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap text-white"
-            style={{ backgroundColor: LINE_GREEN }}
-          >
-            診断する
-          </a>
-        </div>
+        <LineDiagnosisBar />
       </main>
       </div>
     </>

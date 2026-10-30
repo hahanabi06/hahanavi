@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { draftMode } from "next/headers";
 import Link from "next/link";
-import { IconMessageCircle2, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
 import { BearMama, BearCub } from "@/components/Bear";
 import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { ViewTracker } from "@/components/ViewTracker";
+import { LineDiagnosisCard } from "@/components/LineDiagnosisCTA";
 import { getArticle, listPublishedArticles } from "@/lib/notion";
-import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
 export async function generateStaticParams() {
   const articles = await listPublishedArticles().catch(() => []);
@@ -146,23 +146,11 @@ export default async function ArticlePage({
           </div>
         )}
 
-        <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
-          <p className="mb-2.5 text-sm leading-relaxed">
-            この記事の制度、自分は対象になる?
-            <br />
-            他の制度と合わせていくらもらえるか診断するよ
-          </p>
-          <a
-            href={LINE_ADD_FRIEND_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium text-white"
-            style={{ backgroundColor: LINE_GREEN }}
-          >
-            <IconMessageCircle2 size={16} />
-            LINEで簡単手当診断をしてみる
-          </a>
-        </div>
+        <LineDiagnosisCard
+          lead="この記事の制度、自分は対象になる?"
+          sub="他の制度と合わせていくらもらえるか診断するよ"
+          className="mt-2 mb-5"
+        />
       </main>
       </div>
     </>
