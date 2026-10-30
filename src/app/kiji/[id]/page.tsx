@@ -102,6 +102,7 @@ export default async function ArticlePage({
 
         {article.relatedPrograms.length > 0 && (
           <div className="mb-5">
+            <hr className="mt-1 mb-5 border-t border-[#D3D1C7]" />
             <p className="mb-2 text-sm font-medium">
               申請条件・窓口など、詳しくはこちら
             </p>
