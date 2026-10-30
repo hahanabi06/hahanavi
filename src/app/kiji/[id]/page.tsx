@@ -117,7 +117,7 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[11px] text-[#888780] underline"
+                    className="mt-1 mb-3 block text-[11px] text-[#888780] underline"
                   >
                     {block.text}
                   </a>
