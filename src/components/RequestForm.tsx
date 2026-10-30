@@ -54,7 +54,9 @@ export function RequestForm() {
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="例: 〇〇区の住宅支援についても知りたい"
+        placeholder={
+          "例:\n・〇〇区の住宅支援についても知りたい\n・〇〇県の〇〇の制度、すごく良いから見てみて\n・〇〇について困ってるんだ"
+        }
         className="mb-2.5 h-28 w-full resize-none rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm outline-none"
       />
       <button
