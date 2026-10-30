@@ -227,16 +227,10 @@ function daysAgoIso(days: number): string {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 }
 
-function countInWindow(rows: { created_at: string }[], windowMs: number) {
-  const now = Date.now();
-  return rows.filter((r) => now - new Date(r.created_at).getTime() <= windowMs)
-    .length;
-}
-
 function BarChart({ data }: { data: { label: string; pv: number }[] }) {
   const max = Math.max(1, ...data.map((d) => d.pv));
   return (
-    <div className="flex h-32 items-end gap-1.5">
+    <div className="flex h-16 items-end gap-1.5">
       {data.map((d) => (
         <div
           key={d.label}
@@ -267,6 +261,9 @@ export default async function AdminDashboard() {
     lineUsersRes,
     lineMessagesRes,
     articles,
+    totalPageViewsRes,
+    totalVisitorIdsRes,
+    totalFollowsRes,
   ] = await Promise.all([
     supabase
       .from("company_inquiries")
@@ -296,6 +293,10 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: false })
       .limit(300),
     listPublishedArticles().catch(() => []),
+    // 累計(全期間)の数字は、直近30日の絞り込みとは別に軽量なcountクエリで取る
+    supabase.from("page_views").select("*", { count: "exact", head: true }),
+    supabase.from("page_views").select("visitor_id"),
+    supabase.from("line_follows").select("*", { count: "exact", head: true }),
   ]);
 
   const inquiries = inquiriesRes.data ?? [];
@@ -335,11 +336,28 @@ export default async function AdminDashboard() {
         new Date(b.messages[b.messages.length - 1].created_at).getTime() -
         new Date(a.messages[a.messages.length - 1].created_at).getTime(),
     );
-  const day = 24 * 60 * 60 * 1000;
-  const followCounts = {
-    last24h: countInWindow(follows, day),
-    last7d: countInWindow(follows, 7 * day),
-    last30d: follows.length,
+  // 今月(JST基準)のファネル用の数字。直近30日分はすでに取得済みなので、
+  // 新しいサイトなら月初も確実にその範囲に収まる(範囲外の月はほぼ0件扱いになるだけ)
+  const thisMonthKey = jstDateKey(new Date()).slice(0, 7); // "YYYY-MM"
+  const thisMonthViews = (viewsRes.data ?? []).filter((r) =>
+    jstDateKey(new Date(r.created_at)).startsWith(thisMonthKey),
+  );
+  const thisMonthPV = thisMonthViews.length;
+  const thisMonthUU = new Set(
+    thisMonthViews.map((r) => r.visitor_id).filter((v): v is string => !!v),
+  ).size;
+  const thisMonthLineFollows = follows.filter((f) =>
+    jstDateKey(new Date(f.created_at)).startsWith(thisMonthKey),
+  ).length;
+
+  const totalStats = {
+    pv: totalPageViewsRes.count ?? 0,
+    uu: new Set(
+      (totalVisitorIdsRes.data ?? [])
+        .map((r) => r.visitor_id)
+        .filter((v): v is string => !!v),
+    ).size,
+    lineFriends: totalFollowsRes.count ?? 0,
   };
 
   const articleTitleById = new Map(articles.map((a) => [a.id, a.title]));
@@ -394,6 +412,73 @@ export default async function AdminDashboard() {
         </aside>
 
         <main className="min-w-0 flex-1 px-8 py-6">
+          <section className="mb-8">
+            <div className="flex items-start justify-between gap-6">
+              <div className="min-w-0 flex-1">
+                <p className="mb-3 text-lg font-medium">
+                  今月のファネル({thisMonthKey})
+                </p>
+                <div className="flex items-center gap-2">
+                  {[
+                    { label: "PV", value: thisMonthPV },
+                    { label: "UU", value: thisMonthUU },
+                    { label: "LINE登録", value: thisMonthLineFollows },
+                  ].map((step, i, arr) => {
+                    const max = arr[0].value || 1;
+                    const widthPct = Math.max(
+                      18,
+                      Math.round((step.value / max) * 100),
+                    );
+                    const prevValue = i > 0 ? arr[i - 1].value : null;
+                    const rate =
+                      prevValue && prevValue > 0
+                        ? Math.round((step.value / prevValue) * 100)
+                        : null;
+                    return (
+                      <div key={step.label} className="flex items-center gap-2">
+                        {i > 0 && (
+                          <div className="flex shrink-0 flex-col items-center text-[10px] text-[#888780]">
+                            <span>→</span>
+                            {rate !== null && <span>{rate}%</span>}
+                          </div>
+                        )}
+                        <div
+                          className="shrink-0 rounded-xl bg-[#FAECE7] px-4 py-3"
+                          style={{ width: `${widthPct * 1.4}px`, minWidth: "90px" }}
+                        >
+                          <p className="text-xs text-[#993C1D]">{step.label}</p>
+                          <p className="text-xl font-medium text-[#712B13]">
+                            {step.value}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+                <p className="mb-2 text-xs font-medium text-[#888780]">
+                  累計(全期間)
+                </p>
+                <div className="flex gap-4 text-sm">
+                  <div>
+                    <p className="text-[10px] text-[#888780]">総PV</p>
+                    <p className="font-medium">{totalStats.pv}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#888780]">総UU</p>
+                    <p className="font-medium">{totalStats.uu}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-[#888780]">LINE友達数</p>
+                    <p className="font-medium">{totalStats.lineFriends}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section className="mb-8">
             <p className="mb-3 text-lg font-medium">アクセス解析</p>
 
@@ -524,32 +609,6 @@ export default async function AdminDashboard() {
                     まだデータがありません。
                   </p>
                 )}
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-8">
-            <p className="mb-3 text-lg font-medium">
-              LINE登録(CV)
-            </p>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-[#FAECE7] px-4 py-3">
-                <p className="text-xs text-[#993C1D]">過去24時間</p>
-                <p className="text-2xl font-medium text-[#712B13]">
-                  {followCounts.last24h}
-                </p>
-              </div>
-              <div className="rounded-xl bg-[#FAECE7] px-4 py-3">
-                <p className="text-xs text-[#993C1D]">過去7日間</p>
-                <p className="text-2xl font-medium text-[#712B13]">
-                  {followCounts.last7d}
-                </p>
-              </div>
-              <div className="rounded-xl bg-[#FAECE7] px-4 py-3">
-                <p className="text-xs text-[#993C1D]">過去30日間</p>
-                <p className="text-2xl font-medium text-[#712B13]">
-                  {followCounts.last30d}
-                </p>
               </div>
             </div>
           </section>
