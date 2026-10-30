@@ -146,7 +146,7 @@ export default async function ArticlePage({
           </div>
         )}
 
-        <LineDiagnosisBar className="mt-2" />
+        <LineDiagnosisBar className="mt-6" />
       </main>
       </div>
     </>
