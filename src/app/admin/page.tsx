@@ -402,43 +402,43 @@ export default async function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <div className="flex">
-        <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-[#E3E0D6] bg-[#F7F5EF] px-4 py-6">
-          <div className="mb-6 flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row">
+        <aside className="flex w-full flex-col border-b border-[#E3E0D6] bg-[#F7F5EF] px-4 py-4 lg:sticky lg:top-0 lg:h-screen lg:w-60 lg:shrink-0 lg:border-b-0 lg:border-r lg:py-6">
+          <div className="mb-3 flex items-center justify-between lg:mb-6">
             <p className="text-lg font-medium">管理画面</p>
           </div>
           <p className="mb-2 text-xs font-medium text-[#888780]">ポータル</p>
-          <nav className="flex flex-col gap-1">
+          <nav className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
             {PORTAL_LINKS.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg px-3 py-2 text-sm leading-snug hover:bg-[#F1EFE8]"
+                className="shrink-0 rounded-lg px-3 py-2 text-sm leading-snug hover:bg-[#F1EFE8] lg:shrink"
               >
                 <span className="block font-medium">{link.label}</span>
-                <span className="block text-xs text-[#888780]">
+                <span className="hidden text-xs text-[#888780] lg:block">
                   {link.sub}
                 </span>
               </a>
             ))}
           </nav>
-          <div className="mt-auto pt-4">
+          <div className="pt-3 lg:mt-auto lg:pt-4">
             <AdminLogoutButton />
           </div>
         </aside>
 
-        <main className="min-w-0 flex-1 px-8 py-6">
+        <main className="min-w-0 flex-1 px-4 py-5 lg:px-8 lg:py-6">
           <section className="mb-8">
             <p className="mb-3 text-lg font-medium">アクセス解析</p>
 
-            <div className="mb-3 flex items-start justify-between gap-6">
+            <div className="mb-3 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
               <div className="min-w-0">
                 <p className="mb-2 text-xs font-medium text-[#888780]">
                   今月実績
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
                   {[
                     { label: "PV", value: thisMonthPV },
                     { label: "UU", value: thisMonthUU },
@@ -457,7 +457,7 @@ export default async function AdminDashboard() {
                             {rate !== null && <span>{rate}%</span>}
                           </div>
                         )}
-                        <div className="w-24 shrink-0 rounded-xl bg-[#FAECE7] px-3 py-2.5">
+                        <div className="w-20 shrink-0 rounded-xl bg-[#FAECE7] px-3 py-2.5 lg:w-24">
                           <p className="text-xs text-[#993C1D]">{step.label}</p>
                           <p className="text-xl font-medium text-[#712B13]">
                             {step.value}
@@ -473,16 +473,16 @@ export default async function AdminDashboard() {
                 <p className="mb-2 text-xs font-medium text-[#888780]">
                   累計(全期間)
                 </p>
-                <div className="flex gap-2">
-                  <div className="w-24 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5">
+                <div className="flex gap-2 overflow-x-auto pb-0.5">
+                  <div className="w-20 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5 lg:w-24">
                     <p className="text-xs text-[#888780]">総PV</p>
                     <p className="text-xl font-medium">{totalStats.pv}</p>
                   </div>
-                  <div className="w-24 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5">
+                  <div className="w-20 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5 lg:w-24">
                     <p className="text-xs text-[#888780]">総UU</p>
                     <p className="text-xl font-medium">{totalStats.uu}</p>
                   </div>
-                  <div className="w-24 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5">
+                  <div className="w-20 shrink-0 rounded-xl bg-[#F1EFE8] px-3 py-2.5 lg:w-24">
                     <p className="text-xs text-[#888780]">LINE友達数</p>
                     <p className="text-xl font-medium">
                       {totalStats.lineFriends}
@@ -492,8 +492,8 @@ export default async function AdminDashboard() {
               </div>
             </div>
 
-            <div className="mb-3 flex gap-3">
-              <div className="grid w-56 shrink-0 grid-cols-1 gap-1.5">
+            <div className="mb-3 flex flex-col gap-3 lg:flex-row">
+              <div className="grid grid-cols-1 gap-1.5 lg:w-56 lg:shrink-0">
                 <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
                   <p className="text-[10px] text-[#888780]">本日</p>
                   <p className="text-lg font-medium">
@@ -526,7 +526,7 @@ export default async function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="w-1/3 shrink-0 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="rounded-xl bg-[#F1EFE8] px-4 py-3 lg:w-1/3 lg:shrink-0">
                 <p className="mb-3 text-sm font-medium">
                   日別PV推移(過去14日間)
                 </p>
@@ -534,8 +534,8 @@ export default async function AdminDashboard() {
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
+            <div className="flex flex-col gap-3 lg:flex-row">
+              <div className="min-w-0 rounded-xl bg-[#F1EFE8] px-4 py-3 lg:flex-1">
                 <p className="mb-2 text-sm font-medium">
                   人気ページ(過去30日間)
                 </p>
@@ -560,7 +560,7 @@ export default async function AdminDashboard() {
                 )}
               </div>
 
-              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="min-w-0 rounded-xl bg-[#F1EFE8] px-4 py-3 lg:flex-1">
                 <p className="mb-2 text-sm font-medium">
                   流入元(過去30日間)
                 </p>
@@ -585,7 +585,7 @@ export default async function AdminDashboard() {
                 )}
               </div>
 
-              <div className="min-w-0 flex-1 rounded-xl bg-[#F1EFE8] px-4 py-3">
+              <div className="min-w-0 rounded-xl bg-[#F1EFE8] px-4 py-3 lg:flex-1">
                 <p className="mb-2 text-sm font-medium">
                   直近のアクセス(ユーザー別)
                 </p>
@@ -624,7 +624,7 @@ export default async function AdminDashboard() {
           </section>
 
           <section className="mb-8">
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-3">
               <div>
                 <p className="mb-3 text-lg font-medium">
                   ページの修正依頼({pageReports.length}件)
