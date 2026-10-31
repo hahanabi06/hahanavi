@@ -273,10 +273,10 @@ export default async function JobDetailPage({
                         }}
                       />
                     </div>
+                    <p className="mt-1 text-[10px] leading-tight text-[#A89B86]">
+                      出典: 厚労省「令和3年度全国ひとり親世帯等調査」(母の平均年間就労収入)
+                    </p>
                   </div>
-                  <p className="text-[10px] leading-tight text-[#A89B86]">
-                    出典: 厚労省「令和3年度全国ひとり親世帯等調査」(母の平均年間就労収入)
-                  </p>
                 </div>
               ) : (
                 <p className="text-body font-semibold text-[#712B13]">
