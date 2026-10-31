@@ -9,7 +9,7 @@ export function LineDiagnosisBar({ className = "" }: { className?: string }) {
     <div className={`rounded-2xl bg-[#E9F3EA] px-4 py-4 ${className}`}>
       <div className="mb-3 flex items-center gap-3">
         <BearParentChild size={40} />
-        <p className="text-sm leading-relaxed">
+        <p className="font-heading text-body leading-relaxed">
           LINEで友だちになってくれたら嬉しいな♪♪
           <br />
           質問に答えるだけで、あなたが実際にいくらもらえるか診断できるよ
