@@ -48,6 +48,7 @@ const SOURCE_LABEL: Record<string, string> = {
   program_detail: "制度詳細ページ",
   homepage_request: "トップページの要望フォーム",
   article: "記事ページ",
+  job: "お仕事ページ",
 };
 
 const PORTAL_LINKS = [
@@ -324,7 +325,10 @@ export default async function AdminDashboard() {
   // 「この情報間違ってるかも?」系(ページの修正依頼)と、ホームの要望フォームとで
   // 性質が違うので画面上は別セクションに分ける
   const pageReports = reports.filter(
-    (r) => r.source === "program_detail" || r.source === "article",
+    (r) =>
+      r.source === "program_detail" ||
+      r.source === "article" ||
+      r.source === "job",
   );
   const requestReports = reports.filter((r) => r.source === "homepage_request");
   const views = aggregateViews(viewsRes.data ?? []);

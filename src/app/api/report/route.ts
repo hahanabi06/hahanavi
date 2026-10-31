@@ -16,7 +16,9 @@ export async function POST(req: Request) {
       ? "homepage_request"
       : body?.source === "article"
         ? "article"
-        : "program_detail";
+        : body?.source === "job"
+          ? "job"
+          : "program_detail";
 
   const supabase = getSupabaseServerClient();
   const { error } = await supabase.from("program_reports").insert({

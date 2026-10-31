@@ -9,7 +9,7 @@ export function ReportForm({
 }: {
   programId: string;
   programName: string;
-  source?: "program_detail" | "article";
+  source?: "program_detail" | "article" | "job";
 }) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
