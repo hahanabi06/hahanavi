@@ -168,17 +168,35 @@ function referrerLabel(referrer: string | null | undefined): string {
   }
 }
 
+// JST(UTC+9、サマータイムなし)の「今日の0時」「今週の月曜0時」「今月1日の0時」を、
+// 実際のUTCタイムスタンプ(ms)として求める
+function jstPeriodStarts(now: number) {
+  const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+  const shifted = new Date(now + JST_OFFSET_MS);
+  const y = shifted.getUTCFullYear();
+  const m = shifted.getUTCMonth();
+  const d = shifted.getUTCDate();
+  const dow = shifted.getUTCDay(); // 0=日曜〜6=土曜
+  const daysSinceMonday = (dow + 6) % 7; // 月曜始まり
+
+  const todayStart = Date.UTC(y, m, d) - JST_OFFSET_MS;
+  const weekStart = Date.UTC(y, m, d - daysSinceMonday) - JST_OFFSET_MS;
+  const monthStart = Date.UTC(y, m, 1) - JST_OFFSET_MS;
+  return { todayStart, weekStart, monthStart };
+}
+
 function aggregateViews(rows: ViewRow[]) {
   const now = Date.now();
   const day = 24 * 60 * 60 * 1000;
+  const { todayStart, weekStart, monthStart } = jstPeriodStarts(now);
 
-  function countsFor(windowMs: number) {
-    const inWindow = rows.filter(
-      (r) => now - new Date(r.created_at).getTime() <= windowMs,
+  function countsFor(periodStart: number) {
+    const inPeriod = rows.filter(
+      (r) => new Date(r.created_at).getTime() >= periodStart,
     );
-    const pv = inWindow.length;
+    const pv = inPeriod.length;
     const uu = new Set(
-      inWindow.map((r) => r.visitor_id).filter((v): v is string => !!v),
+      inPeriod.map((r) => r.visitor_id).filter((v): v is string => !!v),
     ).size;
     return { pv, uu };
   }
@@ -214,9 +232,9 @@ function aggregateViews(rows: ViewRow[]) {
   }
 
   return {
-    last24h: countsFor(day),
-    last7d: countsFor(7 * day),
-    last30d: countsFor(30 * day),
+    today: countsFor(todayStart),
+    thisWeek: countsFor(weekStart),
+    thisMonth: countsFor(monthStart),
     topPaths,
     topReferrers,
     daily,
@@ -477,32 +495,32 @@ export default async function AdminDashboard() {
             <div className="mb-3 flex gap-3">
               <div className="grid w-56 shrink-0 grid-cols-1 gap-1.5">
                 <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
-                  <p className="text-[10px] text-[#888780]">過去24時間</p>
+                  <p className="text-[10px] text-[#888780]">本日</p>
                   <p className="text-lg font-medium">
-                    {views.last24h.pv}
+                    {views.today.pv}
                     <span className="text-xs font-normal text-[#888780]">
                       {" "}
-                      PV / {views.last24h.uu} UU
+                      PV / {views.today.uu} UU
                     </span>
                   </p>
                 </div>
                 <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
-                  <p className="text-[10px] text-[#888780]">過去7日間</p>
+                  <p className="text-[10px] text-[#888780]">今週(月曜〜)</p>
                   <p className="text-lg font-medium">
-                    {views.last7d.pv}
+                    {views.thisWeek.pv}
                     <span className="text-xs font-normal text-[#888780]">
                       {" "}
-                      PV / {views.last7d.uu} UU
+                      PV / {views.thisWeek.uu} UU
                     </span>
                   </p>
                 </div>
                 <div className="rounded-xl bg-[#F1EFE8] px-2.5 py-2">
-                  <p className="text-[10px] text-[#888780]">過去30日間</p>
+                  <p className="text-[10px] text-[#888780]">今月</p>
                   <p className="text-lg font-medium">
-                    {views.last30d.pv}
+                    {views.thisMonth.pv}
                     <span className="text-xs font-normal text-[#888780]">
                       {" "}
-                      PV / {views.last30d.uu} UU
+                      PV / {views.thisMonth.uu} UU
                     </span>
                   </p>
                 </div>
