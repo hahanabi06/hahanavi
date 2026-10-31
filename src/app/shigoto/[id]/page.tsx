@@ -170,7 +170,14 @@ export default async function JobDetailPage({
           </div>
 
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h1 className="text-heading-title">{job.title}</h1>
+            <div className="flex min-w-0 items-center gap-2">
+              <h1 className="text-heading-title truncate">{job.title}</h1>
+              {job.licenseType && (
+                <span className="text-caption shrink-0 rounded-full bg-[#FCEAEA] px-2.5 py-1 font-semibold text-[#B8491F]">
+                  資格必須
+                </span>
+              )}
+            </div>
             {overallRating !== null && (
               <div className="flex shrink-0 items-center gap-1">
                 <StarRow score={Math.round(overallRating)} />
@@ -188,16 +195,11 @@ export default async function JobDetailPage({
             </p>
           </div>
 
-          {job.licenseType && (
+          {job.licenseType && job.licenseNote && (
             <div className="mb-5 rounded-xl bg-[#E6F1FB] px-3.5 py-3">
-              <p className="text-body font-semibold text-[#0C447C]">
-                {job.licenseType}
+              <p className="text-body leading-relaxed text-[#0C447C]">
+                {job.licenseNote}
               </p>
-              {job.licenseNote && (
-                <p className="text-caption mt-1 leading-relaxed text-[#0C447C]">
-                  {job.licenseNote}
-                </p>
-              )}
             </div>
           )}
 
@@ -219,7 +221,11 @@ export default async function JobDetailPage({
                         {job.title}
                       </span>
                       <span className="text-body font-semibold text-[#712B13]">
-                        約{job.incomeRange.min}〜{job.incomeRange.max}万円
+                        約
+                        {job.incomeRange.min === job.incomeRange.max
+                          ? job.incomeRange.min
+                          : `${job.incomeRange.min}〜${job.incomeRange.max}`}
+                        万円
                       </span>
                     </div>
                     <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/70">
@@ -230,6 +236,11 @@ export default async function JobDetailPage({
                         }}
                       />
                     </div>
+                    {job.incomeSourceNote && (
+                      <p className="mt-1 text-[10px] leading-tight text-[#A89B86]">
+                        出典: {job.incomeSourceNote}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <div className="mb-1 flex items-baseline justify-between">
@@ -357,7 +368,7 @@ export default async function JobDetailPage({
 
           {SUPPORT_PROGRAMS.length > 0 && (
             <section className="mb-6">
-              <p className="text-heading-section mb-2.5">利用できる制度</p>
+              <p className="text-heading-section mb-2.5">使える制度</p>
               <div className="flex flex-col divide-y divide-[#E3E0D6] rounded-2xl bg-[#F1EFE8] px-3.5">
                 {SUPPORT_PROGRAMS.map((p) => (
                   <Link
