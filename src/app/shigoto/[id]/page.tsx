@@ -34,6 +34,20 @@ function StarRow({ score }: { score: number }) {
   );
 }
 
+// "ルート名(補足)"のような末尾の括弧書きが、括弧の途中で改行されて見づらくなるのを防ぐ。
+// 括弧部分をwhitespace-nowrapにして、折り返すなら括弧の直前でひとかたまりに折り返させる
+function LabelWithTrailingParen({ text }: { text: string }) {
+  const match = text.match(/^(.*?)(\([^)]*\))$/);
+  if (!match) return <>{text}</>;
+  const [, base, paren] = match;
+  return (
+    <>
+      {base}
+      <span className="whitespace-nowrap">{paren}</span>
+    </>
+  );
+}
+
 function RatingList({
   ratings,
   notes,
@@ -345,7 +359,7 @@ export default async function JobDetailPage({
                         </span>
                         <div>
                           <p className="text-body mb-1 font-semibold text-[#5F5E5A]">
-                            {route.label}
+                            <LabelWithTrailingParen text={route.label} />
                           </p>
                           <p className="text-caption leading-relaxed text-[#5F5E5A]">
                             {route.detail}
