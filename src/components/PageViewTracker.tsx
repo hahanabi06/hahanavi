@@ -24,10 +24,15 @@ export function PageViewTracker() {
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
     const visitorId = getVisitorId();
-    // LINEのトーク内リンクはdocument.referrerが送られないことが多いので、
-    // LINE側で付与している?from=lineパラメータで判定する(line-webhook/route.ts参照)
-    const fromLine = new URLSearchParams(window.location.search).get("from") === "line";
-    const referrer = fromLine ? "line-app-link" : document.referrer || null;
+    // LINEやXのアプリ内ブラウザ・短縮リンク経由だとdocument.referrerが送られないことが多いので、
+    // リンクに付与している?fromパラメータで判定する(line-webhook/route.ts、XPostForm.tsx参照)
+    const from = new URLSearchParams(window.location.search).get("from");
+    const referrer =
+      from === "line"
+        ? "line-app-link"
+        : from === "x"
+          ? "x-app-link"
+          : document.referrer || null;
     fetch("/api/pageview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

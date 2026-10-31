@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabase";
 import { listPublishedArticles } from "@/lib/notion";
 import { AdminLogoutButton } from "@/components/AdminLogoutButton";
+import { AdminTabNav } from "@/components/AdminTabNav";
 import { LinePushForm } from "@/components/LinePushForm";
 import programsData from "@/data/programs.json";
 
@@ -156,6 +157,7 @@ function summarizeVisitors(rows: ViewRow[], limit: number): VisitorSummary[] {
 
 function referrerLabel(referrer: string | null | undefined): string {
   if (referrer === "line-app-link") return "LINE";
+  if (referrer === "x-app-link") return "X(旧Twitter)";
   if (!referrer) return "直接アクセス";
   try {
     const host = new URL(referrer).hostname.replace(/^www\./, "");
@@ -430,6 +432,8 @@ export default async function AdminDashboard() {
         </aside>
 
         <main className="min-w-0 flex-1 px-4 py-5 lg:px-8 lg:py-6">
+          <AdminTabNav active="dashboard" />
+
           <section className="mb-8">
             <p className="mb-3 text-lg font-medium">アクセス解析</p>
 
