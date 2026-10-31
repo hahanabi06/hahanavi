@@ -137,7 +137,7 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
 const NAV_ITEMS = [
   { icon: IconCoin, label: "支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
-  { icon: IconCertificate, label: "おすすめのお仕事", href: "/shigoto" },
+  { icon: IconCertificate, label: "おすすめの\nお仕事", href: "/shigoto" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
 ];
 
@@ -158,7 +158,7 @@ export default async function Home() {
                 <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-full bg-[#F1EFE8]">
                   <Icon size={21} className="text-[#5F5E5A]" />
                 </div>
-                <span className="text-center text-xs leading-tight">
+                <span className="text-center text-xs leading-tight whitespace-pre-line">
                   {label}
                 </span>
               </>
