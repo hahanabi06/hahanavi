@@ -1,6 +1,6 @@
 import { IconBriefcase, IconMessageCircle2 } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 import { LINE_GREEN, LINE_ADD_FRIEND_URL } from "@/lib/constants";
 
 export const metadata = { title: "ママ向け求人 | ハハナビ" };
@@ -10,7 +10,7 @@ export default function KyujinPage() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
-          <SiteLogoLink />
+          <PageHeader items={[{ label: "ママ向け求人" }]} />
           <h1 className="mb-4 text-lg font-medium">ママ向け求人</h1>
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
             <BearParentChild size={40} />

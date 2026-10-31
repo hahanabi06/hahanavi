@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { IconChevronRight } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 import { JOBS } from "@/lib/jobs";
 
 export const metadata = { title: "おすすめのお仕事 | ハハナビ" };
@@ -11,7 +11,7 @@ export default function ShigotoListPage() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
-          <SiteLogoLink />
+          <PageHeader items={[{ label: "お仕事一覧" }]} />
           <h1 className="text-heading-title mb-4">おすすめのお仕事</h1>
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
             <BearParentChild size={40} />

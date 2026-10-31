@@ -1,4 +1,4 @@
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 import { BearParentChild } from "@/components/Bear";
 import { IconScale } from "@tabler/icons-react";
 
@@ -10,7 +10,7 @@ export default function ShigyoPage() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
-          <SiteLogoLink />
+          <PageHeader items={[{ label: "士業の方へ" }]} />
           <h1 className="mb-4 text-lg font-medium">士業の方へ</h1>
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
             <BearParentChild size={40} />

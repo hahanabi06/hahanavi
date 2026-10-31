@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { IconChevronRight, IconStarFilled, IconStar } from "@tabler/icons-react";
 import { BearParentChild } from "@/components/Bear";
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 import { ReportForm } from "@/components/ReportForm";
 import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import {
@@ -151,22 +151,12 @@ export default async function JobDetailPage({
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <div className="-mb-4 shrink-0">
-              <SiteLogoLink />
-            </div>
-            <nav className="flex min-w-0 items-center gap-1 text-xs text-[#888780]">
-              <Link href="/" className="shrink-0 hover:underline">
-                トップ
-              </Link>
-              <IconChevronRight size={12} className="shrink-0" />
-              <Link href="/shigoto" className="shrink-0 hover:underline">
-                お仕事一覧
-              </Link>
-              <IconChevronRight size={12} className="shrink-0" />
-              <span className="truncate">{job.title}</span>
-            </nav>
-          </div>
+          <PageHeader
+            items={[
+              { label: "お仕事一覧", href: "/shigoto" },
+              { label: job.title },
+            ]}
+          />
 
           <div className="mb-2 flex flex-wrap gap-1.5">
             {job.badges.map((badge) => (

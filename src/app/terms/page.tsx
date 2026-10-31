@@ -1,4 +1,4 @@
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 
 export const metadata = { title: "利用規約 | ハハナビ" };
 
@@ -7,7 +7,7 @@ export default function Terms() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
-          <SiteLogoLink />
+          <PageHeader items={[{ label: "利用規約" }]} />
           <h1 className="mb-4 text-lg font-medium">利用規約</h1>
           <div className="flex flex-col gap-4 text-sm leading-relaxed">
             <p>

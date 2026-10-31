@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { IconChevronRight, IconExternalLink } from "@tabler/icons-react";
 import { BearMama, BearCub, BearConsultant } from "@/components/Bear";
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 import { ViewTracker } from "@/components/ViewTracker";
 import { ReportForm } from "@/components/ReportForm";
 import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
@@ -36,7 +36,12 @@ export default async function ArticlePage({
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
         <ViewTracker articleId={id} />
-        <SiteLogoLink />
+        <PageHeader
+          items={[
+            { label: "お役立ち記事", href: "/kiji" },
+            { label: article.title },
+          ]}
+        />
 
         {!article.published && (
           <div className="text-body mb-4 rounded-xl bg-[#FCEAEA] px-3.5 py-2 font-bold text-[#C0392B]">

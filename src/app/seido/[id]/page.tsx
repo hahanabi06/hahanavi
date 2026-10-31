@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { IconChevronRight, IconAlertTriangle } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconAlertTriangle,
+  IconBuildingBank,
+} from "@tabler/icons-react";
 import { BearParentChild, BearCub } from "@/components/Bear";
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 import { ReportForm } from "@/components/ReportForm";
 import { LineDiagnosisBar } from "@/components/LineDiagnosisCTA";
 import programsData from "@/data/programs.json";
@@ -174,7 +178,12 @@ export default async function ProgramDetailPage({
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
-        <SiteLogoLink />
+        <PageHeader
+          items={[
+            { label: "支援制度", href: "/seido" },
+            { label: program.name },
+          ]}
+        />
         <div className="mb-2 flex flex-wrap gap-1.5">
           <span className="text-caption inline-block w-fit rounded-full bg-[#F1EFE8] px-3 py-1 font-medium text-[#5F5E5A]">
             {CATEGORY_LABEL[program.category] ?? program.category}
@@ -208,8 +217,8 @@ export default async function ProgramDetailPage({
         <div className="mb-1 flex flex-col gap-0">
           {program.eligibility && (
             <div className="border-b border-[#D3D1C7] py-3">
-              <dt className="text-label mb-1 text-[#5F5E5A]">対象者</dt>
-              <dd className="text-body leading-relaxed">
+              <dt className="text-label mb-1.5 text-[#5F5E5A]">対象者</dt>
+              <dd className="text-body rounded-xl bg-[#F1EFE8] px-3.5 py-3 leading-relaxed">
                 {program.eligibility}
               </dd>
             </div>
@@ -448,8 +457,16 @@ export default async function ProgramDetailPage({
             </div>
           )}
           <div className="border-b border-[#D3D1C7] py-3">
-            <dt className="text-label mb-1 text-[#5F5E5A]">申請窓口</dt>
-            <dd className="text-body leading-relaxed">{program.window}</dd>
+            <dt className="text-label mb-1.5 text-[#5F5E5A]">申請窓口</dt>
+            <dd className="flex items-start gap-2 rounded-xl bg-[#F1EFE8] px-3.5 py-3">
+              <IconBuildingBank
+                size={16}
+                className="mt-0.5 shrink-0 text-[#5F5E5A]"
+              />
+              <span className="text-body leading-relaxed">
+                {program.window}
+              </span>
+            </dd>
           </div>
 
           {program.verifyNeeded && (

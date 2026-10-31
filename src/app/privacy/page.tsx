@@ -1,4 +1,4 @@
-import { SiteLogoLink } from "@/components/SiteLogoLink";
+import { PageHeader } from "@/components/Breadcrumb";
 
 export const metadata = { title: "プライバシーポリシー | ハハナビ" };
 
@@ -7,7 +7,7 @@ export default function Privacy() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
-        <SiteLogoLink />
+        <PageHeader items={[{ label: "プライバシーポリシー" }]} />
         <h1 className="mb-4 text-lg font-medium">プライバシーポリシー</h1>
         <div className="flex flex-col gap-4 text-sm leading-relaxed">
           <p>
