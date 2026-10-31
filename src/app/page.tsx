@@ -17,7 +17,7 @@ import { listPublishedArticles } from "@/lib/notion";
 import { cacheLife } from "next/cache";
 import programsData from "@/data/programs.json";
 import { ArticleEyecatch } from "@/lib/article-category";
-import { QUALIFICATIONS } from "@/lib/qualifications";
+import { JOBS } from "@/lib/jobs";
 
 function LineButton({
   children,
@@ -137,7 +137,7 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
 const NAV_ITEMS = [
   { icon: IconCoin, label: "支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
-  { icon: IconCertificate, label: "おすすめ資格", href: null },
+  { icon: IconCertificate, label: "おすすめの仕事", href: "/shigoto" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
 ];
 
@@ -239,19 +239,20 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* おすすめ資格(準備中、リンクは無効) */}
+        {/* おすすめの仕事 */}
         <section className="mb-6">
-          <SectionHeading title="おすすめ資格" linkLabel="資格制度一覧へ" />
+          <SectionHeading title="おすすめの仕事" href="/shigoto" linkLabel="仕事一覧へ" />
           <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {QUALIFICATIONS.map(({ icon: Icon, label, note }) => (
-              <div
-                key={label}
+            {JOBS.map(({ icon: Icon, title, income }) => (
+              <Link
+                key={title}
+                href="/shigoto"
                 className="flex h-[96px] w-[120px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
                 <Icon size={18} className="text-[#5F5E5A]" />
-                <p className="text-body mt-1.5 line-clamp-1 font-medium">{label}</p>
-                <p className="text-caption line-clamp-2 text-[#888780]">{note}</p>
-              </div>
+                <p className="text-body mt-1.5 line-clamp-1 font-medium">{title}</p>
+                <p className="text-caption line-clamp-2 text-[#888780]">{income}</p>
+              </Link>
             ))}
           </div>
         </section>

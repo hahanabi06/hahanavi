@@ -15,6 +15,15 @@ function formatAmountLines(text: string): string[] {
     .flatMap((sentence) => sentence.split(" / ").filter(Boolean));
 }
 
+// 必要書類の説明文を、読点(、)・句点(。)区切りで箇条書きにする
+// (このデータは一貫して「書類、書類、書類」の列挙形式で書かれているため)
+function splitDocItems(text: string): string[] {
+  return text
+    .split(/[、。]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 type ByChildrenRow = {
   children: number;
   full: number;
@@ -32,6 +41,19 @@ type WardPattern = {
   label: string;
   limits: string;
   wards: string[];
+};
+
+type IncomeTierRow = {
+  label: string; // 例: "扶養0人"
+  value?: string; // 単一のしきい値(全部/一部の区別がない制度用)
+  full?: string; // 全部支給のしきい値
+  partial?: string; // 一部支給のしきい値
+};
+
+type IncomeTiers = {
+  note?: string; // 例: "令和8年度"
+  rows: IncomeTierRow[];
+  footnote?: string; // 例: "以降1人ごとに加算"
 };
 
 type Tier = {
@@ -68,7 +90,9 @@ type Program = {
   amount: string;
   byChildren?: ByChildren;
   tiers?: Tier[];
+  tiersNote?: string; // tiers一覧の上に出す前置き説明(例: 「世帯区分により年額が異なる」)
   incomeLimit?: string;
+  incomeTiers?: IncomeTiers;
   wardPatterns?: WardPattern[];
   incomeLimitNote?: string;
   eligibility?: string;
@@ -227,7 +251,42 @@ export default async function ProgramDetailPage({
               </dd>
             </div>
           )}
-          {!program.wardPatterns && program.incomeLimit && (
+          {!program.wardPatterns && program.incomeTiers && (
+            <div className="border-b border-[#D3D1C7] py-3">
+              <dt className="text-label mb-2 text-[#5F5E5A]">所得基準</dt>
+              <dd className="rounded-xl bg-[#FAECE7] px-3.5 py-3">
+                {program.incomeTiers.note && (
+                  <p className="text-caption mb-2 text-[#993C1D]">
+                    {program.incomeTiers.note}
+                  </p>
+                )}
+                <div className="flex flex-col gap-1.5">
+                  {program.incomeTiers.rows.map((row) => (
+                    <div
+                      key={row.label}
+                      className="flex items-center justify-between gap-2 rounded-lg bg-white/60 px-2.5 py-1.5"
+                    >
+                      <span className="text-caption shrink-0 text-[#5F5E5A]">
+                        {row.label}
+                      </span>
+                      <span className="text-body text-right font-medium text-[#712B13]">
+                        {row.value ??
+                          (row.full && row.partial
+                            ? `全部${row.full} / 一部${row.partial}`
+                            : (row.full ?? row.partial))}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {program.incomeTiers.footnote && (
+                  <p className="text-caption mt-2 leading-relaxed text-[#993C1D]">
+                    {program.incomeTiers.footnote}
+                  </p>
+                )}
+              </dd>
+            </div>
+          )}
+          {!program.wardPatterns && !program.incomeTiers && program.incomeLimit && (
             <div className="border-b border-[#D3D1C7] py-3">
               <dt className="text-label mb-2 text-[#5F5E5A]">所得基準</dt>
               <dd className="rounded-xl bg-[#FAECE7] px-3.5 py-3 text-left">
@@ -294,6 +353,11 @@ export default async function ProgramDetailPage({
               </dd>
             ) : program.tiers ? (
               <dd className="flex flex-col gap-2">
+                {program.tiersNote && (
+                  <p className="text-caption text-[#993C1D]">
+                    {program.tiersNote}
+                  </p>
+                )}
                 {program.tiers.map((tier) => (
                   <div
                     key={tier.label}
@@ -368,8 +432,18 @@ export default async function ProgramDetailPage({
           {program.requiredDocs && (
             <div className="border-b border-[#D3D1C7] py-3">
               <dt className="text-label mb-1 text-[#5F5E5A]">必要書類</dt>
-              <dd className="text-body leading-relaxed">
-                {program.requiredDocs}
+              <dd>
+                <ul className="flex flex-col gap-1">
+                  {splitDocItems(program.requiredDocs).map((item, i) => (
+                    <li
+                      key={i}
+                      className="text-body flex gap-1.5 leading-relaxed"
+                    >
+                      <span className="shrink-0 text-[#993C1D]">・</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </dd>
             </div>
           )}

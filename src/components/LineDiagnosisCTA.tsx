@@ -11,7 +11,6 @@ export function LineDiagnosisBar({ className = "" }: { className?: string }) {
         <BearParentChild size={40} />
         <p className="font-heading text-body leading-relaxed">
           LINEで友だちになってくれたら嬉しいな♪♪
-          <br />
           質問に答えるだけで、あなたが実際にいくらもらえるか診断できるよ
         </p>
       </div>
