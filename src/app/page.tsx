@@ -243,10 +243,10 @@ export default async function Home() {
         <section className="mb-6">
           <SectionHeading title="おすすめのお仕事" href="/shigoto" linkLabel="お仕事一覧へ" />
           <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {JOBS.map(({ icon: Icon, title, income }) => (
+            {JOBS.map(({ id, icon: Icon, title, income }) => (
               <Link
-                key={title}
-                href="/shigoto"
+                key={id}
+                href={`/shigoto/${id}`}
                 className="flex h-[96px] w-[120px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
                 <Icon size={18} className="text-[#5F5E5A]" />

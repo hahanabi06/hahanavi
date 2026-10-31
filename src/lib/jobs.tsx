@@ -13,6 +13,7 @@ import {
 export type JobBadge = "資格支援あり" | "未経験から目指せる" | "短期取得";
 
 export type Job = {
+  id: string;
   icon: typeof IconHeartHandshake;
   title: string;
   income: string;
@@ -24,6 +25,7 @@ export type Job = {
 
 export const JOBS: Job[] = [
   {
+    id: "kaigo-fukushishi",
     icon: IconHeartHandshake,
     title: "介護福祉士",
     income: "年収 約370万〜420万円",
@@ -34,6 +36,7 @@ export const JOBS: Job[] = [
       "働きながら実務経験を積んで資格を取れるから、収入を途切れさせずに目指しやすいよ。求人も多くて、夜勤ありの施設からデイサービスのような日勤のみの職場まで、働き方を選びやすいのも魅力。",
   },
   {
+    id: "kangoshi",
     icon: IconStethoscope,
     title: "看護師",
     income: "年収 約525万円",
@@ -44,6 +47,7 @@ export const JOBS: Job[] = [
       "収入・求人の多さともに高水準。夜勤がある職場が多いけど、クリニックや健診センターなど日勤のみ・時短可の職場も選べるから、働き方は求人を見ながら相談してみてね。",
   },
   {
+    id: "rinsho-kensagishi",
     icon: IconMicroscope,
     title: "臨床検査技師",
     income: "年収 約430万〜450万円",
@@ -54,6 +58,7 @@ export const JOBS: Job[] = [
       "血液検査や心電図など、病院の検査室で働く仕事。夜勤が少なめで、収入・求人倍率のバランスが良い資格だよ。",
   },
   {
+    id: "shika-eiseishi",
     icon: IconDental,
     title: "歯科衛生士",
     income: "年収 約380万円",
@@ -64,6 +69,7 @@ export const JOBS: Job[] = [
       "歯科医院で働く仕事。日勤中心で土日休みの医院も多く、求人の強さはこの中でもトップクラス。",
   },
   {
+    id: "hoikushi",
     icon: IconBabyCarriage,
     title: "保育士",
     income: "年収 約380万〜420万円",
