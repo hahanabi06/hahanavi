@@ -10,8 +10,7 @@ export function LineDiagnosisBar({ className = "" }: { className?: string }) {
       <div className="mb-3 flex items-center gap-3">
         <BearParentChild size={40} />
         <p className="font-heading text-body leading-relaxed">
-          LINEで友だちになってくれたら嬉しいな♪♪
-          質問に答えるだけで、あなたが実際にいくらもらえるか診断できるよ
+          質問に答えるだけで、あなたが実際にいくらもらえるか診断できるよ。LINEで友だちになってくれると嬉しいな♪♪
         </p>
       </div>
       <a

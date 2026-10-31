@@ -137,7 +137,7 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
 const NAV_ITEMS = [
   { icon: IconCoin, label: "支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
-  { icon: IconCertificate, label: "おすすめの仕事", href: "/shigoto" },
+  { icon: IconCertificate, label: "おすすめのお仕事", href: "/shigoto" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
 ];
 
@@ -239,9 +239,9 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* おすすめの仕事 */}
+        {/* おすすめのお仕事 */}
         <section className="mb-6">
-          <SectionHeading title="おすすめの仕事" href="/shigoto" linkLabel="仕事一覧へ" />
+          <SectionHeading title="おすすめのお仕事" href="/shigoto" linkLabel="お仕事一覧へ" />
           <div className="flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {JOBS.map(({ icon: Icon, title, income }) => (
               <Link

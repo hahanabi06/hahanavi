@@ -6,7 +6,7 @@ import {
   IconBabyCarriage,
 } from "@tabler/icons-react";
 
-// トップページの「おすすめの仕事」の横スクロール一覧と、/shigoto の一覧ページで
+// トップページの「おすすめのお仕事」の横スクロール一覧と、/shigoto の一覧ページで
 // 同じデータを使う(別々に持つと内容がズレていく)。
 // 2026年10月、厚労省統計等をもとに年収・求人動向・取得期間を調べたうえで選んだ5つ。
 // 詳しい調査結果の出典はnote内に記載。
@@ -15,7 +15,6 @@ export type JobBadge = "資格支援あり" | "未経験から目指せる" | "�
 export type Job = {
   icon: typeof IconHeartHandshake;
   title: string;
-  qualification: string;
   income: string;
   demand: string;
   period: string;
@@ -26,8 +25,7 @@ export type Job = {
 export const JOBS: Job[] = [
   {
     icon: IconHeartHandshake,
-    title: "介護の仕事",
-    qualification: "介護福祉士",
+    title: "介護福祉士",
     income: "年収 約370万〜420万円",
     demand: "求人倍率3.71倍(全職業平均の2倍以上)",
     period: "実務3年+研修、または養成施設で2年",
@@ -37,8 +35,7 @@ export const JOBS: Job[] = [
   },
   {
     icon: IconStethoscope,
-    title: "看護の仕事",
-    qualification: "看護師",
+    title: "看護師",
     income: "年収 約525万円",
     demand: "求人倍率2.51倍(ここ10年で最高水準)",
     period: "専門学校・短大で3年、大学なら4年",
@@ -48,8 +45,7 @@ export const JOBS: Job[] = [
   },
   {
     icon: IconMicroscope,
-    title: "検査の仕事",
-    qualification: "臨床検査技師",
+    title: "臨床検査技師",
     income: "年収 約430万〜450万円",
     demand: "求人倍率1.83倍(売り手市場)",
     period: "専門学校・短大で3年、大学なら4年",
@@ -59,8 +55,7 @@ export const JOBS: Job[] = [
   },
   {
     icon: IconDental,
-    title: "歯科の仕事",
-    qualification: "歯科衛生士",
+    title: "歯科衛生士",
     income: "年収 約380万円",
     demand: "求人がずっと足りていない状態が続いている",
     period: "専門学校・短大で3年",
@@ -70,8 +65,7 @@ export const JOBS: Job[] = [
   },
   {
     icon: IconBabyCarriage,
-    title: "保育の仕事",
-    qualification: "保育士",
+    title: "保育士",
     income: "年収 約380万〜420万円",
     demand: "求人倍率2.4〜3.9倍(慢性的な人手不足)",
     period: "最短2年",

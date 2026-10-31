@@ -5,7 +5,7 @@ import { SiteLogoLink } from "@/components/SiteLogoLink";
 import { JOBS } from "@/lib/jobs";
 import programsData from "@/data/programs.json";
 
-export const metadata = { title: "おすすめの仕事 | ハハナビ" };
+export const metadata = { title: "おすすめのお仕事 | ハハナビ" };
 
 // 資格取得そのものを後押ししてくれる国の制度(career/education カテゴリ)を
 // あわせて案内する。programs.jsonが単一の情報源なので、ここでは絞り込むだけ
@@ -19,7 +19,7 @@ export default function ShigotoPage() {
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
         <main className="w-full max-w-md px-4 pt-6 pb-5">
           <SiteLogoLink />
-          <h1 className="text-heading-title mb-4">おすすめの仕事</h1>
+          <h1 className="text-heading-title mb-4">おすすめのお仕事</h1>
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
             <BearParentChild size={40} />
             <p className="font-heading text-body leading-relaxed">
@@ -29,27 +29,13 @@ export default function ShigotoPage() {
 
           <div className="mb-6 flex flex-col gap-2.5">
             {JOBS.map(
-              ({
-                icon: Icon,
-                title,
-                qualification,
-                income,
-                demand,
-                period,
-                badges,
-                detail,
-              }) => (
+              ({ icon: Icon, title, income, demand, period, badges, detail }) => (
                 <div key={title} className="rounded-xl bg-[#F1EFE8] px-3.5 py-3">
                   <div className="mb-2 flex items-center gap-2.5">
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white">
                       <Icon size={18} className="text-[#5F5E5A]" />
                     </div>
-                    <div>
-                      <p className="text-heading-section">{title}</p>
-                      <p className="text-caption text-[#888780]">
-                        必要な資格: {qualification}
-                      </p>
-                    </div>
+                    <p className="text-heading-section">{title}</p>
                   </div>
 
                   <div className="mb-2 rounded-lg bg-[#FAECE7] px-3 py-2">
