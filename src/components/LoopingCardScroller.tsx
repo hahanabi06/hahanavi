@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useLayoutEffect } from "react";
 import Link from "next/link";
 
 type CardItem = {
@@ -9,10 +9,10 @@ type CardItem = {
   value: string;
 };
 
-// 手動スワイプの横スクロールだが、末尾まで行くと先頭に自動で戻る(ループする)。
-// 実装: カードを2セット並べておき、1セット分スクロールしたら見た目が同じ
-// 2セット目の位置から、瞬時に(アニメーションなしで)1セット目の同じ位置へ
-// scrollLeftを戻す。中身が同じなので見た目のジャンプは起きない
+// 手動スワイプの横スクロールだが、前方向(末尾→先頭)・後方向(先頭→末尾)の
+// どちらにループする。実装: カードを3セット並べて真ん中のセットから表示を始め、
+// 両端(1セット目/3セット目)に入ったら、瞬時に(アニメーションなしで)
+// 真ん中セットの同じ位置へscrollLeftを戻す。中身が同じなので見た目のジャンプは起きない
 export function LoopingCardScroller({
   items,
   hrefPrefix,
@@ -22,12 +22,20 @@ export function LoopingCardScroller({
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
+  useLayoutEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.scrollLeft = el.scrollWidth / 3;
+  }, []);
+
   function handleScroll() {
     const el = scrollerRef.current;
     if (!el) return;
-    const singleSetWidth = el.scrollWidth / 2;
-    if (el.scrollLeft >= singleSetWidth) {
+    const singleSetWidth = el.scrollWidth / 3;
+    if (el.scrollLeft >= singleSetWidth * 2) {
       el.scrollLeft -= singleSetWidth;
+    } else if (el.scrollLeft <= 0) {
+      el.scrollLeft += singleSetWidth;
     }
   }
 
@@ -37,7 +45,7 @@ export function LoopingCardScroller({
       onScroll={handleScroll}
       className="mb-2.5 flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
-      {[...items, ...items].map((item, i) => (
+      {[...items, ...items, ...items].map((item, i) => (
         <Link
           key={`${item.id}-${i}`}
           href={`${hrefPrefix}/${item.id}`}

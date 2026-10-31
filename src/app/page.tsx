@@ -167,11 +167,18 @@ export default async function Home() {
               </>
             );
             return href ? (
-              <Link key={label} href={href} className="flex w-20 flex-col items-center gap-1.5">
+              <Link
+                key={label}
+                href={href}
+                className="flex w-20 flex-col items-center justify-center gap-1.5"
+              >
                 {inner}
               </Link>
             ) : (
-              <div key={label} className="flex w-20 flex-col items-center gap-1.5">
+              <div
+                key={label}
+                className="flex w-20 flex-col items-center justify-center gap-1.5"
+              >
                 {inner}
               </div>
             );
