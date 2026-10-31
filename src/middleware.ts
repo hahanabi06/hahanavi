@@ -6,7 +6,10 @@ export const config = {
 };
 
 export async function middleware(req: NextRequest) {
-  if (req.nextUrl.pathname.startsWith("/admin/login")) {
+  if (
+    req.nextUrl.pathname.startsWith("/admin/login") ||
+    req.nextUrl.pathname === "/api/admin/login"
+  ) {
     return NextResponse.next();
   }
 
