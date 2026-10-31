@@ -16,13 +16,7 @@ import {
   IconFileText,
   IconChevronRight,
 } from "@tabler/icons-react";
-import { Zen_Maru_Gothic } from "next/font/google";
 import { BearParentChild } from "@/components/Bear";
-
-const zenMaruGothic = Zen_Maru_Gothic({
-  subsets: ["latin"],
-  weight: ["700"],
-});
 
 const MENU_LINKS = [
   { icon: IconCoin, label: "支援制度", href: "/seido" },
@@ -50,7 +44,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-1.5">
           <BearParentChild size={42} />
           <div className="text-left">
-            <p className={`${zenMaruGothic.className} text-2xl leading-tight text-[#D85A30]`}>
+            <p className="font-heading text-2xl leading-tight font-bold text-[#D85A30]">
               ハハナビ
             </p>
             <p className="text-xs text-[#888780]">シングルマザーのための情報サイト</p>
@@ -79,7 +73,7 @@ export function SiteHeader() {
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <BearParentChild size={32} />
-                <p className={`${zenMaruGothic.className} text-lg leading-tight text-[#D85A30]`}>
+                <p className="font-heading text-lg leading-tight font-bold text-[#D85A30]">
                   ハハナビ
                 </p>
               </div>

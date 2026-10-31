@@ -7,7 +7,9 @@ export function SiteLogoLink() {
   return (
     <Link href="/" className="mb-4 inline-flex items-center gap-1.5">
       <BearParentChild size={28} />
-      <span className="text-base font-bold text-[#D85A30]">ハハナビ</span>
+      <span className="font-heading text-base font-bold text-[#D85A30]">
+        ハハナビ
+      </span>
     </Link>
   );
 }

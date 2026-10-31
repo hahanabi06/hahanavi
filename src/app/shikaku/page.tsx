@@ -22,7 +22,7 @@ export default function ShikakuPage() {
           <h1 className="mb-4 text-lg font-medium">おすすめ資格</h1>
           <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
             <BearParentChild size={40} />
-            <p className="text-sm leading-relaxed">
+            <p className="font-heading text-base leading-relaxed">
               未経験からでも目指しやすくて、仕事につながりやすい資格をまとめたよ。
               資格取得を後押ししてくれる制度もあわせてチェックしてみてね。
             </p>

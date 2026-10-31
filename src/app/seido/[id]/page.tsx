@@ -165,7 +165,9 @@ export default async function ProgramDetailPage({
           )}
         </div>
         <div className="mb-3 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <h1 className="text-xl leading-snug font-medium">{program.name}</h1>
+          <h1 className="font-heading text-xl leading-snug font-medium">
+            {program.name}
+          </h1>
           {program.headline && (
             <span className="text-sm font-semibold text-[#993C1D]">
               {program.headline}
@@ -187,7 +189,7 @@ export default async function ProgramDetailPage({
               <dt className="mb-1 text-sm font-medium text-[#5F5E5A]">
                 対象者
               </dt>
-              <dd className="text-sm leading-relaxed">
+              <dd className="text-base leading-relaxed">
                 {program.eligibility}
               </dd>
             </div>
@@ -206,7 +208,7 @@ export default async function ProgramDetailPage({
                     <p className="mb-1.5 text-xs font-semibold text-[#993C1D]">
                       {pattern.label}
                     </p>
-                    <p className="mb-2.5 text-sm leading-snug font-medium text-[#712B13]">
+                    <p className="mb-2.5 text-base leading-snug font-medium text-[#712B13]">
                       {pattern.limits}
                     </p>
                     <div className="flex flex-wrap gap-1">
@@ -238,7 +240,7 @@ export default async function ProgramDetailPage({
                 {formatAmountLines(program.incomeLimit).map((line, i) => (
                   <p
                     key={i}
-                    className="text-sm leading-snug font-medium text-[#712B13]"
+                    className="text-base leading-snug font-medium text-[#712B13]"
                   >
                     {line}
                   </p>
@@ -276,7 +278,7 @@ export default async function ProgramDetailPage({
                         </span>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm leading-snug font-semibold text-[#712B13]">
+                        <p className="text-base leading-snug font-semibold text-[#712B13]">
                           {row.full.toLocaleString()}円
                         </p>
                         {row.partialMin !== undefined && (
@@ -322,7 +324,7 @@ export default async function ProgramDetailPage({
                 {formatAmountLines(program.amount).map((line, i) => (
                   <p
                     key={i}
-                    className="text-sm leading-snug font-medium text-[#712B13]"
+                    className="text-base leading-snug font-medium text-[#712B13]"
                   >
                     {line}
                   </p>
@@ -345,7 +347,7 @@ export default async function ProgramDetailPage({
                     <span className="mb-1.5 inline-block rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-[#1F7A3D]">
                       {exception.area}だけの上乗せ
                     </span>
-                    <p className="text-sm leading-snug font-semibold text-[#1F7A3D]">
+                    <p className="text-base leading-snug font-semibold text-[#1F7A3D]">
                       {exception.description}
                     </p>
                     {exception.note && (
@@ -374,7 +376,7 @@ export default async function ProgramDetailPage({
               <dt className="mb-1 text-sm font-medium text-[#5F5E5A]">
                 必要書類
               </dt>
-              <dd className="text-sm leading-relaxed">
+              <dd className="text-base leading-relaxed">
                 {program.requiredDocs}
               </dd>
             </div>
@@ -383,12 +385,12 @@ export default async function ProgramDetailPage({
             <dt className="mb-1 text-sm font-medium text-[#5F5E5A]">
               申請窓口
             </dt>
-            <dd className="text-sm leading-relaxed">{program.window}</dd>
+            <dd className="text-base leading-relaxed">{program.window}</dd>
           </div>
 
           {program.verifyNeeded && (
             <div className="mt-3 rounded-xl bg-[#FCEAEA] px-3.5 py-3">
-              <p className="flex items-center gap-1.5 text-sm font-bold text-[#C0392B]">
+              <p className="flex items-center gap-1.5 text-base font-bold text-[#C0392B]">
                 <IconAlertTriangle size={16} className="shrink-0" />
                 この制度の数字は現在確認中です。最新情報は窓口で確認してね。
               </p>
@@ -404,7 +406,7 @@ export default async function ProgramDetailPage({
                 <dt className="mb-1 text-sm font-medium text-[#5F5E5A]">
                   詳しくはこちら
                 </dt>
-                <dd className="text-sm">
+                <dd className="text-base">
                   <a
                     href={program.source}
                     target="_blank"
@@ -439,7 +441,7 @@ export default async function ProgramDetailPage({
           <ReportForm programId={program.id} programName={program.name} />
         </div>
 
-        <p className="mb-2.5 text-sm font-medium">関連する制度</p>
+        <p className="font-heading mb-2.5 text-base font-medium">関連する制度</p>
         <div className="mb-5 flex flex-col gap-1.5">
           {related.map((r) => (
             <Link
@@ -447,7 +449,7 @@ export default async function ProgramDetailPage({
               href={`/seido/${r.id}`}
               className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-2.5"
             >
-              <p className="text-sm">{r.name}</p>
+              <p className="text-base">{r.name}</p>
               <IconChevronRight size={16} className="text-[#888780]" />
             </Link>
           ))}

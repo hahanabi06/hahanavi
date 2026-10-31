@@ -53,7 +53,7 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-2.5 flex items-baseline justify-between">
-      <p className="text-base font-medium">{title}</p>
+      <p className="font-heading text-base font-medium">{title}</p>
       {showAll &&
         (href ? (
           <Link href={href} className="text-sm text-[#993C1D]">
