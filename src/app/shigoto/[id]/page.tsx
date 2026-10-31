@@ -402,6 +402,9 @@ export default async function JobDetailPage({
                   </Link>
                 ))}
               </div>
+              <p className="text-caption mt-1.5 text-[#888780]">
+                対象資格は自治体によって異なる場合があるよ。お住まいの窓口で確認してね。
+              </p>
             </section>
           )}
 
