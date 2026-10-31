@@ -36,7 +36,7 @@ export async function BearGreeting() {
   return (
     <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
       <BearParentChild size={56} />
-      <p className="font-heading text-base leading-relaxed">
+      <p className="font-heading text-body leading-relaxed">
         {lines.map((line, i) => (
           <span key={i}>
             {line}。

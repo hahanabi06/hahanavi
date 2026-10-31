@@ -14,10 +14,10 @@ export default async function KijiListPage() {
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
         <SiteLogoLink />
-        <h1 className="mb-4 text-lg font-medium">お役立ち記事</h1>
+        <h1 className="text-heading-title mb-4">お役立ち記事</h1>
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={40} />
-          <p className="text-sm leading-relaxed">
+          <p className="font-heading text-body leading-relaxed">
             知っておくと得する話を、少しずつ増やしていくね。
           </p>
         </div>
@@ -31,13 +31,13 @@ export default async function KijiListPage() {
                 className="flex items-center gap-2.5 rounded-xl bg-[#F1EFE8] px-3 py-2"
               >
                 <ArticleEyecatch category={a.category} size={48} />
-                <p className="flex-1 text-sm leading-snug">{a.title}</p>
+                <p className="font-heading text-body flex-1 leading-snug">{a.title}</p>
                 <IconChevronRight size={16} className="shrink-0 text-[#888780]" />
               </Link>
             ))}
           </div>
         ) : (
-          <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-4 text-xs leading-relaxed text-[#888780]">
+          <div className="text-caption rounded-xl bg-[#F1EFE8] px-3.5 py-4 leading-relaxed text-[#888780]">
             まだ記事がありません。準備中です。
           </div>
         )}

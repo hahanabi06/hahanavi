@@ -16,3 +16,28 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* 文字サイズのルール: グレー(補助的)な文字は小さいままでよいが、
+   読んでほしい本文・見出しは16px以上を保つ。既存のtext-sm/text-xs等と
+   併用せず、該当する箇所ではこのユーティリティを使うこと。
+   line-heightは含めない(呼び出し側でleading-*を指定し、色もtext-[#...]で指定する) */
+@utility text-heading-title {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 1.125rem; /* 18px、ページ見出し(h1)用 */
+}
+@utility text-heading-section {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 1.125rem; /* 18px、セクション見出し用 */
+}
+@utility text-body {
+  font-size: 1rem; /* 16px、読ませる本文・説明文用 */
+}
+@utility text-label {
+  font-size: 0.875rem; /* 14px、dt等の項目ラベル用(グレーと組み合わせる) */
+  font-weight: 500;
+}
+@utility text-caption {
+  font-size: 0.6875rem; /* 11px、出典リンク・注意書き等の補助情報用 */
+}

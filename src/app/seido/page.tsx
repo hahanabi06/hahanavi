@@ -26,11 +26,11 @@ export default function SeidoListPage() {
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
         <SiteLogoLink />
-        <h1 className="mb-4 text-lg font-medium">支援制度一覧</h1>
+        <h1 className="text-heading-title mb-4">支援制度一覧</h1>
 
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={40} />
-          <p className="text-sm leading-relaxed">
+          <p className="font-heading text-body leading-relaxed">
             使える制度は、お住まいの地域によって変わるよ。「全国」「都道府県」「市区町村」の順に、対象が広い制度から並べているから、上から見てみてね。
             <br />
             都道府県別の制度と東京都の23区までは調べて載せてるけど、まだ見つけられてない制度もあるかも。気づいたことがあれば教えてね。見つかり次第、追加していくね。

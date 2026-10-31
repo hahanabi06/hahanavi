@@ -39,15 +39,13 @@ export default async function ArticlePage({
         <SiteLogoLink />
 
         {!article.published && (
-          <div className="mb-4 rounded-xl bg-[#FCEAEA] px-3.5 py-2 text-xs font-bold text-[#C0392B]">
+          <div className="text-body mb-4 rounded-xl bg-[#FCEAEA] px-3.5 py-2 font-bold text-[#C0392B]">
             プレビュー中(まだ下書き、公開はされていません)
           </div>
         )}
 
-        <h1 className="font-heading mb-1 text-lg leading-snug font-medium">
-          {article.title}
-        </h1>
-        <p className="mb-5 text-xs text-[#888780]">
+        <h1 className="text-heading-title mb-1 leading-snug">{article.title}</h1>
+        <p className="text-caption mb-5 text-[#888780]">
           {formatArticleDate(article.createdTime)}公開
           {formatArticleDate(article.lastEditedTime) !==
             formatArticleDate(article.createdTime) &&
@@ -83,7 +81,7 @@ export default async function ArticlePage({
                   >
                     {icon}
                     <p
-                      className={`font-heading relative w-[260px] rounded-2xl px-4 py-3 text-base leading-relaxed whitespace-pre-line after:absolute after:top-3 after:h-0 after:w-0 after:border-y-[6px] after:border-y-transparent ${
+                      className={`font-heading text-body relative w-[260px] rounded-2xl px-4 py-3 leading-relaxed whitespace-pre-line after:absolute after:top-3 after:h-0 after:w-0 after:border-y-[6px] after:border-y-transparent ${
                         isMama
                           ? "bg-[#FAECE7] after:-right-2 after:border-l-[8px] after:border-l-[#FAECE7]"
                           : "bg-[#F1EFE8] after:-left-2 after:border-r-[8px] after:border-r-[#F1EFE8]"
@@ -99,7 +97,7 @@ export default async function ArticlePage({
               return (
                 <div key={i} className="contents">
                   {divider}
-                  <p className="font-heading text-base font-medium">{block.text}</p>
+                  <p className="text-body font-medium">{block.text}</p>
                 </div>
               );
             }
@@ -124,7 +122,7 @@ export default async function ArticlePage({
                         />
                       </div>
                     )}
-                    <p className="flex-1 text-base leading-snug">{block.text}</p>
+                    <p className="text-body flex-1 leading-snug">{block.text}</p>
                     <IconExternalLink size={16} className="shrink-0 text-[#888780]" />
                   </a>
                 </div>
@@ -134,7 +132,7 @@ export default async function ArticlePage({
               return (
                 <div key={i} className="contents">
                   {divider}
-                  <div className="flex gap-1.5 pl-1 text-base leading-relaxed">
+                  <div className="text-body flex gap-1.5 pl-1 leading-relaxed">
                     <span className="shrink-0">・</span>
                     <span className="whitespace-pre-line">{block.text}</span>
                   </div>
@@ -154,12 +152,12 @@ export default async function ArticlePage({
                     href={block.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`block text-[11px] text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
+                    className={`text-caption block text-[#888780] underline ${prevIsCitation ? "-mt-2" : "mt-1"} ${nextIsCitation ? "mb-0" : "mb-3"}`}
                   >
                     {block.text}
                   </a>
                 ) : (
-                  <p className="text-base leading-relaxed whitespace-pre-line">
+                  <p className="text-body leading-relaxed whitespace-pre-line">
                     {block.text}
                   </p>
                 )}
@@ -178,7 +176,7 @@ export default async function ArticlePage({
                   href={p.source}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11px] text-[#888780] underline"
+                  className="text-caption text-[#888780] underline"
                 >
                   出典: {p.name}(公式ページ)
                 </a>
@@ -189,7 +187,7 @@ export default async function ArticlePage({
         {article.relatedPrograms.length > 0 && (
           <div className="mb-5">
             <hr className="mb-5 border-t border-[#D3D1C7]" />
-            <p className="font-heading mb-2 text-base font-medium">
+            <p className="text-heading-section mb-2">
               申請条件・窓口など、詳しくはこちら
             </p>
             <div className="flex flex-col gap-1.5">
@@ -199,10 +197,10 @@ export default async function ArticlePage({
                   href={`/seido/${program.id}`}
                   className="flex items-center justify-between gap-2.5 rounded-xl bg-[#F1EFE8] px-3.5 py-3"
                 >
-                  <p className="text-base leading-snug">{program.name}</p>
+                  <p className="text-body leading-snug">{program.name}</p>
                   <div className="flex shrink-0 items-center gap-1">
                     {program.headline && (
-                      <span className="text-xs font-semibold whitespace-nowrap text-[#993C1D]">
+                      <span className="text-caption font-semibold whitespace-nowrap text-[#993C1D]">
                         {program.headline}
                       </span>
                     )}

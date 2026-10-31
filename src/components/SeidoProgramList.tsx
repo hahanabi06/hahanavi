@@ -81,11 +81,11 @@ function ProgramCard({ p }: { p: Program }) {
             </span>
           )}
         </div>
-        <p className="text-sm leading-snug">{p.name}</p>
+        <p className="text-body leading-snug">{p.name}</p>
       </div>
       <div className="flex shrink-0 items-center gap-1">
         {p.headline && (
-          <span className="text-xs font-semibold whitespace-nowrap text-[#993C1D]">
+          <span className="text-caption font-semibold whitespace-nowrap text-[#993C1D]">
             {p.headline}
           </span>
         )}
@@ -106,7 +106,7 @@ function ProgramGroup({
 }) {
   return (
     <section className="mb-6">
-      <p className="mb-2.5 text-sm font-medium">{title}</p>
+      <p className="text-heading-section mb-2.5">{title}</p>
       {items.length > 0 ? (
         <div className="flex flex-col gap-1.5">
           {sortByType(items).map((p) => (
@@ -114,7 +114,7 @@ function ProgramGroup({
           ))}
         </div>
       ) : (
-        <div className="rounded-xl bg-[#F1EFE8] px-3.5 py-4 text-xs leading-relaxed text-[#888780]">
+        <div className="text-caption rounded-xl bg-[#F1EFE8] px-3.5 py-4 leading-relaxed text-[#888780]">
           {emptyMessage}
         </div>
       )}
@@ -149,7 +149,7 @@ export function SeidoProgramList({ programs }: { programs: Program[] }) {
   return (
     <>
       <div className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-3.5">
-        <p className="mb-2.5 flex items-center gap-1.5 text-xs font-medium text-[#5F5E5A]">
+        <p className="text-label mb-2.5 flex items-center gap-1.5 text-[#5F5E5A]">
           <IconMapPin size={16} className="text-[#D85A30]" />
           お住まいの地域を選んでね
         </p>

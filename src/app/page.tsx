@@ -53,7 +53,7 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-2.5 flex items-baseline justify-between">
-      <p className="font-heading text-base font-medium">{title}</p>
+      <p className="text-heading-section">{title}</p>
       {showAll &&
         (href ? (
           <Link href={href} className="text-sm text-[#993C1D]">
@@ -188,8 +188,8 @@ export default async function Home() {
                 href={`/seido/${p.id}`}
                 className="flex h-[96px] w-[152px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-2"
               >
-                <p className="mb-1 line-clamp-2 text-xs text-[#888780]">{p.label}</p>
-                <p className="line-clamp-2 text-base font-medium">{p.value}</p>
+                <p className="text-caption mb-1 line-clamp-2 text-[#888780]">{p.label}</p>
+                <p className="text-body line-clamp-2 font-medium">{p.value}</p>
               </Link>
             ))}
           </div>
@@ -205,7 +205,9 @@ export default async function Home() {
               const inner = (
                 <>
                   <ArticleEyecatch category={item.category} size={48} />
-                  <p className="line-clamp-2 flex-1 text-sm leading-snug">{item.text}</p>
+                  <p className="font-heading line-clamp-2 flex-1 text-body leading-snug">
+                    {item.text}
+                  </p>
                   {item.isNew ? (
                     <span className="shrink-0 rounded-full bg-[#FCEAE3] px-2 py-0.5 text-[10px] font-semibold text-[#B8491F]">
                       NEW
@@ -247,8 +249,8 @@ export default async function Home() {
                 className="flex h-[96px] w-[120px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-3"
               >
                 <Icon size={18} className="text-[#5F5E5A]" />
-                <p className="mt-1.5 line-clamp-1 text-sm font-medium">{label}</p>
-                <p className="line-clamp-2 text-xs text-[#888780]">{note}</p>
+                <p className="text-body mt-1.5 line-clamp-1 font-medium">{label}</p>
+                <p className="text-caption line-clamp-2 text-[#888780]">{note}</p>
               </div>
             ))}
           </div>
@@ -256,18 +258,16 @@ export default async function Home() {
 
         {/* 求人 */}
         <section className="mb-6">
-          <p className="mb-2.5 text-base font-medium">ママ向け求人</p>
+          <p className="text-heading-section mb-2.5">ママ向け求人</p>
           <div className="flex items-center gap-2.5 rounded-2xl bg-[#F1EFE8] px-3.5 py-3.5">
             <IconBriefcase size={18} className="text-[#888780]" />
-            <p className="text-sm text-[#888780]">
-              近日公開。
-            </p>
+            <p className="text-caption text-[#888780]">近日公開。</p>
           </div>
         </section>
 
         {/* ご要望フォーム */}
         <section className="mb-5 rounded-2xl bg-[#F1EFE8] px-4 py-4">
-          <p className="mb-0.5 text-base font-medium">こんな情報、欲しいな♪</p>
+          <p className="text-heading-section mb-0.5">こんな情報、欲しいな♪</p>
           <p className="mb-2.5 text-sm leading-relaxed text-[#5F5E5A]">
             記事のリクエスト、役立つ支援制度の情報、ハハナビへの応援などなんでも待ってるよ
           </p>
@@ -282,8 +282,8 @@ export default async function Home() {
             className="flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5"
           >
             <div>
-              <p className="text-sm font-medium text-[#712B13]">企業の方へ</p>
-              <p className="text-xs text-[#993C1D]">
+              <p className="text-heading-section text-[#712B13]">企業の方へ</p>
+              <p className="text-caption text-[#993C1D]">
                 採用・PRでのご活用はこちら
               </p>
             </div>
@@ -291,8 +291,8 @@ export default async function Home() {
           </Link>
           <div className="flex items-center justify-between rounded-2xl bg-[#FAECE7] px-4 py-3.5">
             <div>
-              <p className="text-sm font-medium text-[#712B13]">士業の方へ</p>
-              <p className="text-xs text-[#993C1D]">
+              <p className="text-heading-section text-[#712B13]">士業の方へ</p>
+              <p className="text-caption text-[#993C1D]">
                 お悩み相談でのご協力はこちら
               </p>
             </div>
