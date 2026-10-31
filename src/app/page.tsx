@@ -66,10 +66,12 @@ function SectionHeading({
   );
 }
 
-// トップページはまだ都道府県セレクターが無いので、全国制度+東京都の制度だけを表示する
-// (他県の制度を都道府県未選択のまま全員に見せると混乱を招くため)。
+// トップページはまだ都道府県セレクターが無いので、layerが"national"(全国一律)の
+// 制度だけを表示する。prefecture/municipal層は地域によって対象や金額が変わるため、
+// 未選択のまま全員に見せると混乱を招く(前は!p.prefectureで判定していたが、
+// マル親のようにprefecture未設定のmunicipal層が誤って紛れ込むバグがあった)
 const PROGRAMS = programsData.programs
-  .filter((p) => !p.prefecture || p.prefecture === "東京都")
+  .filter((p) => p.layer === "national")
   .map((p) => ({
     id: p.id,
     label: p.name,
@@ -135,7 +137,7 @@ async function getHomeArticles(): Promise<{ articles: RankItem[] }> {
 }
 
 const NAV_ITEMS = [
-  { icon: IconCoin, label: "支援制度", href: "/seido" },
+  { icon: IconCoin, label: "お金の\n支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
   { icon: IconCertificate, label: "おすすめの\nお仕事", href: "/shigoto" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },
@@ -180,7 +182,7 @@ export default async function Home() {
 
         {/* 支援制度 */}
         <section className="mb-6">
-          <SectionHeading title="支援制度" href="/seido" />
+          <SectionHeading title="お金の支援制度" href="/seido" />
           <div className="mb-2.5 flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PROGRAMS.map((p) => (
               <Link

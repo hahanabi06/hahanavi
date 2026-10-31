@@ -180,7 +180,7 @@ export default async function ProgramDetailPage({
       <main className="w-full max-w-md px-4 pt-6 pb-5">
         <PageHeader
           items={[
-            { label: "支援制度", href: "/seido" },
+            { label: "お金の支援制度", href: "/seido" },
             { label: program.name },
           ]}
         />

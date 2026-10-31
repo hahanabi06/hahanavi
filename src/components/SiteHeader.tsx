@@ -19,7 +19,7 @@ import {
 import { BearParentChild } from "@/components/Bear";
 
 const MENU_LINKS = [
-  { icon: IconCoin, label: "支援制度", href: "/seido" },
+  { icon: IconCoin, label: "お金の支援制度", href: "/seido" },
   { icon: IconNews, label: "お役立ち記事", href: "/kiji" },
   { icon: IconCertificate, label: "おすすめのお仕事", href: "/shigoto" },
   { icon: IconBriefcase, label: "ママ向け求人", href: "/kyujin" },

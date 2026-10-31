@@ -25,8 +25,8 @@ export default function SeidoListPage() {
     <>
       <div className="flex min-h-full flex-1 justify-center bg-[var(--background)]">
       <main className="w-full max-w-md px-4 pt-6 pb-5">
-        <PageHeader items={[{ label: "支援制度" }]} />
-        <h1 className="text-heading-title mb-4">支援制度一覧</h1>
+        <PageHeader items={[{ label: "お金の支援制度" }]} />
+        <h1 className="text-heading-title mb-4">お金の支援制度一覧</h1>
 
         <div className="mb-5 flex items-center gap-3 rounded-2xl bg-[#F1EFE8] px-4 py-3">
           <BearParentChild size={40} />
