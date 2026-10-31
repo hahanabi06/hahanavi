@@ -183,17 +183,19 @@ export default async function Home() {
         {/* 支援制度 */}
         <section className="mb-6">
           <SectionHeading title="お金の支援制度" href="/seido" />
-          <div className="mb-2.5 flex gap-2.5 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {PROGRAMS.map((p) => (
-              <Link
-                key={p.id}
-                href={`/seido/${p.id}`}
-                className="flex h-[96px] w-[152px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-2"
-              >
-                <p className="text-caption mb-1 line-clamp-2 text-[#888780]">{p.label}</p>
-                <p className="text-body line-clamp-2 font-medium">{p.value}</p>
-              </Link>
-            ))}
+          <div className="group mb-2.5 overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="animate-marquee flex w-max gap-2.5 group-hover:[animation-play-state:paused] group-active:[animation-play-state:paused]">
+              {[...PROGRAMS, ...PROGRAMS].map((p, i) => (
+                <Link
+                  key={`${p.id}-${i}`}
+                  href={`/seido/${p.id}`}
+                  className="flex h-[96px] w-[152px] shrink-0 flex-col justify-center rounded-2xl bg-[#F1EFE8] px-3 py-2"
+                >
+                  <p className="text-caption mb-1 line-clamp-2 text-[#888780]">{p.label}</p>
+                  <p className="text-body line-clamp-2 font-medium">{p.value}</p>
+                </Link>
+              ))}
+            </div>
           </div>
           <LineButton>LINEで簡単手当診断をしてみる</LineButton>
         </section>

@@ -41,3 +41,17 @@ body {
 @utility text-caption {
   font-size: 0.6875rem; /* 11px、出典リンク・注意書き等の補助情報用 */
 }
+
+/* 横スクロールカードを自動で流し続けるマーキー演出。
+   中身を2セット並べて-50%まで動かすことで、継ぎ目なくループする */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@utility animate-marquee {
+  animation: marquee-scroll 28s linear infinite;
+}
